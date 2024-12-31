@@ -1,0 +1,80 @@
+import Patient from "../helpers/Patient";
+
+export function getPatients() {
+  return [
+    {
+      id: 1,
+      nombre: "Juan",
+      apellido: "Pérez",
+      dni: "12345678",
+      fechaNacimiento: "1980-05-15",
+      altura: 1.75,
+      peso: 70,
+      frecRespiratoria: 16,
+      frecCardiaca: 72,
+      presionArterial: "120/80",
+      obraSocial: "OSDE",
+      clinica: "La clinica del sol",
+    },
+    {
+      id: 2,
+      nombre: "María",
+      apellido: "González",
+      dni: "87654321",
+      fechaNacimiento: "1992-11-30",
+      altura: 1.6,
+      peso: 55,
+      frecRespiratoria: 18,
+      frecCardiaca: 78,
+      presionArterial: "110/70",
+      obraSocial: "Swiss Medical",
+      clinica: "Pinamed",
+    },
+    {
+      id: 3,
+      nombre: "Carlos",
+      apellido: "Rodríguez",
+      dni: "23456789",
+      fechaNacimiento: "1975-08-22",
+      altura: 1.8,
+      peso: 85,
+      frecRespiratoria: 15,
+      frecCardiaca: 70,
+      presionArterial: "130/85",
+      obraSocial: "Galeno",
+      clinica: "La clinica del sol",
+    },
+    {
+      id: 4,
+      nombre: "Ana",
+      apellido: "Martínez",
+      dni: "34567890",
+      fechaNacimiento: "1988-03-10",
+      altura: 1.65,
+      peso: 60,
+      frecRespiratoria: 17,
+      frecCardiaca: 75,
+      presionArterial: "118/76",
+      obraSocial: "Omint",
+      clinica: "Pinamed",
+    },
+    {
+      id: 5,
+      nombre: "Luis",
+      apellido: "Sánchez",
+      dni: "45678901",
+      fechaNacimiento: "1995-07-05",
+      altura: 1.7,
+      peso: 80,
+      frecRespiratoria: 14,
+      frecCardiaca: 80,
+      presionArterial: "125/82",
+      obraSocial: "IOMA",
+      clinica: "La clinica del sol",
+    },
+  ];
+}
+
+const initialPatients: Patient[] = getPatients();
+
+export default initialPatients;

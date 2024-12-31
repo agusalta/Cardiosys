@@ -18,8 +18,10 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".", // Asegúrate de que esta propiedad esté configurada
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["*"],
+      "@/components/*": ["components/*"] // Mapeo para acceder a 'components' de forma directa
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
