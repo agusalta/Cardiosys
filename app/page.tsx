@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PatientList from "./components/PatientList";
@@ -7,6 +7,7 @@ import InsurancePieChart from "./components/InsurancePieChart";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import initialPatients from "./data/Patient";
+import useStore from "./context/store";
 
 const insuranceData = [
   { name: "OSDE", value: 400 },
@@ -19,6 +20,12 @@ const insuranceData = [
 
 export default function Home() {
   const [showTotal, setShowTotal] = useState(true);
+  const { clinicToday, clinicImage, updateClinicForToday } = useStore(); // Traemos los valores del estado global
+
+  useEffect(() => {
+    // Llamamos a la función para actualizar la clínica de hoy en el estado global
+    updateClinicForToday();
+  }, [updateClinicForToday]);
 
   const toggleVisibility = () => {
     setShowTotal((prev) => !prev);
@@ -93,6 +100,21 @@ export default function Home() {
                 Ver todos los pacientes
               </Link>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Card de Clínica */}
+        <Card className="md:col-span-1">
+          <CardHeader>
+            <CardTitle>Clínica de Hoy: {clinicToday}</CardTitle>
+            <hr />
+          </CardHeader>
+          <CardContent>
+            <img
+              src={clinicImage || null} // Usamos la imagen determinada por el día de la semana desde el estado global
+              alt="Clínica de Hoy"
+              className="w-35 h-35 object-cover mx-auto" // Tamaño fijo de 100px por 100px
+            />
           </CardContent>
         </Card>
       </div>

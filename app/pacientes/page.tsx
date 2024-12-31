@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { PatientSearch } from "../components/PatientSearch";
 import PatientList from "../components/PatientList";
@@ -11,10 +10,14 @@ import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState(initialPatients);
-  const [clinicFilter, setClinicFilter] = useState<string>(""); // Estado para la clínica seleccionada
+  const [clinicFilter, setClinicFilter] = useState<string>("");
+
+  useEffect(() => {
+    // Actualizar los pacientes solo después de que el componente se haya montado
+    handleSearch("", clinicFilter);
+  }, [clinicFilter]);
 
   const handleSearch = (query: string, clinic: string) => {
-    // Filtramos primero por la búsqueda y luego por la clínica seleccionada
     const filteredPatients = initialPatients.filter((patient) => {
       const matchesQuery =
         patient.nombre.toLowerCase().includes(query.toLowerCase()) ||
@@ -23,7 +26,7 @@ export default function PatientsPage() {
 
       const matchesClinic = clinic
         ? patient.clinica.toLowerCase() === clinic.toLowerCase()
-        : true; // Si no se ha seleccionado clínica, no aplica filtro por clínica
+        : true;
 
       return matchesQuery && matchesClinic;
     });
@@ -31,8 +34,7 @@ export default function PatientsPage() {
   };
 
   const handleClinicChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setClinicFilter(e.target.value); // Actualiza el filtro por clínica
-    handleSearch("", e.target.value); // Aplica el filtro por clínica al hacer el cambio
+    setClinicFilter(e.target.value); // Cambiar filtro por clínica
   };
 
   return (
@@ -40,11 +42,9 @@ export default function PatientsPage() {
       <h1 className="text-3xl font-bold">Pacientes</h1>
       <div className="flex justify-between items-center space-x-4">
         <div className="flex items-center space-x-4 w-full sm:w-auto">
-          {/* Actualiza el componente de búsqueda para incluir filtro por clínica */}
           <PatientSearch
             onSearch={(query) => handleSearch(query, clinicFilter)}
           />
-          {/* Filtro por clínica */}
           <select
             value={clinicFilter}
             onChange={handleClinicChange}
