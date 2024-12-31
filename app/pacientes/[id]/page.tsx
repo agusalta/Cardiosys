@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PersonRemoveAlt1 } from "@mui/icons-material";
 import {
   Select,
   SelectContent,
@@ -20,6 +19,7 @@ import {
   AccessAlarm,
   Bloodtype,
   AttachFile,
+  PersonRemoveAlt1,
   HealthAndSafety,
   LocalHospital,
   History,
@@ -49,6 +49,32 @@ function calcularEdad(fechaNacimiento: string): number {
   }
 
   return edad;
+}
+
+function calcularSC(peso: number, altura: number): number | string {
+  // Validar que el peso y la altura sean números positivos
+  if (isNaN(peso) || isNaN(altura)) {
+    return "Error: El peso y la altura deben ser números.";
+  }
+  if (peso <= 0 || altura <= 0) {
+    return "Error: El peso y la altura deben ser valores positivos.";
+  }
+
+  // Validar que el peso esté en kilogramos y la altura en metros (se convertirá a centímetros)
+  if (peso > 500 || altura > 3) {
+    return "Error: El peso y la altura parecen estar fuera de un rango razonable.";
+  }
+
+  // Convertir altura de metros a centímetros
+  const alturaCm = altura * 100;
+
+  // Cálculo de la superficie corporal utilizando la fórmula de Du Bois
+  const scc = 0.007184;
+  const superficieCorporal =
+    scc * Math.pow(peso, 0.425) * Math.pow(alturaCm, 0.725);
+
+  // Devolver el valor calculado con 2 decimales
+  return parseFloat(superficieCorporal.toFixed(2));
 }
 
 export default function PatientDetailsPage() {
@@ -185,7 +211,7 @@ export default function PatientDetailsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center relative">
                   <div className="font-semibold">
                     <Height className="inline-block mr-2" />
                     Altura
@@ -199,8 +225,12 @@ export default function PatientDetailsPage() {
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
                   />
+                  <span className="absolute right-0 mr-2 text-sm text-gray-300">
+                    mts
+                  </span>
                 </div>
-                <div className="flex justify-between items-center">
+
+                <div className="flex justify-between items-center relative">
                   <div className="font-semibold">
                     <MonitorWeight className="inline-block mr-2" />
                     Peso
@@ -214,8 +244,30 @@ export default function PatientDetailsPage() {
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
                   />
+                  <span className="absolute right-0 mr-2 text-sm text-gray-300">
+                    kg
+                  </span>
                 </div>
-                <div className="flex justify-between items-center">
+
+                <div className="flex justify-between items-center relative">
+                  <div className="font-semibold">
+                    <HealthAndSafety className="inline-block mr-2" />
+                    Superficie Corporal
+                  </div>
+                  <Input
+                    type="number"
+                    name="sc"
+                    value={calcularSC(patient.peso, patient.altura)}
+                    onChange={handleInputChange}
+                    step="0.1"
+                    className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
+                    disabled={!isEditing}
+                  />
+                  <span className="absolute right-0 mr-2 text-sm text-gray-300">
+                    sc
+                  </span>
+                </div>
+                <div className="flex justify-between items-center relative">
                   <div className="font-semibold">
                     <AccessAlarm className="inline-block mr-2" />
                     Frecuencia Respiratoria
@@ -228,8 +280,11 @@ export default function PatientDetailsPage() {
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
                   />
+                  <span className="absolute right-0 mr-2 text-sm text-gray-300">
+                    rpm
+                  </span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center relative">
                   <div className="font-semibold">
                     <MonitorHeart className="inline-block mr-2" />
                     Frecuencia Cardiaca
@@ -242,8 +297,11 @@ export default function PatientDetailsPage() {
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
                   />
+                  <span className="absolute right-0 mr-2 text-sm text-gray-300">
+                    lpm
+                  </span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center relative">
                   <div className="font-semibold">
                     <Bloodtype className="inline-block mr-2" />
                     Presión Arterial
@@ -256,6 +314,9 @@ export default function PatientDetailsPage() {
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
                   />
+                  <span className="absolute right-0 mr-2 text-sm text-gray-300">
+                    mmHg
+                  </span>
                 </div>
               </div>
             </CardContent>

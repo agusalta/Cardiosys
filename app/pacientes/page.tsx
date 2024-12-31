@@ -50,7 +50,7 @@ export default function PatientsPage() {
             onChange={handleClinicChange}
             className="border px-4 py-2 rounded-lg text-xs sm:text-sm w-full sm:w-auto"
           >
-            <option value="">Toda s</option>
+            <option value="">Todas</option>
             <option value="La clinica del sol">La clinica del sol</option>
             <option value="Pinamed">Pinamed</option>
           </select>

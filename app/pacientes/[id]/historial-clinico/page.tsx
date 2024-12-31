@@ -46,6 +46,7 @@ export default function ClinicalHistoryPage() {
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newFile, setNewFile] = useState<File | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     // In a real application, you would fetch the clinical history for the specific patient
@@ -81,9 +82,30 @@ export default function ClinicalHistoryPage() {
     }
   };
 
+  const filteredHistory = clinicalHistory.filter((entry) => {
+    const lowercasedQuery = searchQuery.toLowerCase();
+    return (
+      entry.fecha.toLowerCase().includes(lowercasedQuery) ||
+      entry.estudio.toLowerCase().includes(lowercasedQuery)
+    );
+  });
+
   return (
     <div className="space-y-6 p-6">
       <h1 className="text-3xl font-bold">Historial Clínico</h1>
+
+      <div className="flex justify-between items-center mb-4">
+        <Input
+          type="text"
+          placeholder="Buscar por fecha o estudio..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-1/2"
+        />
+        <Button variant="outline" onClick={() => setSearchQuery("")}>
+          Limpiar búsqueda
+        </Button>
+      </div>
 
       <Card>
         <CardHeader>
@@ -103,7 +125,7 @@ export default function ClinicalHistoryPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clinicalHistory.map((entry) => (
+              {filteredHistory.map((entry) => (
                 <TableRow key={entry.id}>
                   <TableCell>{entry.fecha}</TableCell>
                   <TableCell>{entry.asunto}</TableCell>
@@ -112,13 +134,18 @@ export default function ClinicalHistoryPage() {
                     <span className="line-clamp-2">{entry.observacion}</span>
                   </TableCell>
                   <TableCell>
-                    {entry.factura && (
+                    {entry.factura ? (
                       <Badge variant="secondary">
                         <Receipt className="w-4 h-4 mr-2" />
-                        {entry.factura}
+                        {typeof entry.factura === "number"
+                          ? `${entry.factura.toLocaleString("es-AR")} ARS`
+                          : entry.factura}
                       </Badge>
+                    ) : (
+                      <span>No aplica</span>
                     )}
                   </TableCell>
+
                   <TableCell>
                     <div className="flex flex-wrap gap-2">
                       {entry.archivos.map((archivo, index) => (
@@ -188,16 +215,17 @@ export default function ClinicalHistoryPage() {
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="asunto" className="text-right">
-                    Asunto
+                  <Label htmlFor="estudio" className="text-right">
+                    Estudio
                   </Label>
                   <Input
-                    id="asunto"
-                    value={editingEntry.asunto}
+                    id="estudio"
+                    type="text"
+                    value={editingEntry.estudio}
                     onChange={(e) =>
                       setEditingEntry({
                         ...editingEntry,
-                        asunto: e.target.value,
+                        estudio: e.target.value,
                       })
                     }
                     className="col-span-3"
@@ -219,60 +247,12 @@ export default function ClinicalHistoryPage() {
                     className="col-span-3"
                   />
                 </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="factura" className="text-right">
-                    Factura
+                  <Label htmlFor="archivo" className="text-right">
+                    Archivo
                   </Label>
                   <Input
-                    id="factura"
-                    value={editingEntry.factura || ""}
-                    onChange={(e) =>
-                      setEditingEntry({
-                        ...editingEntry,
-                        factura: e.target.value,
-                      })
-                    }
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="archivos" className="text-right">
-                    Archivos
-                  </Label>
-                  <div className="col-span-3">
-                    <ScrollArea className="h-[100px] w-full rounded-md border p-4">
-                      {editingEntry.archivos.map((archivo, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between py-2"
-                        >
-                          <span>{archivo}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const newArchivos = editingEntry.archivos.filter(
-                                (_, i) => i !== index
-                              );
-                              setEditingEntry({
-                                ...editingEntry,
-                                archivos: newArchivos,
-                              });
-                            }}
-                          >
-                            <Delete className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </ScrollArea>
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="newFile" className="text-right">
-                    Nuevo Archivo
-                  </Label>
-                  <Input
-                    id="newFile"
                     type="file"
                     onChange={handleFileChange}
                     className="col-span-3"
@@ -280,6 +260,12 @@ export default function ClinicalHistoryPage() {
                 </div>
               </div>
               <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Cancelar
+                </Button>
                 <Button type="submit">Guardar cambios</Button>
               </DialogFooter>
             </form>
