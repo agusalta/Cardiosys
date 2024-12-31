@@ -13,5 +13,6 @@ export default interface ClinicalHistoryEntry {
     | "Eco-stress"
     | "Electrocardiograma"
     | "Coronariografía"
-    | "TAC";
+    | "TAC"
+    | any;
 }

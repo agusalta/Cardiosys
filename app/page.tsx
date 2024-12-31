@@ -83,7 +83,7 @@ export default function Home() {
         {/* Bloque vertical: Pacientes Recientes */}
         <Card className="md:col-span-2 md:row-span-2">
           <CardHeader>
-            <CardTitle>Pacientes Recientes</CardTitle>
+            <CardTitle>Visitas Recientes</CardTitle>
             <hr />
           </CardHeader>
           <CardContent>
