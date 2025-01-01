@@ -21,7 +21,12 @@ export default function Header() {
             </li>
             <li>
               <Link href="/estudios" className="hover:underline">
-                Pacientes
+                Estudios
+              </Link>
+            </li>
+            <li>
+              <Link href="/protocolos" className="hover:underline">
+                Protocolos
               </Link>
             </li>
           </ul>

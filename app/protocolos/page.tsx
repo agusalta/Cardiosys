@@ -364,6 +364,44 @@ export default function InformeMedico() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Protocolo de Procedimiento</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <h3 className="font-semibold">
+            Protocolo Pico y PostEjercicio Ergometrico
+          </h3>
+          <p>
+            La prueba de esfuerzo se efectuó en cinta con sistema de registro de
+            12 canales.
+          </p>
+          <p>
+            El procedimiento consistió en la captación en condiciones basales de
+            imágenes correspondientes a las vistas ecocardiográficas
+            paraesternal izquierda en eje mayor y menor y apical en 4 y 2
+            cámaras, así como en la obtención de un registro
+            electrocardiográfico completo.
+          </p>
+          <p>
+            Se realizó luego una prueba ergométrica graduada convencional.
+            Inmediatamente de concluido el ejercicio, el paciente se instaló
+            nuevamente en la camilla de ecocardiografia, registrándose las
+            mismas vistas, previamente captadas en condiciones basales. Todas la
+            imágenes fueron digitalizadas y analizadas por 2 operadores,
+            utilizando la siguiente jerarquía numérica a los efectos de obtener
+            un score de motilidad parietal:
+          </p>
+          <ul className="list-none space-y-1 pl-4">
+            <li>1.- Normal</li>
+            <li>2.- Hipoquinético</li>
+            <li>3.- Aquinético</li>
+            <li>4.- Aneurisma</li>
+            <li>0.- No apto para interpretacion</li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Protocolo de Ejercicio</CardTitle>
         </CardHeader>
         <CardContent>
@@ -590,13 +628,73 @@ export default function InformeMedico() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Evaluación Final</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            className="w-full h-20 p-2 border rounded-md"
+            placeholder="Escribí tu evaluación acá..."
+          ></Textarea>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Análisis de la Motilidad Segmentaria</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="bg-muted/20 p-2 text-sm">
+              1=NORMAL 2=HIPOQUINESIA 3=AQUINESIA 4=ANEURISMA 0=NO INTERPRETABLE
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {/* Basal Section */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-center">Basal</h3>
+                <div className="aspect-square relative">
+                  {/* Números 1 superpuestos - se implementarían con posicionamiento absoluto */}
+                </div>
+              </div>
+
+              {/* Post Exercise Section */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-center">POSTEJERCICIO</h3>
+                <div className="aspect-square relative">
+                  {/* Números 1 superpuestos - se implementarían con posicionamiento absoluto */}
+                </div>
+              </div>
+            </div>
+
+            {/* Score Index */}
+            <div className="border rounded-md overflow-hidden">
+              <div className="bg-muted p-2 text-center font-semibold">
+                Indice de Score de Motilidad
+              </div>
+              <div className="grid grid-cols-2 divide-x">
+                <div className="p-4 text-center">
+                  <span className="font-medium">Indice Basal: </span>
+                  <span className="text-lg">1</span>
+                </div>
+                <div className="p-4 text-center">
+                  <span className="font-medium">Indice Post: </span>
+                  <span className="text-lg">1</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Conclusiones</CardTitle>
         </CardHeader>
         <CardContent>
-          <textarea
-            className="w-full h-32 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <Textarea
+            className="w-full h-20 p-2 border rounded-md"
             placeholder="Escribí tus conclusiones acá..."
-          ></textarea>
+          ></Textarea>
         </CardContent>
       </Card>
 

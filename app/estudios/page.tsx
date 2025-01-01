@@ -90,7 +90,7 @@ export default function EstudiosPage() {
           <Button>
             <Archive className="text-xl md:text-2xl" />
             <span className="hidden md:inline text-xs sm:text-sm">
-              Agregar estudio
+              Nuevo estudio
             </span>
           </Button>
         </div>
