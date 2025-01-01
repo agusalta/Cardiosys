@@ -39,7 +39,6 @@ export default function Home() {
         <Card className="md:col-span-1 md:row-span-2">
           <CardHeader>
             <CardTitle>Obra Social Más Usada</CardTitle>
-            <hr />
           </CardHeader>
           <CardContent>
             <InsurancePieChart data={insuranceData} />
@@ -50,7 +49,6 @@ export default function Home() {
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>Resumen Mensual</CardTitle>
-            <hr />
           </CardHeader>
           <CardContent className="flex flex-col md:grid md:grid-cols-3 md:gap-2">
             <div className="mb-4 md:mb-0">
@@ -91,7 +89,6 @@ export default function Home() {
         <Card className="md:col-span-2 md:row-span-2">
           <CardHeader>
             <CardTitle>Visitas Recientes</CardTitle>
-            <hr />
           </CardHeader>
           <CardContent>
             <PatientList patients={initialPatients} limit={5} />
@@ -107,7 +104,6 @@ export default function Home() {
         <Card className="md:col-span-1">
           <CardHeader>
             <CardTitle>Clínica de Hoy: {clinicToday}</CardTitle>
-            <hr />
           </CardHeader>
           <CardContent>
             <img

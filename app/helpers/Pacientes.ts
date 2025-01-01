@@ -3,6 +3,8 @@ export default interface Patient {
   nombre: string;
   apellido: string;
   dni: string;
+  email: string;
+  telefono: string;
   fechaNacimiento: string;
   altura: number;
   peso: number;

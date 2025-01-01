@@ -2,8 +2,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EditIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -34,7 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Patient from "@/app/helpers/Patient";
+import Patient from "@/app/helpers/Pacientes";
 import initialPatients from "@/app/data/Patient";
 import mockClinicalHistory from "@/app/data/HistorialClinico";
 
@@ -50,6 +52,10 @@ function calcularEdad(fechaNacimiento: string): number {
 
   return edad;
 }
+
+const calcularIMC = (peso: number, altura: number) => {
+  return (peso / Math.pow(altura, 2)).toFixed(2);
+};
 
 function calcularSC(peso: number, altura: number): number | string {
   // Validar que el peso y la altura sean números positivos
@@ -132,6 +138,7 @@ export default function PatientDetailsPage() {
         <h1 className="text-3xl font-bold">Detalles del Paciente</h1>
         <div className="flex flex-wrap justify-center sm:justify-end items-center gap-2 sm:space-x-4">
           <Button onClick={handleEditToggle} variant="outline">
+            <EditIcon className="text-xl md:text-2xl" />
             {isEditing ? "Cancelar" : "Editar"}
           </Button>
           {isEditing && (
@@ -140,7 +147,10 @@ export default function PatientDetailsPage() {
             </Button>
           )}
           <Button>
-            <PersonRemoveAlt1 />
+            <PersonRemoveAlt1 className="text-xl md:text-2xl" />
+            <span className="hidden md:inline text-xs sm:text-sm">
+              Eliminar paciente
+            </span>
           </Button>
         </div>
       </div>
@@ -181,6 +191,28 @@ export default function PatientDetailsPage() {
                     type="text"
                     name="dni"
                     value={patient.dni}
+                    onChange={handleInputChange}
+                    className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="font-semibold">Correo electrónico</div>
+                  <Input
+                    type="email"
+                    name="mail"
+                    value={patient.email}
+                    onChange={handleInputChange}
+                    className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="font-semibold">Teléfono</div>
+                  <Input
+                    type="tel"
+                    name="telefono"
+                    value={patient.telefono}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -265,6 +297,25 @@ export default function PatientDetailsPage() {
                   />
                   <span className="absolute right-0 mr-2 text-sm text-gray-300">
                     sc
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center relative">
+                  <div className="font-semibold">
+                    <FitnessCenterIcon className="inline-block mr-2" />
+                    IMC
+                  </div>
+                  <Input
+                    type="number"
+                    name="imc"
+                    value={calcularIMC(patient.peso, patient.altura)}
+                    onChange={handleInputChange}
+                    step="0.1"
+                    className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
+                    disabled={!isEditing}
+                  />
+                  <span className="absolute right-0 mr-2 text-sm text-gray-300">
+                    kg
                   </span>
                 </div>
                 <div className="flex justify-between items-center relative">

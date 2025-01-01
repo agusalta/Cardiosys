@@ -1,4 +1,4 @@
-import Patient from "../helpers/Patient";
+import Patient from "../helpers/Pacientes";
 
 export function getPatients() {
   return [
@@ -15,6 +15,8 @@ export function getPatients() {
       presionArterial: "120/80",
       obraSocial: "OSDE",
       clinica: "La clinica del sol",
+      email: "juan.perez@example.com",
+      telefono: "+54 9 11 5555 1234",
     },
     {
       id: 2,
@@ -29,6 +31,8 @@ export function getPatients() {
       presionArterial: "110/70",
       obraSocial: "Swiss Medical",
       clinica: "Pinamed",
+      email: "maria.gonzalez@example.com",
+      telefono: "+54 9 11 5555 5678",
     },
     {
       id: 3,
@@ -43,6 +47,8 @@ export function getPatients() {
       presionArterial: "130/85",
       obraSocial: "Galeno",
       clinica: "La clinica del sol",
+      email: "carlos.rodriguez@example.com",
+      telefono: "+54 9 11 5555 9012",
     },
     {
       id: 4,
@@ -57,6 +63,8 @@ export function getPatients() {
       presionArterial: "118/76",
       obraSocial: "Omint",
       clinica: "Pinamed",
+      email: "ana.martinez@example.com",
+      telefono: "+54 9 11 5555 3456",
     },
     {
       id: 5,
@@ -71,6 +79,8 @@ export function getPatients() {
       presionArterial: "125/82",
       obraSocial: "IOMA",
       clinica: "La clinica del sol",
+      email: "luis.sanchez@example.com",
+      telefono: "+54 9 11 5555 7890",
     },
   ];
 }

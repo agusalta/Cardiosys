@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Home,
@@ -18,16 +18,31 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import useStore from "../context/store";
 
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/" },
   { icon: Users, label: "Pacientes", href: "/pacientes" },
   { icon: FileText, label: "Estudios", href: "/estudios" },
+  { icon: FileText, label: "Protocolos", href: "/protocolos" },
   { icon: Settings, label: "Configuración", href: "/configuracion" },
 ];
 
 export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { clinicToday } = useStore(); // Accede al estado global
+
+  const clinicEmoji =
+    clinicToday === "Pinamed"
+      ? "🌲"
+      : clinicToday === "Clínica del Sol"
+      ? "🌞"
+      : ""; // Determina el emoji según la clínica
+
+  useEffect(() => {
+    // Aquí puedes actualizar el estado global si es necesario.
+  }, [clinicToday]);
 
   return (
     <div
@@ -41,9 +56,10 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
         <div className="px-3 py-2">
           {!isCollapsed && (
             <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-              CardioSys
+              CardioSys {clinicEmoji}
             </h2>
           )}
+
           <div className="space-y-1">
             {menuItems.map((item) => (
               <TooltipProvider key={item.href}>
@@ -65,6 +81,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
                       </Link>
                     </Button>
                   </TooltipTrigger>
+
                   {isCollapsed && (
                     <TooltipContent side="right">{item.label}</TooltipContent>
                   )}

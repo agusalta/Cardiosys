@@ -6,7 +6,6 @@ import PatientList from "../components/PatientList";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import initialPatients from "../data/Patient";
-import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState(initialPatients);

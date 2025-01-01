@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import AddIcon from "@mui/icons-material/Add";
 import {
   Table,
   TableBody,
@@ -35,6 +37,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ClinicalHistoryEntry from "@/app/helpers/HistorialClinico";
 import mockClinicalHistory from "@/app/data/HistorialClinico";
+import Link from "next/link";
 
 export default function ClinicalHistoryPage() {
   const { id } = useParams();
@@ -94,7 +97,7 @@ export default function ClinicalHistoryPage() {
     <div className="space-y-6 p-6">
       <h1 className="text-3xl font-bold">Historial Clínico</h1>
 
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center">
         <Input
           type="text"
           placeholder="Buscar por fecha o estudio..."
@@ -102,9 +105,19 @@ export default function ClinicalHistoryPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-1/2"
         />
-        <Button variant="outline" onClick={() => setSearchQuery("")}>
-          Limpiar búsqueda
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button variant="outline" onClick={() => setSearchQuery("")}>
+            <SearchOffIcon className="text-xl md:text-2xl" />
+          </Button>
+          <Button asChild>
+            <Link href="/pacientes/nuevo" className="flex items-center gap-2">
+              <AddIcon className="text-xl md:text-2xl" />
+              <span className="hidden md:inline text-xs sm:text-sm">
+                Agregar nuevo item
+              </span>
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -121,7 +134,7 @@ export default function ClinicalHistoryPage() {
                 <TableHead>Observación</TableHead>
                 <TableHead>Factura</TableHead>
                 <TableHead>Archivos</TableHead>
-                <TableHead>Acciones</TableHead>
+                <TableHead> </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
