@@ -1,4 +1,4 @@
-import Patient from "../helpers/Pacientes";
+import Paciente from "../helpers/Pacientes";
 
 export function getPatients() {
   return [
@@ -7,6 +7,7 @@ export function getPatients() {
       nombre: "Juan",
       apellido: "Pérez",
       dni: "12345678",
+      sexo: "M",
       fechaNacimiento: "1980-05-15",
       altura: 1.75,
       peso: 70,
@@ -14,7 +15,6 @@ export function getPatients() {
       frecCardiaca: 72,
       presionArterial: "120/80",
       obraSocial: "OSDE",
-      clinica: "La clinica del sol",
       email: "juan.perez@example.com",
       telefono: "+54 9 11 5555 1234",
     },
@@ -23,6 +23,7 @@ export function getPatients() {
       nombre: "María",
       apellido: "González",
       dni: "87654321",
+      sexo: "F",
       fechaNacimiento: "1992-11-30",
       altura: 1.6,
       peso: 55,
@@ -30,7 +31,6 @@ export function getPatients() {
       frecCardiaca: 78,
       presionArterial: "110/70",
       obraSocial: "Swiss Medical",
-      clinica: "Pinamed",
       email: "maria.gonzalez@example.com",
       telefono: "+54 9 11 5555 5678",
     },
@@ -39,6 +39,7 @@ export function getPatients() {
       nombre: "Carlos",
       apellido: "Rodríguez",
       dni: "23456789",
+      sexo: "M",
       fechaNacimiento: "1975-08-22",
       altura: 1.8,
       peso: 85,
@@ -46,7 +47,6 @@ export function getPatients() {
       frecCardiaca: 70,
       presionArterial: "130/85",
       obraSocial: "Galeno",
-      clinica: "La clinica del sol",
       email: "carlos.rodriguez@example.com",
       telefono: "+54 9 11 5555 9012",
     },
@@ -55,6 +55,7 @@ export function getPatients() {
       nombre: "Ana",
       apellido: "Martínez",
       dni: "34567890",
+      sexo: "F",
       fechaNacimiento: "1988-03-10",
       altura: 1.65,
       peso: 60,
@@ -62,7 +63,6 @@ export function getPatients() {
       frecCardiaca: 75,
       presionArterial: "118/76",
       obraSocial: "Omint",
-      clinica: "Pinamed",
       email: "ana.martinez@example.com",
       telefono: "+54 9 11 5555 3456",
     },
@@ -71,6 +71,7 @@ export function getPatients() {
       nombre: "Luis",
       apellido: "Sánchez",
       dni: "45678901",
+      sexo: "M",
       fechaNacimiento: "1995-07-05",
       altura: 1.7,
       peso: 80,
@@ -78,13 +79,12 @@ export function getPatients() {
       frecCardiaca: 80,
       presionArterial: "125/82",
       obraSocial: "IOMA",
-      clinica: "La clinica del sol",
       email: "luis.sanchez@example.com",
       telefono: "+54 9 11 5555 7890",
     },
   ];
 }
 
-const initialPatients: Patient[] = getPatients();
+const initialPatients: Paciente[] = getPatients() as Paciente[];
 
 export default initialPatients;

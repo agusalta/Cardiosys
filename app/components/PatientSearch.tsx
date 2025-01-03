@@ -23,7 +23,7 @@ export function PatientSearch({ onSearch }: PatientSearchProps) {
       <Input
         type="search"
         placeholder="Buscar pacientes..."
-        className="pl-8"
+        className="pl-8 italic capitalize"
         value={query}
         onChange={handleSearch}
       />

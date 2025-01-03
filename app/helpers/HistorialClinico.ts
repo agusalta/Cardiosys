@@ -6,13 +6,5 @@ export default interface ClinicalHistoryEntry {
   asunto: string;
   factura?: any;
   archivos: string[];
-  estudio:
-    | "Eco-doppler"
-    | "Ecocardiograma Doppler"
-    | "Ergometría"
-    | "Eco-stress"
-    | "Electrocardiograma"
-    | "Coronariografía"
-    | "TAC"
-    | any;
+  estudio: string;
 }

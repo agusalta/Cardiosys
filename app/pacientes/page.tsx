@@ -5,35 +5,26 @@ import { PatientSearch } from "../components/PatientSearch";
 import PatientList from "../components/PatientList";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import initialPatients from "../data/Patient";
+import initialPatients from "../data/Paciente";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState(initialPatients);
-  const [clinicFilter, setClinicFilter] = useState<string>("");
+  // const [clinicFilter, setClinicFilter] = useState<string>("");
 
-  useEffect(() => {
-    // Actualizar los pacientes solo después de que el componente se haya montado
-    handleSearch("", clinicFilter);
-  }, [clinicFilter]);
-
-  const handleSearch = (query: string, clinic: string) => {
+  const handleSearch = (query: string) => {
     const filteredPatients = initialPatients.filter((patient) => {
       const matchesQuery =
         patient.nombre.toLowerCase().includes(query.toLowerCase()) ||
         patient.apellido.toLowerCase().includes(query.toLowerCase()) ||
         patient.dni.includes(query);
 
-      const matchesClinic = clinic
-        ? patient.clinica.toLowerCase() === clinic.toLowerCase()
-        : true;
+      // const matchesClinic = clinic
+      //   ? patient.clinica.toLowerCase() === clinic.toLowerCase()
+      //   : true;
 
-      return matchesQuery && matchesClinic;
+      return matchesQuery;
     });
     setPatients(filteredPatients);
-  };
-
-  const handleClinicChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setClinicFilter(e.target.value); // Cambiar filtro por clínica
   };
 
   return (
@@ -41,18 +32,7 @@ export default function PatientsPage() {
       <h1 className="text-3xl font-bold">Pacientes</h1>
       <div className="flex justify-between items-center space-x-4">
         <div className="flex items-center space-x-4 w-full sm:w-auto">
-          <PatientSearch
-            onSearch={(query) => handleSearch(query, clinicFilter)}
-          />
-          <select
-            value={clinicFilter}
-            onChange={handleClinicChange}
-            className="border px-4 py-2 rounded-lg text-xs sm:text-sm w-full sm:w-auto"
-          >
-            <option value="">Todas</option>
-            <option value="La clinica del sol">La clinica del sol</option>
-            <option value="Pinamed">Pinamed</option>
-          </select>
+          <PatientSearch onSearch={(query) => handleSearch(query)} />
         </div>
         <Button asChild>
           <Link href="/pacientes/nuevo" className="flex items-center gap-2">

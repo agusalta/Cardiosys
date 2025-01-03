@@ -11,18 +11,10 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-
-interface Patient {
-  id: number;
-  nombre: string;
-  apellido: string;
-  dni: string;
-  fechaNacimiento: string;
-  clinica: string;
-}
+import Paciente from "../helpers/Pacientes";
 
 interface PatientListProps {
-  patients?: Patient[];
+  patients?: Paciente[];
   limit?: number;
 }
 
@@ -83,7 +75,6 @@ export default function PatientList({
           <TableHead>Apellido</TableHead>
           <TableHead>DNI</TableHead>
           <TableHead>Fecha de Nacimiento</TableHead>
-          <TableHead>Clinica</TableHead>
           <TableHead>Acciones</TableHead>
         </TableRow>
       </TableHeader>
@@ -94,7 +85,6 @@ export default function PatientList({
             <TableCell>{patient.apellido}</TableCell>
             <TableCell>{patient.dni}</TableCell>
             <TableCell>{patient.fechaNacimiento}</TableCell>
-            <TableCell>{getClinicaBadge(patient.clinica)}</TableCell>
             <TableCell>
               <Link href={`/pacientes/${patient.id}`} passHref>
                 <Button variant="outline" size="sm">

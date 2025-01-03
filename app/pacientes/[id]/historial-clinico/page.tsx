@@ -103,7 +103,7 @@ export default function ClinicalHistoryPage() {
           placeholder="Buscar por fecha o estudio..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-1/2"
+          className="w-1/2 italic capitalize"
         />
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => setSearchQuery("")}>

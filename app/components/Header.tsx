@@ -24,11 +24,6 @@ export default function Header() {
                 Estudios
               </Link>
             </li>
-            <li>
-              <Link href="/protocolos" className="hover:underline">
-                Protocolos
-              </Link>
-            </li>
           </ul>
         </nav>
       </div>

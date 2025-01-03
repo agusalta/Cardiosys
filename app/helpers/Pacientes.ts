@@ -1,16 +1,18 @@
-export default interface Patient {
+export interface Paciente {
   id: number;
   nombre: string;
   apellido: string;
+  sexo: Sexo;
   dni: string;
   email: string;
   telefono: string;
   fechaNacimiento: string;
   altura: number;
   peso: number;
-  frecRespiratoria: number;
-  frecCardiaca: number;
-  presionArterial: string;
+  frecRespiratoria?: number;
+  frecCardiaca?: number;
+  presionArterial?: string;
   obraSocial: string;
-  clinica: string;
 }
+
+export type Sexo = "M" | "F";

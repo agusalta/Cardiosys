@@ -6,17 +6,9 @@ import PatientList from "./components/PatientList";
 import InsurancePieChart from "./components/InsurancePieChart";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import initialPatients from "./data/Patient";
+import initialPatients from "./data/Paciente";
 import useStore from "./context/store";
-
-const insuranceData = [
-  { name: "OSDE", value: 400 },
-  { name: "Swiss Medical", value: 300 },
-  { name: "Medifé", value: 300 },
-  { name: "Galeno", value: 200 },
-  { name: "Ioma", value: 200 },
-  { name: "Pami", value: 200 },
-];
+import { insuranceData } from "./data/ObraSocial";
 
 export default function Home() {
   const [showTotal, setShowTotal] = useState(true);

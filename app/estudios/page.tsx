@@ -10,19 +10,53 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { EditIcon, XIcon, CheckIcon, TrashIcon } from "lucide-react";
-import { Archive, Delete } from "@mui/icons-material";
+import { EditIcon, XIcon, CheckIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { initialCardiologyStudies } from "../data/Estudios";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
 
-const initialCardiologyStudies = [
-  { id: 1, name: "Electrocardiograma", cost: 100 },
-  { id: 2, name: "Ecocardiograma", cost: 200 },
-  { id: 3, name: "Prueba de esfuerzo", cost: 150 },
-];
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 export default function EstudiosPage() {
   const [studies, setStudies] = useState(initialCardiologyStudies);
   const [isEditing, setIsEditing] = useState(false);
   const [tempStudies, setTempStudies] = useState(initialCardiologyStudies);
+  const [newStudy, setNewStudy] = useState({ name: "", cost: "" });
 
   const handleCostChange = (id: number, newCost: number) => {
     const updatedStudies = tempStudies.map((study) =>
@@ -46,110 +80,239 @@ export default function EstudiosPage() {
   };
 
   const handleDelete = (id: number) => {
-    const updatedStudies = studies.filter((study) => study.id !== id);
-    setStudies(updatedStudies);
+    const updatedStudies = tempStudies.filter((study) => study.id !== id);
     setTempStudies(updatedStudies);
   };
 
+  const handleAddStudy = () => {
+    if (newStudy.name && parseFloat(newStudy.cost) > 0) {
+      const newId = Math.max(...tempStudies.map((s) => s.id)) + 1;
+      setTempStudies([
+        ...tempStudies,
+        { ...newStudy, id: newId, cost: parseFloat(newStudy.cost) },
+      ]);
+      setNewStudy({ name: "", cost: "" });
+    }
+  };
+
+  const chartData = {
+    labels: studies.map((study) => study.name),
+    datasets: [
+      {
+        label: "Costo de estudios",
+        data: studies.map((study) => study.cost),
+        backgroundColor: "hsl(var(--primary))",
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Costo de estudios cardiológicos",
+      },
+    },
+  };
+
+  const frequencyData = {
+    labels: [
+      "Electrocardiograma",
+      "Ecocardiograma",
+      "Holter",
+      "Prueba de esfuerzo",
+    ],
+    datasets: [
+      {
+        label: "Estudios más realizados",
+        data: [12, 19, 7, 14], // Valores simulados
+        backgroundColor: [
+          "hsl(var(--primary))",
+          "hsl(var(--secondary))",
+          "hsl(var(--accent))",
+          "hsl(var(--muted))",
+        ],
+      },
+    ],
+  };
+
+  const frequencyOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Estudios más realizados en el mes",
+      },
+    },
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Contenedor de título y botones */}
-      <div className="flex flex-wrap items-center justify-between">
-        <h1 className="text-3xl font-bold">Estudios</h1>
-        <div className="flex flex-wrap items-center gap-2 sm:space-x-4">
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold mb-4 sm:mb-0">
+          Estudios Cardiológicos
+        </h1>
+        <div className="flex space-x-2">
           {!isEditing ? (
-            <Button
-              variant="outline"
-              onClick={handleEdit}
-              className="flex items-center gap-2"
-            >
-              <EditIcon className="text-xl md:text-2xl" />
+            <Button onClick={handleEdit} variant="outline">
+              <EditIcon className="w-4 h-4 mr-2" />
               Editar
             </Button>
           ) : (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={handleCancel}
-                className="flex items-center gap-2"
-              >
-                <XIcon className="text-xl md:text-2xl" />
+            <>
+              <Button onClick={handleCancel} variant="outline">
+                <XIcon className="w-4 h-4 mr-2" />
                 Cancelar
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleSave}
-                className="flex items-center gap-2"
-              >
-                <CheckIcon className="text-xl md:text-2xl" />
+              <Button onClick={handleSave} variant="default">
+                <CheckIcon className="w-4 h-4 mr-2" />
                 Guardar
               </Button>
-            </div>
+            </>
           )}
-
-          <Button>
-            <Archive className="text-xl md:text-2xl" />
-            <span className="hidden md:inline text-xs sm:text-sm">
-              Nuevo estudio
-            </span>
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>
+                <PlusIcon className="w-4 h-4 mr-2" />
+                Nuevo Estudio
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Agregar Nuevo Estudio</DialogTitle>
+                <DialogDescription>
+                  Ingrese los detalles del nuevo estudio cardiológico.
+                </DialogDescription>
+              </DialogHeader>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAddStudy();
+                }}
+              >
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="name" className="text-right">
+                      Nombre
+                    </Label>
+                    <Input
+                      id="name"
+                      value={newStudy.name}
+                      onChange={(e) =>
+                        setNewStudy({ ...newStudy, name: e.target.value })
+                      }
+                      className="col-span-3"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="cost" className="text-right">
+                      Costo
+                    </Label>
+                    <Input
+                      id="cost"
+                      type="number"
+                      value={newStudy.cost}
+                      onChange={(e) =>
+                        setNewStudy({
+                          ...newStudy,
+                          cost: e.target.value,
+                        })
+                      }
+                      className="col-span-3"
+                      required
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit">Agregar Estudio</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Card 1: Estudios Cardiológicos */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Estudios Cardiológicos</CardTitle>
-            <CardDescription>Lista de estudios con su costo</CardDescription>
+            <CardTitle>Lista de Estudios</CardTitle>
+            <CardDescription>
+              Gestiona los estudios cardiológicos y sus costos
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-4">
-              {tempStudies.map((study) => (
-                <li
-                  key={study.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium">{study.name}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      type="number"
-                      value={study.cost}
-                      onChange={(e) =>
-                        handleCostChange(study.id, parseFloat(e.target.value))
-                      }
-                      className="w-24 text-right"
-                      disabled={!isEditing}
-                    />
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nombre del Estudio</TableHead>
+                  <TableHead className="text-right">Costo</TableHead>
+                  {isEditing && (
+                    <TableHead className="w-[100px]">Acciones</TableHead>
+                  )}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {tempStudies.map((study) => (
+                  <TableRow key={study.id}>
+                    <TableCell>{study.name}</TableCell>
+                    <TableCell className="text-right">
+                      <Input
+                        type="number"
+                        value={study.cost}
+                        onChange={(e) =>
+                          handleCostChange(study.id, parseFloat(e.target.value))
+                        }
+                        className="w-24 text-right"
+                        disabled={!isEditing}
+                      />
+                    </TableCell>
                     {isEditing && (
-                      <Button
-                        variant="outline"
-                        onClick={() => handleDelete(study.id)}
-                        className="flex items-center gap-2"
-                      >
-                        <Delete className="w-4 h-4" />
-                      </Button>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(study.id)}
+                        >
+                          <Trash2Icon className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
                     )}
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
 
-        {/* Card 2: Card de prueba */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Card de Prueba</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-500">
-              Esta es una card de prueba para mostrar otra información.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Gráfico de Costos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Bar data={chartData} options={chartOptions} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Estudios más realizados</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Pie data={frequencyData} options={frequencyOptions} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

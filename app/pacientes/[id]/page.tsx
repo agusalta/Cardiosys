@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import WcIcon from "@mui/icons-material/Wc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EditIcon } from "lucide-react";
@@ -36,8 +37,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Patient from "@/app/helpers/Pacientes";
-import initialPatients from "@/app/data/Patient";
+import { Sexo, Paciente } from "@/app/helpers/Pacientes";
+import initialPatients from "@/app/data/Paciente";
 import mockClinicalHistory from "@/app/data/HistorialClinico";
 
 function calcularEdad(fechaNacimiento: string): number {
@@ -85,7 +86,7 @@ function calcularSC(peso: number, altura: number): number | string {
 
 export default function PatientDetailsPage() {
   const { id } = useParams();
-  const [patient, setPatient] = useState<Patient | null>(null);
+  const [patient, setPatient] = useState<Paciente | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -130,6 +131,12 @@ export default function PatientDetailsPage() {
   const handleSaveChanges = () => {
     setIsEditing(false);
     // Here you would typically save the changes to your backend
+  };
+
+  const handleSexChange = (value: Sexo) => {
+    if (value === "M" || value === "F") {
+      setPatient({ ...patient, sexo: value });
+    }
   };
 
   return (
@@ -395,36 +402,30 @@ export default function PatientDetailsPage() {
                     disabled={!isEditing}
                   />
                 </div>
-                <div className="flex justify-between items-center">
-                  <div className="font-semibold">
-                    <LocalHospital className="inline-block mr-2" />
-                    Clínica
-                  </div>
-                  <Select
-                    name="clinica"
-                    value={patient.clinica}
-                    onValueChange={(value) =>
-                      handleInputChange({
-                        target: { name: "clinica", value },
-                      } as React.ChangeEvent<HTMLSelectElement>)
-                    }
-                    disabled={!isEditing}
-                  >
-                    <SelectTrigger
-                      className={`w-48 ${
-                        isEditing ? "bg-white" : "bg-gray-100"
-                      }`}
-                    >
-                      <SelectValue placeholder="Seleccionar clínica" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="La clinica del sol">
-                        La clinica del sol
-                      </SelectItem>
-                      <SelectItem value="Pinamed">Pinamed</SelectItem>
-                    </SelectContent>
-                  </Select>
+              </div>
+            </CardContent>
+            <CardContent>
+              <div className="flex justify-between items-center">
+                <div className="font-semibold">
+                  <WcIcon className="inline-block mr-2" />
+                  Sexo
                 </div>
+                <Select
+                  name="sexo"
+                  value={patient.sexo}
+                  onValueChange={(value) => handleSexChange(value as Sexo)}
+                  disabled={!isEditing}
+                >
+                  <SelectTrigger
+                    className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
+                  >
+                    <SelectValue placeholder="Seleccionar sexo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="M">Masculino</SelectItem>
+                    <SelectItem value="F">Femenino</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
