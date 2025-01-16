@@ -42,8 +42,8 @@ export default function PatientList({
       <TableBody>
         {displayedPatients.map((patient) => (
           <TableRow key={patient.ID_Paciente}>
-            <TableCell>{patient.Nombre}</TableCell>
-            <TableCell>{patient.Apellido}</TableCell>
+            <TableCell className="capitalize">{patient.Nombre}</TableCell>
+            <TableCell className="capitalize">{patient.Apellido}</TableCell>
             <TableCell>{patient.DNI}</TableCell>
             <TableCell>
               {new Date(patient.FechaNacimiento).toLocaleDateString("es-AR")}

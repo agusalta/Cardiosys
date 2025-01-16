@@ -6,18 +6,18 @@ import PatientList from "./components/PatientList";
 import InsurancePieChart from "./components/InsurancePieChart";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import initialPatients from "./data/Paciente";
 import useStore from "./context/store";
 import { insuranceData } from "./data/ObraSocial";
 import Image from "next/image";
+import { usePatients } from "./data/Paciente";
 
 export default function Home() {
   const [showTotal, setShowTotal] = useState(true);
-  const { clinicToday, clinicImage, updateClinicForToday } = useStore(); // Traemos los valores del estado global
+  const { clinicToday, clinicImage, updateClinicForToday } = useStore(); // Estado global
+  const { patients, loading } = usePatients();
 
   useEffect(() => {
-    // Llamamos a la función para actualizar la clínica de hoy en el estado global
-    updateClinicForToday();
+    updateClinicForToday(); // Actualizar la clínica de hoy
   }, [updateClinicForToday]);
 
   const toggleVisibility = () => {
@@ -28,7 +28,7 @@ export default function Home() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Panel de Control</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Bloque vertical: Obra Social Más Usada */}
+        {/* Obra Social Más Usada */}
         <Card className="md:col-span-1 md:row-span-2">
           <CardHeader>
             <CardTitle>Obra Social Más Usada</CardTitle>
@@ -38,7 +38,7 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Bloque horizontal: Pacientes Nuevos y Total Recaudado */}
+        {/* Resumen Mensual */}
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>Resumen Mensual</CardTitle>
@@ -78,13 +78,17 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Bloque vertical: Pacientes Recientes */}
+        {/* Visitas Recientes */}
         <Card className="md:col-span-2 md:row-span-2">
           <CardHeader>
             <CardTitle>Visitas Recientes</CardTitle>
           </CardHeader>
           <CardContent>
-            <PatientList patients={initialPatients} limit={5} />
+            {loading ? (
+              <p>Cargando pacientes...</p>
+            ) : (
+              <PatientList patients={patients} limit={5} />
+            )}
             <div className="mt-4">
               <Link href="/pacientes" className="text-blue-500 hover:underline">
                 Ver todos los pacientes
@@ -93,19 +97,23 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Card de Clínica */}
+        {/* Clínica de Hoy */}
         <Card className="md:col-span-1">
           <CardHeader>
             <CardTitle>Clínica de Hoy: {clinicToday}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Image
-              src={clinicImage || null}
-              alt="Clínica de Hoy"
-              className="object-cover mx-auto"
-              width={200}
-              height={200}
-            />
+            {clinicImage ? (
+              <Image
+                src={clinicImage}
+                alt="Clínica de Hoy"
+                className="object-cover mx-auto"
+                width={200}
+                height={200}
+              />
+            ) : (
+              <p>No hay imagen disponible.</p>
+            )}
           </CardContent>
         </Card>
       </div>
