@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import Paciente from "../helpers/Pacientes";
 
 interface PatientListProps {
@@ -26,46 +25,8 @@ export default function PatientList({
     return <p>No hay pacientes para mostrar.</p>;
   }
 
+  // Si se proporciona un límite, muestra solo los primeros 'limit' pacientes
   const displayedPatients = limit ? patients.slice(0, limit) : patients;
-
-  const getClinicaBadge = (clinica: string) => {
-    switch (clinica) {
-      case "La clinica del sol":
-        return (
-          <Badge
-            variant="outline"
-            color="blue"
-            className="bg-blue-500 text-white border-blue-600 shadow-lg hover:bg-blue-600 transition-all"
-          >
-            <span className="sm:hidden">🌞</span> {/* Emoji para móvil */}
-            <span className="hidden sm:inline">{clinica}</span>{" "}
-            {/* Nombre para escritorio */}
-          </Badge>
-        );
-      case "Pinamed":
-        return (
-          <Badge
-            variant="outline"
-            color="green"
-            className="bg-green-500 text-white border-green-600 shadow-lg hover:bg-green-600 transition-all"
-          >
-            <span className="sm:hidden">🌲</span> {/* Emoji para móvil */}
-            <span className="hidden sm:inline">{clinica}</span>{" "}
-            {/* Nombre para escritorio */}
-          </Badge>
-        );
-      default:
-        return (
-          <Badge
-            variant="outline"
-            color="gray"
-            className="bg-gray-300 text-gray-800 border-gray-400 shadow-md hover:bg-gray-400 transition-all"
-          >
-            {clinica}
-          </Badge>
-        );
-    }
-  };
 
   return (
     <Table>
@@ -80,13 +41,15 @@ export default function PatientList({
       </TableHeader>
       <TableBody>
         {displayedPatients.map((patient) => (
-          <TableRow key={patient.id}>
-            <TableCell>{patient.nombre}</TableCell>
-            <TableCell>{patient.apellido}</TableCell>
-            <TableCell>{patient.dni}</TableCell>
-            <TableCell>{patient.fechaNacimiento}</TableCell>
+          <TableRow key={patient.ID_Paciente}>
+            <TableCell>{patient.Nombre}</TableCell>
+            <TableCell>{patient.Apellido}</TableCell>
+            <TableCell>{patient.DNI}</TableCell>
             <TableCell>
-              <Link href={`/pacientes/${patient.id}`} passHref>
+              {new Date(patient.FechaNacimiento).toLocaleDateString("es-AR")}
+            </TableCell>
+            <TableCell>
+              <Link href={`/pacientes/${patient.ID_Paciente}`} passHref>
                 <Button variant="outline" size="sm">
                   Ver Detalles
                 </Button>

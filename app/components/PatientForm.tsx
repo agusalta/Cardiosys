@@ -17,6 +17,8 @@ export default function PatientForm() {
     peso: "",
     motivoConsulta: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -27,18 +29,34 @@ export default function PatientForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(patient);
-    // Aquí iría la lógica para enviar los datos al backend
-    setPatient({
-      nombre: "",
-      apellido: "",
-      dni: "",
-      obraSocial: "",
-      fechaNacimiento: "",
-      altura: "",
-      peso: "",
-      motivoConsulta: "",
-    });
+    if (parseInt(patient.altura) <= 0 || parseInt(patient.peso) <= 0) {
+      setError("La altura y el peso deben ser valores positivos.");
+      return;
+    }
+    setLoading(true);
+    try {
+      console.log(patient);
+      // Lógica para enviar los datos al backend
+      setPatient({
+        nombre: "",
+        apellido: "",
+        dni: "",
+        obraSocial: "",
+        fechaNacimiento: "",
+        altura: "",
+        peso: "",
+        motivoConsulta: "",
+      });
+      setError(null);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Ocurrió un error desconocido.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -102,7 +120,7 @@ export default function PatientForm() {
             id="altura"
             name="altura"
             type="number"
-            value={patient.altura}
+            value={patient.altura.toString()}
             onChange={handleChange}
             required
           />
@@ -113,7 +131,7 @@ export default function PatientForm() {
             id="peso"
             name="peso"
             type="number"
-            value={patient.peso}
+            value={patient.peso.toString()}
             onChange={handleChange}
             required
           />
@@ -129,8 +147,9 @@ export default function PatientForm() {
           required
         />
       </div>
-      <Button type="submit" className="w-full">
-        Guardar Paciente
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? "Guardando..." : "Guardar Paciente"}
       </Button>
     </form>
   );

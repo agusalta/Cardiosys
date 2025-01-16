@@ -24,7 +24,7 @@ import useStore from "../context/store";
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/" },
   { icon: Users, label: "Pacientes", href: "/pacientes" },
-  { icon: FileText, label: "Estudios", href: "/estudios" },
+  { icon: FileText, label: "Costos", href: "/estudios" },
   { icon: Settings, label: "Configuración", href: "/configuracion" },
 ];
 

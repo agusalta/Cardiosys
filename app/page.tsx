@@ -9,6 +9,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import initialPatients from "./data/Paciente";
 import useStore from "./context/store";
 import { insuranceData } from "./data/ObraSocial";
+import Image from "next/image";
 
 export default function Home() {
   const [showTotal, setShowTotal] = useState(true);
@@ -98,10 +99,12 @@ export default function Home() {
             <CardTitle>Clínica de Hoy: {clinicToday}</CardTitle>
           </CardHeader>
           <CardContent>
-            <img
-              src={clinicImage || null} // Usamos la imagen determinada por el día de la semana desde el estado global
+            <Image
+              src={clinicImage || null}
               alt="Clínica de Hoy"
-              className="w-35 h-35 object-cover mx-auto" // Tamaño fijo de 100px por 100px
+              className="object-cover mx-auto"
+              width={200}
+              height={200}
             />
           </CardContent>
         </Card>

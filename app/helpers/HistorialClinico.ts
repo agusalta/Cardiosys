@@ -4,7 +4,7 @@ export default interface ClinicalHistoryEntry {
   fecha: string;
   observacion: string;
   asunto: string;
-  factura?: any;
+  factura?: number;
   archivos: string[];
   estudio: string;
 }

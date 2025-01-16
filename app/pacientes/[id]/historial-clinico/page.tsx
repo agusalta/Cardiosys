@@ -22,19 +22,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Edit,
-  Delete,
-  AttachFile,
-  Receipt,
-  Visibility,
-} from "@mui/icons-material";
+import { Edit, Delete, AttachFile, Receipt } from "@mui/icons-material";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import ClinicalHistoryEntry from "@/app/helpers/HistorialClinico";
 import mockClinicalHistory from "@/app/data/HistorialClinico";
 import Link from "next/link";

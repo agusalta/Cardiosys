@@ -21,7 +21,7 @@ export default function Header() {
             </li>
             <li>
               <Link href="/estudios" className="hover:underline">
-                Estudios
+                Costos
               </Link>
             </li>
           </ul>

@@ -1,90 +1,28 @@
 import Paciente from "../helpers/Pacientes";
 
-export function getPatients() {
-  return [
-    {
-      id: 1,
-      nombre: "Juan",
-      apellido: "Pérez",
-      dni: "12345678",
-      sexo: "M",
-      fechaNacimiento: "1980-05-15",
-      altura: 1.75,
-      peso: 70,
-      frecRespiratoria: 16,
-      frecCardiaca: 72,
-      presionArterial: "120/80",
-      obraSocial: "OSDE",
-      email: "juan.perez@example.com",
-      telefono: "+54 9 11 5555 1234",
-    },
-    {
-      id: 2,
-      nombre: "María",
-      apellido: "González",
-      dni: "87654321",
-      sexo: "F",
-      fechaNacimiento: "1992-11-30",
-      altura: 1.6,
-      peso: 55,
-      frecRespiratoria: 18,
-      frecCardiaca: 78,
-      presionArterial: "110/70",
-      obraSocial: "Swiss Medical",
-      email: "maria.gonzalez@example.com",
-      telefono: "+54 9 11 5555 5678",
-    },
-    {
-      id: 3,
-      nombre: "Carlos",
-      apellido: "Rodríguez",
-      dni: "23456789",
-      sexo: "M",
-      fechaNacimiento: "1975-08-22",
-      altura: 1.8,
-      peso: 85,
-      frecRespiratoria: 15,
-      frecCardiaca: 70,
-      presionArterial: "130/85",
-      obraSocial: "Galeno",
-      email: "carlos.rodriguez@example.com",
-      telefono: "+54 9 11 5555 9012",
-    },
-    {
-      id: 4,
-      nombre: "Ana",
-      apellido: "Martínez",
-      dni: "34567890",
-      sexo: "F",
-      fechaNacimiento: "1988-03-10",
-      altura: 1.65,
-      peso: 60,
-      frecRespiratoria: 17,
-      frecCardiaca: 75,
-      presionArterial: "118/76",
-      obraSocial: "Omint",
-      email: "ana.martinez@example.com",
-      telefono: "+54 9 11 5555 3456",
-    },
-    {
-      id: 5,
-      nombre: "Luis",
-      apellido: "Sánchez",
-      dni: "45678901",
-      sexo: "M",
-      fechaNacimiento: "1995-07-05",
-      altura: 1.7,
-      peso: 80,
-      frecRespiratoria: 14,
-      frecCardiaca: 80,
-      presionArterial: "125/82",
-      obraSocial: "IOMA",
-      email: "luis.sanchez@example.com",
-      telefono: "+54 9 11 5555 7890",
-    },
-  ];
+export async function getPatients(): Promise<Paciente[]> {
+  try {
+    const response = await fetch("http://localhost:3000/api/pacientes", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Error al obtener los pacientes: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data as Paciente[];
+  } catch (error) {
+    console.error("Error al cargar los pacientes:", error);
+    return [];
+  }
 }
 
-const initialPatients: Paciente[] = getPatients() as Paciente[];
+let initialPatients: Paciente[] = [];
+
+getPatients().then((patients) => {
+  initialPatients = patients;
+});
 
 export default initialPatients;

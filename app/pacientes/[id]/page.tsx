@@ -15,18 +15,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Person,
   Height,
   MonitorWeight,
   MonitorHeart,
   AccessAlarm,
   Bloodtype,
-  AttachFile,
   PersonRemoveAlt1,
   HealthAndSafety,
-  LocalHospital,
   History,
-  Visibility,
 } from "@mui/icons-material";
 import Link from "next/link";
 import {
@@ -37,8 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Sexo, Paciente } from "@/app/helpers/Pacientes";
-import initialPatients from "@/app/data/Paciente";
+import Paciente, { Sexo } from "@/app/helpers/Pacientes";
 import mockClinicalHistory from "@/app/data/HistorialClinico";
 
 function calcularEdad(fechaNacimiento: string): number {
@@ -59,49 +54,82 @@ const calcularIMC = (peso: number, altura: number) => {
 };
 
 function calcularSC(peso: number, altura: number): number | string {
-  // Validar que el peso y la altura sean números positivos
   if (isNaN(peso) || isNaN(altura)) {
     return "Error: El peso y la altura deben ser números.";
   }
   if (peso <= 0 || altura <= 0) {
     return "Error: El peso y la altura deben ser valores positivos.";
   }
-
-  // Validar que el peso esté en kilogramos y la altura en metros (se convertirá a centímetros)
   if (peso > 500 || altura > 3) {
     return "Error: El peso y la altura parecen estar fuera de un rango razonable.";
   }
 
-  // Convertir altura de metros a centímetros
   const alturaCm = altura * 100;
-
-  // Cálculo de la superficie corporal utilizando la fórmula de Du Bois
   const scc = 0.007184;
   const superficieCorporal =
     scc * Math.pow(peso, 0.425) * Math.pow(alturaCm, 0.725);
 
-  // Devolver el valor calculado con 2 decimales
   return parseFloat(superficieCorporal.toFixed(2));
+}
+
+interface Os {
+  TipoSeguro: string;
 }
 
 export default function PatientDetailsPage() {
   const { id } = useParams();
   const [patient, setPatient] = useState<Paciente | null>(null);
+  const [os, setOs] = useState<Os | null>(null);
+  const [originalPatient, setOriginalPatient] = useState<Paciente | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
-    const foundPatient = initialPatients.find(
-      (patient) => patient.id.toString() === id
-    );
-    setPatient(foundPatient || null);
+    const fetchPatients = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/pacientes/${id}`
+        );
+        if (!response.ok) {
+          throw new Error("Error al obtener el paciente con el id = " + id);
+        }
+        const data = await response.json();
+        setPatient(data);
+        setOriginalPatient(data);
+      } catch (error) {
+        console.error("Error al cargar el paciente:", error);
+      }
+    };
+
+    fetchPatients();
   }, [id]);
+
+  useEffect(() => {
+    const fetchOS = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/seguro/seguros/${patient?.ID_Seguro}`
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Error al obtener el seguro del paciente = " + patient?.ID_Paciente
+          );
+        }
+        const data = await response.json();
+        setOs(data);
+      } catch (error) {
+        console.error("Error al cargar el seguro:", error);
+      }
+    };
+
+    fetchOS();
+  });
 
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;
   }
 
-  const edad = calcularEdad(patient.fechaNacimiento);
+  const edad = calcularEdad(patient.FechaNacimiento);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -116,7 +144,9 @@ export default function PatientDetailsPage() {
             name === "peso" ||
             name === "frecRespiratoria" ||
             name === "frecCardiaca"
-              ? parseFloat(value)
+              ? value === ""
+                ? ""
+                : parseFloat(value)
               : value,
         };
       }
@@ -125,17 +155,21 @@ export default function PatientDetailsPage() {
   };
 
   const handleEditToggle = () => {
+    if (isEditing) {
+      setPatient(originalPatient);
+    }
     setIsEditing((prev) => !prev);
   };
 
   const handleSaveChanges = () => {
     setIsEditing(false);
+    setOriginalPatient(patient);
     // Here you would typically save the changes to your backend
   };
 
   const handleSexChange = (value: Sexo) => {
     if (value === "M" || value === "F") {
-      setPatient({ ...patient, sexo: value });
+      setPatient({ ...patient, Sexo: value });
     }
   };
 
@@ -174,8 +208,8 @@ export default function PatientDetailsPage() {
                   <div className="font-semibold">Nombre</div>
                   <Input
                     type="text"
-                    name="nombre"
-                    value={patient.nombre}
+                    name="Nombre"
+                    value={patient.Nombre}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -185,8 +219,8 @@ export default function PatientDetailsPage() {
                   <div className="font-semibold">Apellido</div>
                   <Input
                     type="text"
-                    name="apellido"
-                    value={patient.apellido}
+                    name="Apellido"
+                    value={patient.Apellido}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -196,8 +230,8 @@ export default function PatientDetailsPage() {
                   <div className="font-semibold">DNI</div>
                   <Input
                     type="text"
-                    name="dni"
-                    value={patient.dni}
+                    name="DNI"
+                    value={patient.DNI}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -207,8 +241,8 @@ export default function PatientDetailsPage() {
                   <div className="font-semibold">Correo electrónico</div>
                   <Input
                     type="email"
-                    name="mail"
-                    value={patient.email}
+                    name="Email"
+                    value={patient.Email}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -218,8 +252,8 @@ export default function PatientDetailsPage() {
                   <div className="font-semibold">Teléfono</div>
                   <Input
                     type="tel"
-                    name="telefono"
-                    value={patient.telefono}
+                    name="Telefono"
+                    value={patient.Telefono}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -229,8 +263,12 @@ export default function PatientDetailsPage() {
                   <div className="font-semibold">Fecha de Nacimiento</div>
                   <Input
                     type="date"
-                    name="fechaNacimiento"
-                    value={patient.fechaNacimiento}
+                    name="FechaNacimiento"
+                    value={
+                      new Date(patient.FechaNacimiento)
+                        .toISOString()
+                        .split("T")[0]
+                    }
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -257,8 +295,8 @@ export default function PatientDetailsPage() {
                   </div>
                   <Input
                     type="number"
-                    name="altura"
-                    value={patient.altura}
+                    name="Altura"
+                    value={patient.Altura}
                     onChange={handleInputChange}
                     step="0.01"
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
@@ -276,8 +314,8 @@ export default function PatientDetailsPage() {
                   </div>
                   <Input
                     type="number"
-                    name="peso"
-                    value={patient.peso}
+                    name="Peso"
+                    value={patient.Peso}
                     onChange={handleInputChange}
                     step="0.1"
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
@@ -296,11 +334,11 @@ export default function PatientDetailsPage() {
                   <Input
                     type="number"
                     name="sc"
-                    value={calcularSC(patient.peso, patient.altura)}
+                    value={calcularSC(patient.Peso, patient.Altura)}
                     onChange={handleInputChange}
                     step="0.1"
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
-                    disabled={!isEditing}
+                    disabled={true}
                   />
                   <span className="absolute right-0 mr-2 text-sm text-gray-300">
                     sc
@@ -315,11 +353,11 @@ export default function PatientDetailsPage() {
                   <Input
                     type="number"
                     name="imc"
-                    value={calcularIMC(patient.peso, patient.altura)}
+                    value={calcularIMC(patient.Peso, patient.Altura)}
                     onChange={handleInputChange}
                     step="0.1"
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
-                    disabled={!isEditing}
+                    disabled={true}
                   />
                   <span className="absolute right-0 mr-2 text-sm text-gray-300">
                     kg
@@ -332,8 +370,8 @@ export default function PatientDetailsPage() {
                   </div>
                   <Input
                     type="number"
-                    name="frecRespiratoria"
-                    value={patient.frecRespiratoria}
+                    name="FrecuenciaRespiratoria"
+                    value={patient.FrecuenciaRespiratoria}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -349,31 +387,14 @@ export default function PatientDetailsPage() {
                   </div>
                   <Input
                     type="number"
-                    name="frecCardiaca"
-                    value={patient.frecCardiaca}
+                    name="FrecuenciaCardiaca"
+                    value={patient.FrecuenciaCardiaca}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
                   />
                   <span className="absolute right-0 mr-2 text-sm text-gray-300">
                     lpm
-                  </span>
-                </div>
-                <div className="flex justify-between items-center relative">
-                  <div className="font-semibold">
-                    <Bloodtype className="inline-block mr-2" />
-                    Presión Arterial
-                  </div>
-                  <Input
-                    type="text"
-                    name="presionArterial"
-                    value={patient.presionArterial}
-                    onChange={handleInputChange}
-                    className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
-                    disabled={!isEditing}
-                  />
-                  <span className="absolute right-0 mr-2 text-sm text-gray-300">
-                    mmHg
                   </span>
                 </div>
               </div>
@@ -396,7 +417,7 @@ export default function PatientDetailsPage() {
                   <Input
                     type="text"
                     name="obraSocial"
-                    value={patient.obraSocial}
+                    value={os?.TipoSeguro}
                     onChange={handleInputChange}
                     className={`w-48 ${isEditing ? "bg-white" : "bg-gray-100"}`}
                     disabled={!isEditing}
@@ -411,8 +432,8 @@ export default function PatientDetailsPage() {
                   Sexo
                 </div>
                 <Select
-                  name="sexo"
-                  value={patient.sexo}
+                  name="Sexo"
+                  value={patient.Sexo}
                   onValueChange={(value) => handleSexChange(value as Sexo)}
                   disabled={!isEditing}
                 >

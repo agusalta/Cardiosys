@@ -1,31 +1,56 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useState, useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { PatientSearch } from "../components/PatientSearch";
 import PatientList from "../components/PatientList";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import initialPatients from "../data/Paciente";
+import Paciente from "../helpers/Pacientes";
 
 export default function PatientsPage() {
-  const [patients, setPatients] = useState(initialPatients);
-  // const [clinicFilter, setClinicFilter] = useState<string>("");
+  const [patients, setPatients] = useState<Paciente[]>([]);
+  const [originalPatients, setOriginalPatients] = useState<Paciente[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/pacientes");
+        if (!response.ok) {
+          throw new Error("Error al obtener los pacientes");
+        }
+        const data = await response.json();
+        setPatients(data);
+        setOriginalPatients(data);
+      } catch (error) {
+        console.error("Error al cargar los pacientes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, []);
 
   const handleSearch = (query: string) => {
-    const filteredPatients = initialPatients.filter((patient) => {
-      const matchesQuery =
-        patient.nombre.toLowerCase().includes(query.toLowerCase()) ||
-        patient.apellido.toLowerCase().includes(query.toLowerCase()) ||
-        patient.dni.includes(query);
-
-      // const matchesClinic = clinic
-      //   ? patient.clinica.toLowerCase() === clinic.toLowerCase()
-      //   : true;
-
-      return matchesQuery;
-    });
-    setPatients(filteredPatients);
+    if (query.trim() === "") {
+      setPatients(originalPatients);
+    } else {
+      const filteredPatients = originalPatients.filter((patient) => {
+        const matchesQuery =
+          patient.Nombre.toLowerCase().includes(query.toLowerCase()) ||
+          patient.Apellido.toLowerCase().includes(query.toLowerCase()) ||
+          patient.DNI.includes(query);
+        return matchesQuery;
+      });
+      setPatients(filteredPatients);
+    }
   };
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -43,7 +68,7 @@ export default function PatientsPage() {
           </Link>
         </Button>
       </div>
-      <PatientList patients={patients} />
+      <PatientList patients={patients} limit={Infinity} />
     </div>
   );
 }

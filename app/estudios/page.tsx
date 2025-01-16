@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -30,6 +30,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -52,11 +59,37 @@ ChartJS.register(
   ArcElement
 );
 
+const insuranceMultipliers: {
+  [key: string]: { multiplier: number };
+  IOMA: { multiplier: number };
+  PAMI: { multiplier: number };
+  PREPAGA: { multiplier: number };
+  PARTICULAR: { multiplier: number };
+} = {
+  IOMA: { multiplier: 1.2 },
+  PAMI: { multiplier: 1.1 },
+  PREPAGA: { multiplier: 1.5 },
+  PARTICULAR: { multiplier: 1.0 },
+};
 export default function EstudiosPage() {
   const [studies, setStudies] = useState(initialCardiologyStudies);
   const [isEditing, setIsEditing] = useState(false);
   const [tempStudies, setTempStudies] = useState(initialCardiologyStudies);
   const [newStudy, setNewStudy] = useState({ name: "", cost: "" });
+  const [selectedInsurance, setSelectedInsurance] = useState("IOMA");
+
+  useEffect(() => {
+    updateStudiesPrices(selectedInsurance);
+  }, [selectedInsurance]);
+
+  const updateStudiesPrices = (insurance: string) => {
+    const updatedStudies = initialCardiologyStudies.map((study) => ({
+      ...study,
+      cost: study.cost * insuranceMultipliers[insurance].multiplier,
+    }));
+    setStudies(updatedStudies);
+    setTempStudies(updatedStudies);
+  };
 
   const handleCostChange = (id: number, newCost: number) => {
     const updatedStudies = tempStudies.map((study) =>
@@ -160,6 +193,20 @@ export default function EstudiosPage() {
           Estudios Cardiológicos
         </h1>
         <div className="flex space-x-2">
+          <Select
+            onValueChange={setSelectedInsurance}
+            defaultValue={selectedInsurance}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Seleccionar Obra Social" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="IOMA">IOMA</SelectItem>
+              <SelectItem value="PAMI">PAMI</SelectItem>
+              <SelectItem value="PREPAGA">PREPAGA</SelectItem>
+              <SelectItem value="PARTICULAR">PARTICULAR</SelectItem>
+            </SelectContent>
+          </Select>
           {!isEditing ? (
             <Button onClick={handleEdit} variant="outline">
               <EditIcon className="w-4 h-4 mr-2" />
@@ -268,7 +315,7 @@ export default function EstudiosPage() {
                     <TableCell className="text-right">
                       <Input
                         type="number"
-                        value={study.cost}
+                        value={study.cost.toFixed(2)}
                         onChange={(e) =>
                           handleCostChange(study.id, parseFloat(e.target.value))
                         }
@@ -300,7 +347,12 @@ export default function EstudiosPage() {
               <CardTitle>Gráfico de Costos</CardTitle>
             </CardHeader>
             <CardContent>
-              <Bar data={chartData} options={chartOptions} />
+              <div style={{ height: "450px", width: "100%" }}>
+                <Bar
+                  data={chartData}
+                  options={{ ...chartOptions, maintainAspectRatio: false }}
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -309,7 +361,15 @@ export default function EstudiosPage() {
               <CardTitle>Estudios más realizados</CardTitle>
             </CardHeader>
             <CardContent>
-              <Pie data={frequencyData} options={frequencyOptions} />
+              <div style={{ height: "450px", width: "100%" }}>
+                <Pie
+                  data={frequencyData}
+                  options={{
+                    ...frequencyOptions,
+                    maintainAspectRatio: false,
+                  }}
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
