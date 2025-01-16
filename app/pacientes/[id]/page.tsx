@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +34,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import mockClinicalHistory from "@/app/data/HistorialClinico";
 import { patientSchema, PatientFormData } from "@/app/schemas/patientSchema";
 import Paciente from "@/app/helpers/Pacientes";
@@ -88,7 +97,10 @@ export default function PatientDetailsPage() {
   const [patient, setPatient] = useState<Paciente | null>(null);
   const [os, setOs] = useState<Os | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const defaultValues: PatientFormData = {
     Nombre: "",
@@ -185,6 +197,49 @@ export default function PatientDetailsPage() {
     }
   };
 
+  async function handleDeletePatient() {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/pacientes/${patient?.ID_Paciente}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error("Error al eliminar el paciente:", {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorData,
+        });
+        throw new Error(
+          errorData?.message ||
+            `Error ${response.status}: ${response.statusText}`
+        );
+      }
+
+      toast({
+        title: "Paciente eliminado",
+        description: "El paciente ha sido eliminado correctamente.",
+        variant: "default",
+      });
+
+      router.push("/");
+    } catch (error) {
+      console.error("Error inesperado:", error);
+
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "No se pudo eliminar el paciente. Por favor, inténtelo de nuevo.",
+        variant: "destructive",
+      });
+    }
+  }
+
   const onSubmit = async (data: PatientFormData) => {
     try {
       // Format the date as 'YYYY-MM-DD'
@@ -194,6 +249,7 @@ export default function PatientDetailsPage() {
           .toISOString()
           .split("T")[0],
         ID_Seguro: data.ID_Seguro,
+        Sexo: data.Sexo,
       };
 
       const response = await fetch(
@@ -217,15 +273,15 @@ export default function PatientDetailsPage() {
       setIsEditing(false);
       toast({
         title: "Éxito",
-        description:
-          "La información del paciente se ha actualizado correctamente.",
+        description: `La información del paciente ${data.Apellido} se ha actualizado correctamente.`,
       });
     } catch (error: any) {
       console.error("Error al guardar los cambios:", error);
       toast({
         title: "Error",
         description:
-          error.message || "No se pudo actualizar la información del paciente.",
+          error.message ||
+          "No se pudo actualizar la información de este paciente.",
         variant: "destructive",
       });
     }
@@ -245,12 +301,32 @@ export default function PatientDetailsPage() {
               Guardar
             </Button>
           )}
-          <Button>
-            <PersonRemoveAlt1 className="text-xl md:text-2xl" />
-            <span className="hidden md:inline text-xs sm:text-sm">
-              Eliminar paciente
-            </span>
-          </Button>
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button>Eliminar Paciente</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Confirmar eliminación</DialogTitle>
+                <DialogDescription>
+                  ¿Está seguro que desea eliminar al paciente? Esta acción no se
+                  puede deshacer.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={handleDeletePatient}
+                  disabled={isDeleting}
+                  variant="destructive"
+                >
+                  {isDeleting ? "Eliminando..." : "Confirmar Eliminación"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -655,7 +731,8 @@ export default function PatientDetailsPage() {
                     render={({ field }) => (
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        defaultValue={patient.Sexo || ""}
+                        value={field.value}
                         disabled={!isEditing}
                       >
                         <SelectTrigger

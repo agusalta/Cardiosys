@@ -25,16 +25,21 @@ export const patientSchema = z.object({
       return num >= 1 && num <= 500;
     }, "El peso debe estar entre 1 y 500 kg")
     .transform((val) => parseFloat(val as string)),
+
   FrecuenciaRespiratoria: z
-    .number()
-    .int()
-    .min(1)
-    .max(100, "La frecuencia respiratoria debe estar entre 1 y 100"),
+    .union([z.string(), z.number()])
+    .transform((val) => parseInt(val as string, 10))
+    .refine((val) => val >= 1 && val <= 100, {
+      message: "La frecuencia respiratoria debe estar entre 1 y 100",
+    }),
+
   FrecuenciaCardiaca: z
-    .number()
-    .int()
-    .min(20)
-    .max(250, "La frecuencia cardíaca debe estar entre 20 y 250"),
+    .union([z.string(), z.number()])
+    .transform((val) => parseInt(val as string, 10))
+    .refine((val) => val >= 20 && val <= 250, {
+      message: "La frecuencia cardíaca debe estar entre 20 y 250",
+    }),
+
   Sexo: z.enum(["M", "F"], {
     errorMap: () => ({ message: "Seleccione un sexo válido" }),
   }),
