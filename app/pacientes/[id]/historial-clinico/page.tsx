@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
@@ -25,65 +25,56 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Delete, AttachFile, Receipt } from "@mui/icons-material";
+import { Edit, Delete, Receipt } from "@mui/icons-material";
 import { Badge } from "@/components/ui/badge";
-import ClinicalHistoryEntry from "@/app/helpers/HistorialClinico";
-import mockClinicalHistory from "@/app/data/HistorialClinico";
-import Link from "next/link";
+import {
+  HistorialClinico,
+  useHistorialClinico,
+} from "@/app/data/HistorialClinico";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ClinicalHistoryPage() {
   const { id } = useParams();
-  const [clinicalHistory, setClinicalHistory] = useState<
-    ClinicalHistoryEntry[]
-  >([]);
-  const [editingEntry, setEditingEntry] = useState<ClinicalHistoryEntry | null>(
+  const { historial, loading, error } = useHistorialClinico(Number(id));
+  const [editingEntry, setEditingEntry] = useState<HistorialClinico | null>(
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newFile, setNewFile] = useState<File | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  useEffect(() => {
-    // In a real application, you would fetch the clinical history for the specific patient
-    setClinicalHistory(mockClinicalHistory);
-  }, [id]);
+  const [isCreating, setIsCreating] = useState(false);
+  const { toast } = useToast();
 
-  const handleEdit = (entry: ClinicalHistoryEntry) => {
+  console.log("Historial", historial);
+
+  const handleEdit = (entry: HistorialClinico) => {
     setEditingEntry(entry);
     setIsDialogOpen(true);
+    setIsCreating(false);
   };
 
-  const handleDelete = (entryId: number) => {
-    setClinicalHistory(clinicalHistory.filter((entry) => entry.id !== entryId));
-  };
+  const handleDelete = async (entryId: number) => {};
 
-  const handleSave = (updatedEntry: ClinicalHistoryEntry) => {
-    if (newFile) {
-      updatedEntry.archivos = [...updatedEntry.archivos, newFile.name];
-    }
-    setClinicalHistory(
-      clinicalHistory.map((entry) =>
-        entry.id === updatedEntry.id ? updatedEntry : entry
-      )
-    );
-    setIsDialogOpen(false);
-    setEditingEntry(null);
-    setNewFile(null);
-  };
+  const handleSave = async (updatedEntry: HistorialClinico) => {};
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setNewFile(e.target.files[0]);
-    }
-  };
+  const handleCreate = () => {};
 
-  const filteredHistory = clinicalHistory.filter((entry) => {
+  const filteredHistory = historial.filter((entry) => {
     const lowercasedQuery = searchQuery.toLowerCase();
     return (
-      entry.fecha.toLowerCase().includes(lowercasedQuery) ||
-      entry.estudio.toLowerCase().includes(lowercasedQuery)
+      entry.Fecha.toLowerCase().includes(lowercasedQuery) ||
+      entry.Asunto.toLowerCase().includes(lowercasedQuery) ||
+      entry.NombreTipoEstudio.toLowerCase().includes(lowercasedQuery)
     );
   });
+
+  if (loading) {
+    return <div>Cargando historial clínico...</div>;
+  }
+
+  if (error) {
+    return <div>Error al cargar el historial clínico: {error}</div>;
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -92,22 +83,18 @@ export default function ClinicalHistoryPage() {
       <div className="flex justify-between items-center">
         <Input
           type="text"
-          placeholder="Buscar por fecha o estudio..."
+          placeholder="Buscar por fecha o asunto "
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-1/2 italic capitalize"
+          className="w-1/2 italic lowercase"
         />
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => setSearchQuery("")}>
             <SearchOffIcon className="text-xl md:text-2xl" />
           </Button>
-          <Button asChild>
-            <Link href="/pacientes/nuevo" className="flex items-center gap-2">
-              <AddIcon className="text-xl md:text-2xl" />
-              <span className="hidden md:inline text-xs sm:text-sm">
-                Agregar nuevo item
-              </span>
-            </Link>
+          <Button onClick={handleCreate}>
+            <AddIcon className="text-xl md:text-2xl mr-2" />
+            <span className="hidden md:inline">Agregar nuevo item</span>
           </Button>
         </div>
       </div>
@@ -122,44 +109,32 @@ export default function ClinicalHistoryPage() {
               <TableRow>
                 <TableHead>Fecha</TableHead>
                 <TableHead>Asunto</TableHead>
-                <TableHead>Estudio</TableHead>
+                <TableHead>Tipo de Estudio</TableHead>
                 <TableHead>Observación</TableHead>
                 <TableHead>Factura</TableHead>
-                <TableHead>Archivos</TableHead>
-                <TableHead> </TableHead>
+                <TableHead>Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredHistory.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell>{entry.fecha}</TableCell>
-                  <TableCell>{entry.asunto}</TableCell>
-                  <TableCell>{entry.estudio}</TableCell>
+                <TableRow key={entry.ID_Estudio}>
                   <TableCell>
-                    <span className="line-clamp-2">{entry.observacion}</span>
+                    {new Date(entry.Fecha).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>{entry.Asunto}</TableCell>
+                  <TableCell>{entry.NombreTipoEstudio}</TableCell>
+                  <TableCell>
+                    <span className="line-clamp-2">{entry.Observacion}</span>
                   </TableCell>
                   <TableCell>
-                    {entry.factura ? (
+                    {entry.Factura ? (
                       <Badge variant="secondary">
                         <Receipt className="w-4 h-4 mr-2" />
-                        {typeof entry.factura === "number"
-                          ? `${entry.factura.toLocaleString("es-AR")} ARS`
-                          : entry.factura}
+                        {entry.Factura}
                       </Badge>
                     ) : (
                       <span>No aplica</span>
                     )}
-                  </TableCell>
-
-                  <TableCell>
-                    <div className="flex flex-wrap gap-2">
-                      {entry.archivos.map((archivo, index) => (
-                        <Badge key={index} variant="outline">
-                          <AttachFile className="w-4 h-4 mr-2" />
-                          {archivo}
-                        </Badge>
-                      ))}
-                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
@@ -173,7 +148,7 @@ export default function ClinicalHistoryPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDelete(entry.id)}
+                        onClick={() => handleDelete(entry.ID_Estudio)}
                       >
                         <Delete className="w-4 h-4" />
                       </Button>
@@ -189,9 +164,15 @@ export default function ClinicalHistoryPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Editar Entrada del Historial</DialogTitle>
+            <DialogTitle>
+              {isCreating
+                ? "Crear Nueva Entrada"
+                : "Editar Entrada del Historial"}
+            </DialogTitle>
             <DialogDescription>
-              Modifique los detalles de la entrada del historial clínico aquí.
+              {isCreating
+                ? "Ingrese los detalles de la nueva entrada del historial clínico."
+                : "Modifique los detalles de la entrada del historial clínico aquí."}
             </DialogDescription>
           </DialogHeader>
           {editingEntry && (
@@ -209,28 +190,28 @@ export default function ClinicalHistoryPage() {
                   <Input
                     id="fecha"
                     type="date"
-                    value={editingEntry.fecha}
+                    value={editingEntry.Fecha}
                     onChange={(e) =>
                       setEditingEntry({
                         ...editingEntry,
-                        fecha: e.target.value,
+                        Fecha: e.target.value,
                       })
                     }
                     className="col-span-3"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="estudio" className="text-right">
-                    Estudio
+                  <Label htmlFor="asunto" className="text-right">
+                    Asunto
                   </Label>
                   <Input
-                    id="estudio"
+                    id="asunto"
                     type="text"
-                    value={editingEntry.estudio}
+                    value={editingEntry.Asunto}
                     onChange={(e) =>
                       setEditingEntry({
                         ...editingEntry,
-                        estudio: e.target.value,
+                        Asunto: e.target.value,
                       })
                     }
                     className="col-span-3"
@@ -242,36 +223,45 @@ export default function ClinicalHistoryPage() {
                   </Label>
                   <Textarea
                     id="observacion"
-                    value={editingEntry.observacion}
+                    value={editingEntry.Observacion}
                     onChange={(e) =>
                       setEditingEntry({
                         ...editingEntry,
-                        observacion: e.target.value,
+                        Observacion: e.target.value,
                       })
                     }
                     className="col-span-3"
                   />
                 </div>
-
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="archivo" className="text-right">
-                    Archivo
+                  <Label htmlFor="factura" className="text-right">
+                    Factura
                   </Label>
                   <Input
-                    type="file"
-                    onChange={handleFileChange}
+                    id="factura"
+                    type="text"
+                    value={editingEntry.Factura || ""}
+                    onChange={(e) =>
+                      setEditingEntry({
+                        ...editingEntry,
+                        Factura: e.target.value || null,
+                      })
+                    }
                     className="col-span-3"
                   />
                 </div>
               </div>
               <DialogFooter>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={() => setIsDialogOpen(false)}
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">Guardar cambios</Button>
+                <Button type="submit">
+                  {isCreating ? "Crear" : "Guardar cambios"}
+                </Button>
               </DialogFooter>
             </form>
           )}

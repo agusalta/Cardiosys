@@ -1,104 +1,174 @@
 "use client";
 
-import React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const formSchema = z.object({
-  nombre: z.string().min(2, {
-    message: "El nombre debe tener al menos 2 caracteres.",
-  }),
-  apellido: z.string().min(2, {
-    message: "El apellido debe tener al menos 2 caracteres.",
-  }),
-  dni: z.string().min(7, {
-    message: "El DNI debe tener al menos 7 caracteres.",
-  }),
-  fechaNacimiento: z.string().min(10, {
-    message: "Ingrese una fecha de nacimiento válida.",
-  }),
-  correo: z.string().email({
-    message: "Ingrese un correo válido.",
-  }),
-  telefono: z.string().min(7, {
-    message: "El teléfono debe tener al menos 7 caracteres.",
-  }),
-  direccion: z.string().min(5, {
-    message: "La dirección debe tener al menos 5 caracteres.",
-  }),
-  altura: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-      message: "La altura debe ser un número positivo.",
-    }),
-  peso: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-      message: "El peso debe ser un número positivo.",
-    }),
-  sexo: z.string().min(2, {
-    message: "La clínica debe tener al menos 2 caracteres.",
-  }),
-  obraSocial: z.string().min(2, {
-    message: "La obra social debe tener al menos 2 caracteres.",
-  }),
-});
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export default function CreatePatientForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      nombre: "",
-      apellido: "",
-      dni: "",
-      fechaNacimiento: "",
-      correo: "",
-      telefono: "",
-      direccion: "",
-      altura: "",
-      peso: "",
-      sexo: "",
-      obraSocial: "",
-    },
+  const [formData, setFormData] = useState({
+    nombre: "",
+    apellido: "",
+    dni: "",
+    fechaNacimiento: "",
+    correo: "",
+    telefono: "",
+    altura: "",
+    peso: "",
+    sexo: "",
+    obraSocial: "",
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // Aquí puedes agregar la lógica para enviar los datos al backend
-  }
+  const { toast } = useToast();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    console.log(`Seleccionando ${name}: ${value}`);
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      telefono: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Datos del formulario a enviar:", formData);
+
+    // Validar datos antes de enviar la solicitud
+    if (
+      !formData.nombre ||
+      !formData.apellido ||
+      !formData.dni ||
+      !formData.correo
+    ) {
+      const validationError =
+        "Todos los campos obligatorios deben ser completados.";
+      toast({
+        title: "Error de validación",
+        description: validationError,
+        variant: "destructive",
+        duration: 5000,
+      });
+      return; // Detener el proceso de envío si los campos son inválidos
+    }
+
+    const patientData = {
+      ID_Paciente: 0,
+      ID_Seguro: 1,
+      Nombre: formData.nombre,
+      Apellido: formData.apellido,
+      DNI: formData.dni,
+      Email: formData.correo,
+      Telefono: formData.telefono,
+      FechaNacimiento: formData.fechaNacimiento,
+      Altura: formData.altura,
+      Peso: formData.peso,
+      FrecuenciaCardiaca: 75,
+      FrecuenciaRespiratoria: 18,
+      Sexo: formData.sexo,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/api/pacientes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(patientData),
+      });
+
+      // Si la respuesta del servidor no es ok, maneja el error
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage =
+          errorData?.message || "Error desconocido al crear el paciente";
+        throw new Error(errorMessage);
+      }
+
+      // Si la respuesta es exitosa, maneja el éxito
+      const data = await response.json();
+      console.log("Paciente creado:", data);
+      toast({
+        title: "Éxito",
+        description: `El paciente ha sido creado correctamente.`,
+        duration: 5000,
+      });
+
+      // Resetear el formulario después de un envío exitoso
+      setFormData({
+        nombre: "",
+        apellido: "",
+        dni: "",
+        fechaNacimiento: "",
+        correo: "",
+        telefono: "",
+        altura: "",
+        peso: "",
+        sexo: "",
+        obraSocial: "",
+      });
+    } catch (error: any) {
+      // Si ocurre un error, maneja el error de manera detallada
+      const errorMessage =
+        error?.message ||
+        "Hubo un problema al crear el paciente. Por favor, inténtelo de nuevo.";
+
+      console.error("Error:", error);
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
+  };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Crear Nuevo Paciente</CardTitle>
-        <CardDescription>
-          Ingrese los datos del nuevo paciente en el formulario a continuación.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+    <>
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Crear Nuevo Paciente</CardTitle>
+          <CardDescription>
+            Ingrese los datos del nuevo paciente en el formulario a
+            continuación.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-8">
             <Tabs defaultValue="personal" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="personal">Datos Personales</TabsTrigger>
@@ -109,186 +179,213 @@ export default function CreatePatientForm() {
               </TabsList>
               <TabsContent value="personal">
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="nombre"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Juan" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="apellido"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Apellido</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Pérez" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dni"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>DNI</FormLabel>
-                        <FormControl>
-                          <Input placeholder="12345678" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="fechaNacimiento"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Fecha de Nacimiento</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="date"
-                            placeholder="YYYY-MM-DD"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="correo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Correo</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="juan.perez@example.com"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="telefono"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Teléfono</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123456789" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="direccion"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Dirección</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Calle Falsa 123" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <label
+                      htmlFor="nombre"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Nombre
+                    </label>
+                    <Input
+                      id="nombre"
+                      name="nombre"
+                      value={formData.nombre}
+                      onChange={handleInputChange}
+                      placeholder="Juan"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="apellido"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Apellido
+                    </label>
+                    <Input
+                      id="apellido"
+                      name="apellido"
+                      value={formData.apellido}
+                      onChange={handleInputChange}
+                      placeholder="Pérez"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="dni"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      DNI
+                    </label>
+                    <Input
+                      id="dni"
+                      name="dni"
+                      value={formData.dni}
+                      onChange={handleInputChange}
+                      placeholder="12345678"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="fechaNacimiento"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Fecha de Nacimiento
+                    </label>
+                    <Input
+                      id="fechaNacimiento"
+                      name="fechaNacimiento"
+                      type="date"
+                      value={formData.fechaNacimiento}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="correo"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Correo
+                    </label>
+                    <Input
+                      id="correo"
+                      name="correo"
+                      type="email"
+                      value={formData.correo}
+                      onChange={handleInputChange}
+                      placeholder="juan.perez@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="telefono"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Teléfono
+                    </label>
+                    <PhoneInput
+                      country={"ar"}
+                      value={formData.telefono}
+                      onChange={handlePhoneChange}
+                      inputProps={{
+                        name: "telefono",
+                        required: true,
+                        autoFocus: true,
+                      }}
+                      inputStyle={{
+                        width: "100%",
+                        height: "40px",
+                        fontSize: "16px",
+                        paddingLeft: "48px",
+                        borderRadius: "4px",
+                      }}
+                      buttonStyle={{
+                        borderTopLeftRadius: "4px",
+                        borderBottomLeftRadius: "4px",
+                      }}
+                    />
+                  </div>
                 </div>
               </TabsContent>
               <TabsContent value="vitals">
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="altura"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Altura (en metros)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="1.70"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Ingrese la altura en metros (ej. 1.70)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="peso"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Peso (en kg)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="70" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Ingrese el peso en kilogramos
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <label
+                      htmlFor="altura"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Altura (en metros)
+                    </label>
+                    <Input
+                      id="altura"
+                      name="altura"
+                      type="number"
+                      step="0.01"
+                      value={formData.altura}
+                      onChange={handleInputChange}
+                      placeholder="1.70"
+                    />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Ingrese la altura en metros (ej. 1.70)
+                    </p>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="peso"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Peso (en kg)
+                    </label>
+                    <Input
+                      id="peso"
+                      name="peso"
+                      type="number"
+                      value={formData.peso}
+                      onChange={handleInputChange}
+                      placeholder="70"
+                    />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Ingrese el peso en kilogramos
+                    </p>
+                  </div>
                 </div>
               </TabsContent>
               <TabsContent value="additional">
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="sexo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Sexo</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Masculino" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="obraSocial"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Obra Social</FormLabel>
-                        <FormControl>
-                          <Input placeholder="OSDE" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <label
+                      htmlFor="sexo"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Sexo
+                    </label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleSelectChange("sexo", value)
+                      }
+                      value={formData.sexo}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione el sexo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="M">Masculino</SelectItem>
+                        <SelectItem value="F">Femenino</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="obraSocial"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Obra Social
+                    </label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleSelectChange("obraSocial", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione la obra social" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">PAMI</SelectItem>
+                        <SelectItem value="2">IOMA</SelectItem>
+                        <SelectItem value="3">Particular</SelectItem>
+                        <SelectItem value="4">Prepaga</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
+            <Button type="submit" className="w-full">
+              Crear Paciente
+            </Button>
           </form>
-        </Form>
-      </CardContent>
-      <CardFooter>
-        <Button onClick={form.handleSubmit(onSubmit)} className="w-full">
-          Crear Paciente
-        </Button>
-      </CardFooter>
-    </Card>
+        </CardContent>
+      </Card>
+      <Toaster />
+    </>
   );
 }

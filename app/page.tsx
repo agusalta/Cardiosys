@@ -17,7 +17,7 @@ export default function Home() {
   const { patients, loading } = usePatients();
 
   useEffect(() => {
-    updateClinicForToday(); // Actualizar la clínica de hoy
+    updateClinicForToday();
   }, [updateClinicForToday]);
 
   const toggleVisibility = () => {
@@ -58,14 +58,14 @@ export default function Home() {
                   aria-label="Toggle visibility"
                 >
                   {showTotal ? (
-                    <Visibility fontSize="small" />
-                  ) : (
                     <VisibilityOff fontSize="small" />
+                  ) : (
+                    <Visibility fontSize="small" />
                   )}
                 </button>
               </h3>
               <p className="text-3xl font-bold">
-                {showTotal ? "$15,750" : "******"}
+                {showTotal ? "******" : "$15,750"}
               </p>
               <p className="text-sm text-muted-foreground">
                 Facturas particulares

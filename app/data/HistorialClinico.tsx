@@ -1,39 +1,81 @@
-import ClinicalHistoryEntry from "../helpers/HistorialClinico";
+import { useState, useEffect } from "react";
 
-function getHistorialClinico(): ClinicalHistoryEntry[] {
-  return [
-    {
-      id: 1,
-      dni: "45678901",
-      fecha: "2023-05-15",
-      observacion: "Consulta de rutina",
-      asunto: "Chequeo anual",
-      estudio: "Eco-doppler",
-      archivos: ["chequeo_anual.pdf"],
-    },
-    {
-      id: 2,
-      fecha: "2023-06-20",
-      dni: "45678901",
-      observacion: "Control de presión arterial",
-      asunto: "Seguimiento",
-      factura: 30000,
-      estudio: "Ecocardiograma Doppler",
-      archivos: ["presion_arterial.pdf", "receta.pdf"],
-    },
-    {
-      id: 3,
-      dni: "45678901",
-      fecha: "2023-07-10",
-      observacion: "Exámenes de laboratorio",
-      asunto: "Análisis de sangre",
-      factura: 40000,
-      estudio: "Eco-stress",
-      archivos: ["resultados_laboratorio.pdf"],
-    },
-  ];
+export interface HistorialClinico {
+  ID_Estudio: number;
+  Fecha: string;
+  Asunto: string;
+  Observacion: string;
+  Factura: string | null;
+  ID_Paciente: number;
+  ID_TipoEstudio: number;
+  NombreTipoEstudio: string;
 }
 
-const mockClinicalHistory: ClinicalHistoryEntry[] = getHistorialClinico();
+interface TipoEstudio {
+  ID_TipoEstudio: number;
+  NombreEstudio: string;
+  Descripcion: string;
+}
 
-export default mockClinicalHistory;
+export function useHistorialClinico(patientId: number | undefined) {
+  const [historial, setHistorial] = useState<HistorialClinico[]>([]);
+  const [tiposEstudio, setTiposEstudio] = useState<Map<number, string>>(
+    new Map()
+  ); // Usamos un Map para guardar ID y nombre
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Función para obtener el nombre del tipo de estudio por su ID
+  const getTipoEstudio = async (id: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/tipoEstudio/${id}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tipo de estudio");
+      }
+      const data = await response.json();
+      return data[0]?.NombreEstudio; // Accedemos al nombre del estudio (en base al formato de la respuesta)
+    } catch (err: any) {
+      console.error("Error fetching tipo de estudio:", err);
+      setError(err.message);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    if (patientId) {
+      setLoading(true);
+      fetch(`http://localhost:3000/api/estudio/${patientId}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch historial clínico");
+          }
+          return response.json();
+        })
+        .then(async (data) => {
+          // Actualizamos el historial con el nombre del tipo de estudio
+          const updatedHistorial = await Promise.all(
+            data.map(async (entry: HistorialClinico) => {
+              const tipoEstudioNombre = await getTipoEstudio(
+                entry.ID_TipoEstudio
+              );
+              return {
+                ...entry,
+                NombreTipoEstudio: tipoEstudioNombre || "Cargando...", // Si no hay nombre, ponemos un mensaje temporal
+              };
+            })
+          );
+          setHistorial(updatedHistorial); // Guardamos el historial actualizado con los nombres
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching historial clínico:", err);
+          setError(err.message);
+          setLoading(false);
+        });
+    }
+  }, [patientId]);
+
+  return { historial, loading, error, setHistorial };
+}

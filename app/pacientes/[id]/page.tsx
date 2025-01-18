@@ -43,12 +43,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import mockClinicalHistory from "@/app/data/HistorialClinico";
 import { patientSchema, PatientFormData } from "@/app/schemas/patientSchema";
 import Paciente from "@/app/helpers/Pacientes";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { format, parse } from "date-fns";
+import { useHistorialClinico } from "@/app/data/HistorialClinico";
 
 function calcularEdad(fechaNacimiento: string): number {
   const nacimiento = new Date(fechaNacimiento);
@@ -94,13 +94,13 @@ interface Os {
 
 export default function PatientDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [patient, setPatient] = useState<Paciente | null>(null);
   const [os, setOs] = useState<Os | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
 
   const defaultValues: PatientFormData = {
     Nombre: "",
@@ -127,6 +127,8 @@ export default function PatientDetailsPage() {
     resolver: zodResolver(patientSchema),
     defaultValues,
   });
+
+  const { historial } = useHistorialClinico(patient?.ID_Paciente);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -183,6 +185,8 @@ export default function PatientDetailsPage() {
 
     fetchOS();
   }, [patient?.ID_Seguro, patient?.ID_Paciente, toast]);
+
+  console.log("historial", history);
 
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;
@@ -780,11 +784,13 @@ export default function PatientDetailsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockClinicalHistory.map((entry) => (
-                      <TableRow key={entry.id}>
-                        <TableCell>{entry.fecha}</TableCell>
-                        <TableCell>{entry.observacion}</TableCell>
-                        <TableCell>{entry.estudio}</TableCell>
+                    {historial.map((entry) => (
+                      <TableRow key={entry.ID_Estudio}>
+                        <TableCell>
+                          {new Date(entry.Fecha).toLocaleDateString("es-AR")}
+                        </TableCell>
+                        <TableCell>{entry.Asunto}</TableCell>
+                        <TableCell>{entry.Observacion}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
