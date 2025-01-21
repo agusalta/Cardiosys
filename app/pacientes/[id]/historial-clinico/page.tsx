@@ -27,9 +27,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Delete, Receipt } from "@mui/icons-material";
 import { Badge } from "@/components/ui/badge";
-import HistorialClinico from "@/app/types/HistorialClinico";
+import type HistorialClinico from "@/app/types/HistorialClinico";
 import { useToast } from "@/hooks/use-toast";
 import formatDateForInput from "@/app/utils/formatDateForInput";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Link from "next/link";
+import TipoEstudio from "@/app/types/TipoEstudio";
 
 export default function ClinicalHistoryPage() {
   const { id } = useParams();
@@ -47,6 +56,7 @@ export default function ClinicalHistoryPage() {
     isOpen: boolean;
     entryId: number | null;
   }>({ isOpen: false, entryId: null });
+  const [studyTypes, setStudyTypes] = useState<TipoEstudio[]>([]);
 
   const getTipoEstudio = useCallback(async (id: number) => {
     try {
@@ -57,7 +67,7 @@ export default function ClinicalHistoryPage() {
         throw new Error("Failed to fetch tipo de estudio");
       }
       const data = await response.json();
-      return data[0]?.NombreEstudio ?? "Cargando...";
+      return data.NombreEstudio ?? "Cargando...";
     } catch (err: any) {
       console.error("Error fetching tipo de estudio:", err);
       setError(err.message);
@@ -102,6 +112,23 @@ export default function ClinicalHistoryPage() {
     };
 
     fetchHistorial();
+  }, []);
+
+  useEffect(() => {
+    const fetchStudyTypes = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/tipoEstudio`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch study types");
+        }
+        const data = await response.json();
+        setStudyTypes(data);
+      } catch (error) {
+        console.error("Error fetching study types:", error);
+        // Handle error appropriately, e.g., display an error message
+      }
+    };
+    fetchStudyTypes();
   }, []);
 
   const handleEdit = (entry: HistorialClinico) => {
@@ -289,7 +316,6 @@ export default function ClinicalHistoryPage() {
                 <TableHead>Fecha</TableHead>
                 <TableHead>Asunto</TableHead>
                 <TableHead>Tipo de Estudio</TableHead>
-                <TableHead>Observación</TableHead>
                 <TableHead>Factura</TableHead>
                 <TableHead>Acciones</TableHead>
               </TableRow>
@@ -297,7 +323,14 @@ export default function ClinicalHistoryPage() {
             <TableBody>
               {filteredHistory.map((entry) => (
                 <TableRow key={`history-${entry.ID_Estudio}`}>
-                  <TableCell>{entry.ID_Estudio}</TableCell>
+                  <TableCell>
+                    <Link
+                      href={`/pacientes/${id}/historial-clinico/${entry.ID_Estudio}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {entry.ID_Estudio}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     {new Date(entry.Fecha).toLocaleDateString("es-AR", {
                       timeZone: "UTC",
@@ -305,9 +338,6 @@ export default function ClinicalHistoryPage() {
                   </TableCell>
                   <TableCell>{entry.Asunto} </TableCell>
                   <TableCell>{entry.NombreTipoEstudio}</TableCell>
-                  <TableCell>
-                    <span className="line-clamp-2">{entry.Observacion}</span>
-                  </TableCell>
                   <TableCell>
                     {entry.Factura ? (
                       <Badge variant="secondary">
@@ -407,6 +437,34 @@ export default function ClinicalHistoryPage() {
                     }
                     className="col-span-3"
                   />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="tipoEstudio" className="text-right">
+                    Tipo de Estudio
+                  </Label>
+                  <Select
+                    value={editingEntry.ID_TipoEstudio.toString()}
+                    onValueChange={(value) =>
+                      setEditingEntry({
+                        ...editingEntry,
+                        ID_TipoEstudio: Number.parseInt(value),
+                      })
+                    }
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Seleccione un tipo de estudio" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {studyTypes.map((type) => (
+                        <SelectItem
+                          key={type.ID_TipoEstudio}
+                          value={type.ID_TipoEstudio.toString()}
+                        >
+                          {type.NombreEstudio}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="observacion" className="text-right">

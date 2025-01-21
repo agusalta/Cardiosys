@@ -779,8 +779,7 @@ export default function PatientDetailsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Fecha</TableHead>
-                      <TableHead>Observación</TableHead>
-                      <TableHead>Estudio</TableHead>
+                      <TableHead>Asunto</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -790,7 +789,6 @@ export default function PatientDetailsPage() {
                           {new Date(entry.Fecha).toLocaleDateString("es-AR")}
                         </TableCell>
                         <TableCell>{entry.Asunto}</TableCell>
-                        <TableCell>{entry.Observacion}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

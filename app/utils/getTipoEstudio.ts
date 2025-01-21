@@ -17,6 +17,8 @@ export async function getTipoEstudio(id: number): Promise<string> {
     }
     const data: TipoEstudio = await response.json();
     tipoEstudioCache[id] = data.NombreEstudio;
+
+    console.log(data.NombreEstudio);
     return data.NombreEstudio;
   } catch (error) {
     console.error("Error fetching tipo estudio:", error);
