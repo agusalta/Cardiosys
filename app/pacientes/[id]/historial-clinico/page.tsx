@@ -45,7 +45,8 @@ import {
   uploadFiles,
 } from "@/app/lib/fileManager";
 import { getTipoEstudio } from "@/app/utils/getTipoEstudio";
-import { fetchArchivoContentById } from "@/app/lib/fileManager"; // Import the function
+import { fetchArchivoContentById } from "@/app/lib/fileManager";
+import { usePatients } from "@/app/data/Paciente";
 
 interface ArchivoEstudio {
   ID_Archivo: number;
@@ -61,6 +62,7 @@ export default function ClinicalHistoryPage() {
   const [historial, setHistorial] = useState<HistorialClinico[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [nombreCompleto, setNombreCompleto] = useState<string>("");
   const [editingEntry, setEditingEntry] = useState<HistorialClinico | null>(
     null
   );
@@ -150,6 +152,29 @@ export default function ClinicalHistoryPage() {
     }
   }, [historial]);
 
+  useEffect(() => {
+    async function fetchNombre() {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/pacientes/${id}`
+        );
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+        const data = await response.json();
+        const nombreCompleto = `${data.Nombre} ${data.Apellido}`;
+
+        setNombreCompleto(nombreCompleto);
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchNombre();
+  }, []);
+
   const handleEdit = (entry: HistorialClinico) => {
     const formattedDate = formatDateForInput(entry.Fecha);
     setEditingEntry({
@@ -162,7 +187,6 @@ export default function ClinicalHistoryPage() {
   };
 
   const handleDelete = (entryId: number) => {
-    console.log("Eliminando estudio con ID:", entryId);
     setDeleteConfirmation({ isOpen: true, entryId });
   };
 
@@ -235,7 +259,6 @@ export default function ClinicalHistoryPage() {
       }
 
       const responseData = await response.json();
-      console.log("Response Data:", responseData);
 
       // Obtener el ID_Estudio del nuevo o actualizado estudio
       const estudioId = isCreating
@@ -260,7 +283,6 @@ export default function ClinicalHistoryPage() {
       // Si hay archivos nuevos, cargarlos y asignarles el ID_Estudio
       if (files.length > 0) {
         const uploadedFiles = await uploadFiles(files, estudioId);
-        console.log("Uploaded files:", uploadedFiles);
       }
 
       if (isCreating) {
@@ -269,8 +291,6 @@ export default function ClinicalHistoryPage() {
         setHistorial((prevHistorial) => {
           return [entryWithNombreEstudio, ...prevHistorial];
         });
-
-        console.log(entryWithNombreEstudio);
       } else {
         setHistorial((prevHistorial) =>
           prevHistorial.map((item) =>
@@ -340,7 +360,7 @@ export default function ClinicalHistoryPage() {
   });
 
   if (loading) {
-    return <div>Cargando historial clínico...</div>;
+    return <div>Cargando historial clínico de {nombreCompleto}</div>;
   }
 
   if (error) {
@@ -349,7 +369,9 @@ export default function ClinicalHistoryPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold">Historial Clínico</h1>
+      <h1 className="text-3xl font-bold">
+        Historial Clínico de {nombreCompleto}
+      </h1>
 
       <div className="flex justify-between items-center">
         <Input
