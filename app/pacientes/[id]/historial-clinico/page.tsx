@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
@@ -27,44 +27,222 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Delete, Receipt } from "@mui/icons-material";
 import { Badge } from "@/components/ui/badge";
-import {
-  HistorialClinico,
-  useHistorialClinico,
-} from "@/app/data/HistorialClinico";
+import HistorialClinico from "@/app/types/HistorialClinico";
 import { useToast } from "@/hooks/use-toast";
+import formatDateForInput from "@/app/utils/formatDateForInput";
 
 export default function ClinicalHistoryPage() {
   const { id } = useParams();
-  const { historial, loading, error } = useHistorialClinico(Number(id));
+  const [historial, setHistorial] = useState<HistorialClinico[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [editingEntry, setEditingEntry] = useState<HistorialClinico | null>(
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
   const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    entryId: number | null;
+  }>({ isOpen: false, entryId: null });
 
-  console.log("Historial", historial);
+  const getTipoEstudio = useCallback(async (id: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/tipoEstudio/${id}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tipo de estudio");
+      }
+      const data = await response.json();
+      return data[0]?.NombreEstudio ?? "Cargando...";
+    } catch (err: any) {
+      console.error("Error fetching tipo de estudio:", err);
+      setError(err.message);
+      return "Error al cargar tipo de estudio";
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!id) return;
+
+    setHistorial([]);
+    setLoading(true);
+    setError(null);
+
+    const fetchHistorial = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/estudio/${id}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch historial clínico");
+        }
+        const data = await response.json();
+
+        const updatedHistorial = await Promise.all(
+          data.map(async (entry: HistorialClinico) => {
+            const tipoEstudioNombre = await getTipoEstudio(
+              entry.ID_TipoEstudio
+            );
+            return {
+              ...entry,
+              NombreTipoEstudio: tipoEstudioNombre,
+            };
+          })
+        );
+        setHistorial(updatedHistorial);
+      } catch (err: any) {
+        console.error("Error fetching historial clínico:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistorial();
+  }, []);
 
   const handleEdit = (entry: HistorialClinico) => {
-    setEditingEntry(entry);
+    const formattedDate = formatDateForInput(entry.Fecha);
+    setEditingEntry({
+      ...entry,
+      Fecha: formattedDate,
+    });
     setIsDialogOpen(true);
     setIsCreating(false);
   };
 
-  const handleDelete = async (entryId: number) => {};
+  const handleDelete = (entryId: number) => {
+    console.log("Eliminando estudio con ID:", entryId);
+    setDeleteConfirmation({ isOpen: true, entryId });
+  };
 
-  const handleSave = async (updatedEntry: HistorialClinico) => {};
+  const confirmDelete = async () => {
+    if (deleteConfirmation.entryId === null) return;
 
-  const handleCreate = () => {};
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/estudio/${deleteConfirmation.entryId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error al eliminar el estudio: ${response.statusText}`);
+      }
+
+      toast({
+        title: "Éxito",
+        description: "Estudio eliminado correctamente.",
+      });
+
+      setHistorial((prevHistorial) =>
+        prevHistorial.filter(
+          (entry) => entry.ID_Estudio !== deleteConfirmation.entryId
+        )
+      );
+    } catch (error) {
+      console.error("Error al intentar eliminar el estudio:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el estudio.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteConfirmation({ isOpen: false, entryId: null });
+    }
+  };
+
+  const handleSaveOrCreate = async (entry: HistorialClinico) => {
+    try {
+      const tipoEstudioNombre = entry.ID_TipoEstudio
+        ? await getTipoEstudio(entry.ID_TipoEstudio)
+        : "Cargando...";
+
+      const entryWithNombreEstudio = {
+        ...entry,
+        NombreTipoEstudio: tipoEstudioNombre,
+      };
+
+      const url = isCreating
+        ? "http://localhost:3000/api/estudio"
+        : `http://localhost:3000/api/estudio/${entryWithNombreEstudio.ID_Estudio}`;
+      const method = isCreating ? "POST" : "PUT";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(entryWithNombreEstudio),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al guardar los datos: " + response.status);
+      }
+
+      const responseData = await response.json();
+      console.log("Response Data:", responseData);
+
+      if (isCreating) {
+        entryWithNombreEstudio.ID_Estudio = responseData.data.ID_Estudio;
+
+        setHistorial((prevHistorial) => {
+          return [entryWithNombreEstudio, ...prevHistorial];
+        });
+
+        console.log(entryWithNombreEstudio);
+      } else {
+        setHistorial((prevHistorial) =>
+          prevHistorial.map((item) =>
+            item.ID_Estudio === entryWithNombreEstudio.ID_Estudio
+              ? entryWithNombreEstudio
+              : item
+          )
+        );
+      }
+
+      setIsDialogOpen(false);
+      setIsCreating(false);
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        title: "Error",
+        description: `No se pudo ${
+          isCreating ? "crear" : "actualizar"
+        } el estudio.`,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCreate = () => {
+    setEditingEntry({
+      ID_Estudio: 0,
+      Fecha: new Date().toISOString().split("T")[0],
+      Asunto: "",
+      Observacion: "",
+      Factura: null,
+      ID_Paciente: Number(id),
+      ID_TipoEstudio: 1,
+      NombreTipoEstudio: "",
+    });
+    setIsCreating(true);
+    setIsDialogOpen(true);
+  };
 
   const filteredHistory = historial.filter((entry) => {
     const lowercasedQuery = searchQuery.toLowerCase();
     return (
-      entry.Fecha.toLowerCase().includes(lowercasedQuery) ||
-      entry.Asunto.toLowerCase().includes(lowercasedQuery) ||
-      entry.NombreTipoEstudio.toLowerCase().includes(lowercasedQuery)
+      (entry.Fecha?.toLowerCase() || "").includes(lowercasedQuery) ||
+      (entry.Asunto?.toLowerCase() || "").includes(lowercasedQuery) ||
+      (entry.NombreTipoEstudio?.toLowerCase() || "").includes(lowercasedQuery)
     );
   });
 
@@ -83,10 +261,10 @@ export default function ClinicalHistoryPage() {
       <div className="flex justify-between items-center">
         <Input
           type="text"
-          placeholder="Buscar por fecha o asunto "
+          placeholder="Buscar por fecha, asunto o estudio "
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-1/2 italic lowercase"
+          className="w-1/2 italic "
         />
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => setSearchQuery("")}>
@@ -94,19 +272,20 @@ export default function ClinicalHistoryPage() {
           </Button>
           <Button onClick={handleCreate}>
             <AddIcon className="text-xl md:text-2xl mr-2" />
-            <span className="hidden md:inline">Agregar nuevo item</span>
+            <span className="hidden md:inline">Agregar un nuevo estudio</span>
           </Button>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Entradas del Historial</CardTitle>
+          <CardTitle>Estudios</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>ID</TableHead>
                 <TableHead>Fecha</TableHead>
                 <TableHead>Asunto</TableHead>
                 <TableHead>Tipo de Estudio</TableHead>
@@ -117,11 +296,14 @@ export default function ClinicalHistoryPage() {
             </TableHeader>
             <TableBody>
               {filteredHistory.map((entry) => (
-                <TableRow key={entry.ID_Estudio}>
+                <TableRow key={`history-${entry.ID_Estudio}`}>
+                  <TableCell>{entry.ID_Estudio}</TableCell>
                   <TableCell>
-                    {new Date(entry.Fecha).toLocaleDateString()}
+                    {new Date(entry.Fecha).toLocaleDateString("es-AR", {
+                      timeZone: "UTC",
+                    })}
                   </TableCell>
-                  <TableCell>{entry.Asunto}</TableCell>
+                  <TableCell>{entry.Asunto} </TableCell>
                   <TableCell>{entry.NombreTipoEstudio}</TableCell>
                   <TableCell>
                     <span className="line-clamp-2">{entry.Observacion}</span>
@@ -161,7 +343,16 @@ export default function ClinicalHistoryPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) {
+            setIsCreating(false);
+            setEditingEntry(null);
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
@@ -179,7 +370,7 @@ export default function ClinicalHistoryPage() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleSave(editingEntry);
+                handleSaveOrCreate(editingEntry);
               }}
             >
               <div className="grid gap-4 py-4">
@@ -265,6 +456,37 @@ export default function ClinicalHistoryPage() {
               </DialogFooter>
             </form>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={deleteConfirmation.isOpen}
+        onOpenChange={(isOpen) => {
+          setDeleteConfirmation({ isOpen, entryId: null });
+        }}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirmar eliminación</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro de que deseas eliminar este estudio? Esta acción no
+              se puede deshacer.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                setDeleteConfirmation({ isOpen: false, entryId: null })
+              }
+            >
+              Cancelar
+            </Button>
+            <Button type="button" variant="destructive" onClick={confirmDelete}>
+              Eliminar
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

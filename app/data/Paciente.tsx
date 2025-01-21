@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Paciente from "../helpers/Pacientes";
+import Paciente from "../types/Pacientes";
 
 export function usePatients() {
   const [patients, setPatients] = useState<Paciente[]>([]);

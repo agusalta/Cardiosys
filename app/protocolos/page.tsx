@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DatosPaciente, EtapaEjercicio } from "../helpers/Protocolos";
+import { DatosPaciente, EtapaEjercicio } from "../types/Protocolos";
 
 export default function InformeMedico() {
   const [datosPaciente, setDatosPaciente] = useState<DatosPaciente>({

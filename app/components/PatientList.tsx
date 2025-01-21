@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import Paciente from "../helpers/Pacientes";
+import Paciente from "../types/Pacientes";
 
 interface PatientListProps {
   patients?: Paciente[];

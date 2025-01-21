@@ -44,7 +44,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { patientSchema, PatientFormData } from "@/app/schemas/patientSchema";
-import Paciente from "@/app/helpers/Pacientes";
+import Paciente from "@/app/types/Pacientes";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { format, parse } from "date-fns";

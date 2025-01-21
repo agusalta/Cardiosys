@@ -1,32 +1,12 @@
-import { useState, useEffect } from "react";
-
-export interface HistorialClinico {
-  ID_Estudio: number;
-  Fecha: string;
-  Asunto: string;
-  Observacion: string;
-  Factura: string | null;
-  ID_Paciente: number;
-  ID_TipoEstudio: number;
-  NombreTipoEstudio: string;
-}
-
-interface TipoEstudio {
-  ID_TipoEstudio: number;
-  NombreEstudio: string;
-  Descripcion: string;
-}
+import { useState, useEffect, useCallback } from "react";
+import HistorialClinico from "../types/HistorialClinico";
 
 export function useHistorialClinico(patientId: number | undefined) {
   const [historial, setHistorial] = useState<HistorialClinico[]>([]);
-  const [tiposEstudio, setTiposEstudio] = useState<Map<number, string>>(
-    new Map()
-  ); // Usamos un Map para guardar ID y nombre
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para obtener el nombre del tipo de estudio por su ID
-  const getTipoEstudio = async (id: number) => {
+  const getTipoEstudio = useCallback(async (id: number) => {
     try {
       const response = await fetch(
         `http://localhost:3000/api/tipoEstudio/${id}`
@@ -35,47 +15,53 @@ export function useHistorialClinico(patientId: number | undefined) {
         throw new Error("Failed to fetch tipo de estudio");
       }
       const data = await response.json();
-      return data[0]?.NombreEstudio; // Accedemos al nombre del estudio (en base al formato de la respuesta)
+      return data[0]?.NombreEstudio ?? "Cargando...";
     } catch (err: any) {
       console.error("Error fetching tipo de estudio:", err);
       setError(err.message);
-      return null;
+      return "Error al cargar tipo de estudio";
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (patientId) {
-      setLoading(true);
-      fetch(`http://localhost:3000/api/estudio/${patientId}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch historial clínico");
-          }
-          return response.json();
-        })
-        .then(async (data) => {
-          // Actualizamos el historial con el nombre del tipo de estudio
-          const updatedHistorial = await Promise.all(
-            data.map(async (entry: HistorialClinico) => {
-              const tipoEstudioNombre = await getTipoEstudio(
-                entry.ID_TipoEstudio
-              );
-              return {
-                ...entry,
-                NombreTipoEstudio: tipoEstudioNombre || "Cargando...", // Si no hay nombre, ponemos un mensaje temporal
-              };
-            })
-          );
-          setHistorial(updatedHistorial); // Guardamos el historial actualizado con los nombres
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching historial clínico:", err);
-          setError(err.message);
-          setLoading(false);
-        });
-    }
-  }, [patientId]);
+    if (!patientId) return;
+
+    setHistorial([]);
+    setLoading(true);
+    setError(null);
+
+    const fetchHistorial = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/estudio/${patientId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch historial clínico");
+        }
+        const data = await response.json();
+
+        const updatedHistorial = await Promise.all(
+          data.map(async (entry: HistorialClinico) => {
+            const tipoEstudioNombre = await getTipoEstudio(
+              entry.ID_TipoEstudio
+            );
+            return {
+              ...entry,
+              NombreTipoEstudio: tipoEstudioNombre,
+            };
+          })
+        );
+        setHistorial(updatedHistorial);
+      } catch (err: any) {
+        console.error("Error fetching historial clínico:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistorial();
+  }, [patientId, getTipoEstudio]);
 
   return { historial, loading, error, setHistorial };
 }

@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
-
-interface TipoEstudio {
-  ID_TipoEstudio: number;
-  NombreEstudio: string;
-}
+import TipoEstudio from "../types/TipoEstudio";
 
 export function useTipoEstudio(id: number) {
   const [tipoEstudio, setTipoEstudio] = useState<TipoEstudio | null>(null);

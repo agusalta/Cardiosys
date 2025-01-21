@@ -6,7 +6,7 @@ import { PatientSearch } from "../components/PatientSearch";
 import PatientList from "../components/PatientList";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Paciente from "../helpers/Pacientes";
+import Paciente from "../types/Pacientes";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Paciente[]>([]);

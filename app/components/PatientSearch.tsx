@@ -22,8 +22,8 @@ export function PatientSearch({ onSearch }: PatientSearchProps) {
       <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
       <Input
         type="search"
-        placeholder="Buscar pacientes..."
-        className="pl-8 italic capitalize"
+        placeholder="Buscar por DNI, Nombre o Apellido"
+        className="pl-8 w-96 italic "
         value={query}
         onChange={handleSearch}
       />
