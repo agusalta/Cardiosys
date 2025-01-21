@@ -3,7 +3,7 @@ export default interface HistorialClinico {
   Fecha: string;
   Asunto: string;
   Observacion: string;
-  Factura: string | null;
+  Factura: number;
   ID_Paciente: number;
   ID_TipoEstudio: number;
   NombreTipoEstudio?: string;

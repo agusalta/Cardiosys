@@ -38,7 +38,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import TipoEstudio from "@/app/types/TipoEstudio";
+import type TipoEstudio from "@/app/types/TipoEstudio";
+import {
+  deleteArchivo,
+  fetchArchivosByEstudioId,
+  uploadFiles,
+} from "@/app/lib/fileManager";
+import { getTipoEstudio } from "@/app/utils/getTipoEstudio";
+import { fetchArchivoContentById } from "@/app/lib/fileManager"; // Import the function
+
+interface ArchivoEstudio {
+  ID_Archivo: number;
+  NombreArchivo: string;
+}
+
+interface StudyFiles {
+  [key: number]: ArchivoEstudio[];
+}
 
 export default function ClinicalHistoryPage() {
   const { id } = useParams();
@@ -57,23 +73,9 @@ export default function ClinicalHistoryPage() {
     entryId: number | null;
   }>({ isOpen: false, entryId: null });
   const [studyTypes, setStudyTypes] = useState<TipoEstudio[]>([]);
-
-  const getTipoEstudio = useCallback(async (id: number) => {
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/tipoEstudio/${id}`
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch tipo de estudio");
-      }
-      const data = await response.json();
-      return data.NombreEstudio ?? "Cargando...";
-    } catch (err: any) {
-      console.error("Error fetching tipo de estudio:", err);
-      setError(err.message);
-      return "Error al cargar tipo de estudio";
-    }
-  }, []);
+  const [files, setFiles] = useState<File[]>([]);
+  const [studyFiles, setStudyFiles] = useState<StudyFiles>({});
+  const [editingFiles, setEditingFiles] = useState<ArchivoEstudio[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -125,11 +127,28 @@ export default function ClinicalHistoryPage() {
         setStudyTypes(data);
       } catch (error) {
         console.error("Error fetching study types:", error);
-        // Handle error appropriately, e.g., display an error message
       }
     };
     fetchStudyTypes();
   }, []);
+
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        const filesByStudy: any = {};
+        for (const entry of historial) {
+          const files = await fetchArchivosByEstudioId(entry.ID_Estudio);
+          filesByStudy[entry.ID_Estudio] = files;
+        }
+        setStudyFiles(filesByStudy);
+      } catch (error) {
+        console.error("Error fetching study files:", error);
+      }
+    };
+    if (historial.length > 0) {
+      fetchFiles();
+    }
+  }, [historial]);
 
   const handleEdit = (entry: HistorialClinico) => {
     const formattedDate = formatDateForInput(entry.Fecha);
@@ -137,6 +156,7 @@ export default function ClinicalHistoryPage() {
       ...entry,
       Fecha: formattedDate,
     });
+    setEditingFiles(studyFiles[entry.ID_Estudio] || []);
     setIsDialogOpen(true);
     setIsCreating(false);
   };
@@ -217,8 +237,34 @@ export default function ClinicalHistoryPage() {
       const responseData = await response.json();
       console.log("Response Data:", responseData);
 
+      // Obtener el ID_Estudio del nuevo o actualizado estudio
+      const estudioId = isCreating
+        ? responseData.data.ID_Estudio
+        : entryWithNombreEstudio.ID_Estudio;
+
+      // Si es una actualización, asociar archivos existentes al estudio
+      if (!isCreating) {
+        const updatedFiles = editingFiles.map((file) => file.ID_Archivo);
+        await fetch(
+          `http://localhost:3000/api/archivo/archivos/${entry.ID_Estudio}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ archivos: updatedFiles }),
+          }
+        );
+      }
+
+      // Si hay archivos nuevos, cargarlos y asignarles el ID_Estudio
+      if (files.length > 0) {
+        const uploadedFiles = await uploadFiles(files, estudioId);
+        console.log("Uploaded files:", uploadedFiles);
+      }
+
       if (isCreating) {
-        entryWithNombreEstudio.ID_Estudio = responseData.data.ID_Estudio;
+        entryWithNombreEstudio.ID_Estudio = estudioId;
 
         setHistorial((prevHistorial) => {
           return [entryWithNombreEstudio, ...prevHistorial];
@@ -235,8 +281,23 @@ export default function ClinicalHistoryPage() {
         );
       }
 
+      // Actualizar los archivos en el estado
+      setStudyFiles((prev) => ({
+        ...prev,
+        [estudioId]: [
+          ...editingFiles,
+          ...files.map((file, index) => ({
+            ID_Archivo: Date.now() + index, // Temporal ID para nuevos archivos
+            NombreArchivo: file.name,
+            ID_Estudio: estudioId, // Asignar el ID_Estudio a cada archivo
+          })),
+        ],
+      }));
+
       setIsDialogOpen(false);
       setIsCreating(false);
+      setFiles([]);
+      setEditingFiles([]);
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -255,13 +316,18 @@ export default function ClinicalHistoryPage() {
       Fecha: new Date().toISOString().split("T")[0],
       Asunto: "",
       Observacion: "",
-      Factura: null,
+      Factura: 0,
       ID_Paciente: Number(id),
       ID_TipoEstudio: 1,
       NombreTipoEstudio: "",
     });
     setIsCreating(true);
     setIsDialogOpen(true);
+  };
+
+  const handleDeleteArchive = async (ID_Archivo: number) => {
+    setEditingFiles(editingFiles.filter((f) => f.ID_Archivo !== ID_Archivo));
+    await deleteArchivo(ID_Archivo);
   };
 
   const filteredHistory = historial.filter((entry) => {
@@ -312,25 +378,17 @@ export default function ClinicalHistoryPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
                 <TableHead>Fecha</TableHead>
                 <TableHead>Asunto</TableHead>
                 <TableHead>Tipo de Estudio</TableHead>
                 <TableHead>Factura</TableHead>
+                <TableHead>Archivo(s)</TableHead>
                 <TableHead>Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredHistory.map((entry) => (
                 <TableRow key={`history-${entry.ID_Estudio}`}>
-                  <TableCell>
-                    <Link
-                      href={`/pacientes/${id}/historial-clinico/${entry.ID_Estudio}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {entry.ID_Estudio}
-                    </Link>
-                  </TableCell>
                   <TableCell>
                     {new Date(entry.Fecha).toLocaleDateString("es-AR", {
                       timeZone: "UTC",
@@ -342,14 +400,42 @@ export default function ClinicalHistoryPage() {
                     {entry.Factura ? (
                       <Badge variant="secondary">
                         <Receipt className="w-4 h-4 mr-2" />
-                        {entry.Factura}
+                        {new Intl.NumberFormat("es-AR", {
+                          style: "decimal",
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(entry.Factura)}{" "}
+                        ARS
                       </Badge>
                     ) : (
                       <span>No aplica</span>
                     )}
                   </TableCell>
                   <TableCell>
+                    {studyFiles[entry.ID_Estudio]?.map((file, index) => (
+                      <div key={file.ID_Archivo}>
+                        <Button
+                          variant="link"
+                          onClick={async () => {
+                            const content = await fetchArchivoContentById(
+                              file.ID_Archivo
+                            );
+                          }}
+                        >
+                          {file.NombreArchivo || `File ${index + 1}`}
+                        </Button>
+                      </div>
+                    ))}
+                  </TableCell>
+                  <TableCell>
                     <div className="flex space-x-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link
+                          href={`/pacientes/${id}/historial-clinico/${entry.ID_Estudio}`}
+                        >
+                          Ver
+                        </Link>
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -380,10 +466,12 @@ export default function ClinicalHistoryPage() {
           if (!open) {
             setIsCreating(false);
             setEditingEntry(null);
+            setEditingFiles([]);
+            setFiles([]);
           }
         }}
       >
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-w-[450px] sm:max-w-[650px]">
           <DialogHeader>
             <DialogTitle>
               {isCreating
@@ -421,23 +509,7 @@ export default function ClinicalHistoryPage() {
                     className="col-span-3"
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="asunto" className="text-right">
-                    Asunto
-                  </Label>
-                  <Input
-                    id="asunto"
-                    type="text"
-                    value={editingEntry.Asunto}
-                    onChange={(e) =>
-                      setEditingEntry({
-                        ...editingEntry,
-                        Asunto: e.target.value,
-                      })
-                    }
-                    className="col-span-3"
-                  />
-                </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="tipoEstudio" className="text-right">
                     Tipo de Estudio
@@ -467,6 +539,23 @@ export default function ClinicalHistoryPage() {
                   </Select>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="asunto" className="text-right">
+                    Asunto
+                  </Label>
+                  <Input
+                    id="asunto"
+                    type="text"
+                    value={editingEntry.Asunto}
+                    onChange={(e) =>
+                      setEditingEntry({
+                        ...editingEntry,
+                        Asunto: e.target.value,
+                      })
+                    }
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="observacion" className="text-right">
                     Observación
                   </Label>
@@ -488,18 +577,58 @@ export default function ClinicalHistoryPage() {
                   </Label>
                   <Input
                     id="factura"
-                    type="text"
-                    value={editingEntry.Factura || ""}
+                    type="number"
+                    min={0}
+                    value={editingEntry.Factura || 0}
                     onChange={(e) =>
                       setEditingEntry({
                         ...editingEntry,
-                        Factura: e.target.value || null,
+                        Factura: Number(e.target.value) || 0,
                       })
                     }
                     className="col-span-3"
                   />
                 </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="archivo" className="text-right">
+                    Archivo(s) existentes
+                  </Label>
+                  <div className="col-span-3">
+                    {editingFiles.map((file) => (
+                      <div
+                        key={file.ID_Archivo}
+                        className="flex items-center justify-between mb-2"
+                      >
+                        <span>{file.NombreArchivo}</span>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={(e) => handleDeleteArchive(file.ID_Archivo)}
+                        >
+                          Eliminar
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="nuevoArchivo" className="text-right">
+                    Agregar archivo(s)
+                  </Label>
+                  <Input
+                    id="nuevoArchivo"
+                    multiple
+                    type="file"
+                    onChange={(e) => {
+                      const newFiles = Array.from(e.target.files || []);
+                      setFiles(newFiles);
+                    }}
+                    className="col-span-3"
+                  />
+                </div>
               </div>
+
               <DialogFooter>
                 <Button
                   type="button"

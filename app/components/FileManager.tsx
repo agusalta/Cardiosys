@@ -15,7 +15,6 @@ import { AttachFile, Delete } from "@mui/icons-material";
 
 interface File {
   name: string;
-  date: string;
 }
 
 export default function FileManager() {
@@ -63,7 +62,6 @@ export default function FileManager() {
           {files.map((file, index) => (
             <TableRow key={index}>
               <TableCell>{file.name}</TableCell>
-              <TableCell>{file.date}</TableCell>
               <TableCell>
                 <Button
                   variant="destructive"
