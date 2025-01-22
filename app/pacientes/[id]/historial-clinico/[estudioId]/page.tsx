@@ -11,7 +11,17 @@ import {
   FileText,
   Microscope,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { getTipoEstudio } from "@/app/utils/getTipoEstudio";
+import Archivo from "@/app/types/Archivo";
+import { Label } from "@/components/ui/label";
+import ArchivoSelect from "./ArchivoSelect";
 
 async function getEstudio(estudioId: string) {
   const res = await fetch(
@@ -26,6 +36,30 @@ async function getEstudio(estudioId: string) {
   return res.json();
 }
 
+async function getArchivosEstudio(estudioId: string) {
+  const ID_Estudio = Number(estudioId);
+
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/archivo/estudio/${ID_Estudio}`
+    );
+
+    if (!response.ok) {
+      throw new Error("No se pudo obtener los archivos");
+    }
+
+    const data = await response.json();
+    if (!data || data.length === 0) {
+      throw new Error("No se encontraron archivos para este estudio");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error al obtener los archivos:", error);
+    return [];
+  }
+}
+
 export default function EstudioDetailPage({
   params,
 }: {
@@ -34,6 +68,8 @@ export default function EstudioDetailPage({
   const resolvedParams = use(params);
 
   const estudio = use(getEstudio(resolvedParams.estudioId).catch(() => null));
+
+  const archivosEstudio = use(getArchivosEstudio(resolvedParams.estudioId));
 
   const tipoEstudio = use(
     getTipoEstudio(estudio?.ID_TipoEstudio || 0).catch(() => "Error al cargar")
@@ -120,6 +156,15 @@ export default function EstudioDetailPage({
             <p className="whitespace-pre-wrap text-md leading-relaxed">
               {estudio.Observacion}
             </p>
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Archivos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ArchivoSelect archivos={archivosEstudio} />
           </CardContent>
         </Card>
       </div>
