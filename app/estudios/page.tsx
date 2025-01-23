@@ -37,6 +37,7 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
+import { useToast } from "@/hooks/use-toast";
 import { useTipoEstudio } from "../data/TipoEstudio";
 import type TipoEstudio from "../types/TipoEstudio";
 import { useSeguro } from "../data/ObraSocial";
@@ -64,9 +65,14 @@ export default function EstudiosPage() {
   const { fetchTipoEstudios } = useTipoEstudio();
   const { getCostoEstudio, updateCostoEstudio } = useCostoEstudio();
   const { seguros } = useSeguro();
+  const { toast } = useToast();
 
   useEffect(() => {
-    fetchTipoEstudios().then(setStudiesWithCost);
+    fetchTipoEstudios().then((studies) =>
+      setStudiesWithCost(
+        studies.map((study: TipoEstudioConCosto) => ({ ...study, costo: 0 }))
+      )
+    );
   }, []);
 
   useEffect(() => {
@@ -85,7 +91,7 @@ export default function EstudiosPage() {
           );
           return {
             ...study,
-            costo: costo !== null ? costo : 0,
+            costo: costo !== null && costo !== undefined ? costo : 0,
           };
         })
       );
@@ -103,7 +109,10 @@ export default function EstudiosPage() {
 
   const handleUpdateCost = async (study: TipoEstudioConCosto) => {
     if (!selectedInsurance) {
-      alert("Por favor, seleccione una obra social primero.");
+      toast({
+        title: "Error",
+        description: "Por favor, seleccione una obra social primero.",
+      });
       return;
     }
 
@@ -113,13 +122,21 @@ export default function EstudiosPage() {
         Number.parseInt(selectedInsurance, 10),
         study.costo
       );
-      alert("Costo actualizado exitosamente");
+
       await fetchUpdatedCosts();
+
+      toast({
+        title: "Éxito",
+        description: "Costo actualizado exitosamente",
+      });
     } catch (error) {
       console.error("Error al actualizar el costo:", error);
-      alert(
-        "Ocurrió un error al actualizar el costo. Por favor, intente nuevamente."
-      );
+
+      toast({
+        title: "Error",
+        description:
+          "Ocurrió un error al actualizar el costo. Por favor, intente nuevamente.",
+      });
     }
   };
 
@@ -147,31 +164,36 @@ export default function EstudiosPage() {
     },
   };
 
-  const frequencyData = {
-    labels: studiesWithCost.slice(0, 4).map((study) => study.NombreEstudio),
+  // Nuevo gráfico de distribución de costos
+  const costDistributionData = {
+    labels: studiesWithCost.map((study) => study.NombreEstudio),
     datasets: [
       {
-        label: "Estudios más realizados",
-        data: [12, 19, 7, 14], // Valores simulados
+        label: "Distribución de costos",
+        data: studiesWithCost.map((study) => study.costo),
         backgroundColor: [
           "hsl(var(--primary))",
           "hsl(var(--secondary))",
           "hsl(var(--accent))",
           "hsl(var(--muted))",
+          "hsl(var(--card))",
+          "hsl(var(--card-foreground))",
+          "hsl(var(--popover))",
+          "hsl(var(--popover-foreground))",
         ],
       },
     ],
   };
 
-  const frequencyOptions = {
+  const costDistributionOptions = {
     responsive: true,
     plugins: {
       legend: {
-        position: "top" as const,
+        position: "right" as const,
       },
       title: {
         display: true,
-        text: "Estudios más realizados en el mes",
+        text: "Distribución de costos de estudios",
       },
     },
   };
@@ -181,7 +203,7 @@ export default function EstudiosPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Estudios Cardiológicos</h1>
         <Select onValueChange={setSelectedInsurance} value={selectedInsurance}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[210px]">
             <SelectValue placeholder="Seleccionar Obra Social" />
           </SelectTrigger>
           <SelectContent>
@@ -226,6 +248,7 @@ export default function EstudiosPage() {
                             Number(e.target.value)
                           )
                         }
+                        disabled={!selectedInsurance}
                         className="w-24 text-right"
                       />
                     </TableCell>
@@ -234,9 +257,11 @@ export default function EstudiosPage() {
                         onClick={() => handleUpdateCost(study)}
                         size="sm"
                         variant="outline"
+                        className="w-full sm:w-auto"
+                        disabled={!selectedInsurance}
                       >
-                        <SaveIcon className="w-4 h-4 mr-2" />
-                        Actualizar
+                        <SaveIcon className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Actualizar</span>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -263,14 +288,14 @@ export default function EstudiosPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Estudios más realizados</CardTitle>
+              <CardTitle>Distribución de Costos de Estudios</CardTitle>
             </CardHeader>
             <CardContent>
               <div style={{ height: "450px", width: "100%" }}>
                 <Pie
-                  data={frequencyData}
+                  data={costDistributionData}
                   options={{
-                    ...frequencyOptions,
+                    ...costDistributionOptions,
                     maintainAspectRatio: false,
                   }}
                 />
