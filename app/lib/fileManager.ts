@@ -3,7 +3,7 @@ export async function uploadFiles(files: File[], ID_Estudio: number) {
     // Itera sobre los archivos y los sube uno por uno
     for (let file of files) {
       const formData = new FormData();
-      console.log(file.name);
+
       formData.append("Archivo", file);
       formData.append("ID_Estudio", ID_Estudio.toString());
 
@@ -23,7 +23,6 @@ export async function uploadFiles(files: File[], ID_Estudio: number) {
 
       // Si todo va bien, puedes manejar la respuesta (si necesitas hacer algo con la respuesta)
       const result = await response.json();
-      console.log(`File ${file.name} uploaded successfully:`, result);
     }
 
     return { message: "All files uploaded successfully" };
@@ -45,7 +44,7 @@ export async function fetchArchivosByEstudioId(idEstudio: number) {
     }
 
     const archivos = await response.json();
-    console.log("Archivos: ", archivos);
+
     return archivos;
   } catch (error) {
     console.error("Error fetching archivos:", error);
@@ -65,7 +64,7 @@ export async function fetchArchivoContentById(idArchivo: number) {
     }
 
     const archivo = await response.json();
-    console.log("Archivo: ", archivo);
+
     return archivo;
   } catch (error) {
     console.error("Error fetching archivos:", error);
@@ -95,7 +94,6 @@ export async function deleteArchivo(idArchivo: number) {
     }
 
     const responseData = await response.json();
-    console.log(responseData.message);
   } catch (error: any) {
     console.error("Error:", error.message);
     alert("No se pudo eliminar el archivo: " + error.message);

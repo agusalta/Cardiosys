@@ -25,7 +25,6 @@ export default function PatientList({
     return <p>No hay pacientes para mostrar.</p>;
   }
 
-  // Si se proporciona un límite, muestra solo los primeros 'limit' pacientes
   const displayedPatients = limit ? patients.slice(0, limit) : patients;
 
   return (

@@ -30,12 +30,6 @@ export default function useCostoEstudio() {
     Costo: number
   ) {
     try {
-      console.log("Datos enviados al backend:", {
-        ID_TipoEstudio,
-        ID_Seguro,
-        Costo,
-      });
-
       const response = await fetch(
         `http://localhost:3000/api/costoEstudio/update`,
         {
@@ -63,7 +57,7 @@ export default function useCostoEstudio() {
       }
 
       const data = await response.json();
-      console.log("Datos recibidos del backend:", data);
+
       return data;
     } catch (error: any) {
       console.error(error.message);

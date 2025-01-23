@@ -49,7 +49,6 @@ export default function CreatePatientForm() {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    console.log(`Seleccionando ${name}: ${value}`);
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -65,7 +64,6 @@ export default function CreatePatientForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Datos del formulario a enviar:", formData);
 
     // Validar datos antes de enviar la solicitud
     if (
@@ -120,7 +118,7 @@ export default function CreatePatientForm() {
 
       // Si la respuesta es exitosa, maneja el éxito
       const data = await response.json();
-      console.log("Paciente creado:", data);
+
       toast({
         title: "Éxito",
         description: `El paciente ha sido creado correctamente.`,

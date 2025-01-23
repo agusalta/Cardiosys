@@ -175,18 +175,11 @@ export default function PatientDetailsPage() {
         setOs(data);
       } catch (error) {
         console.error("Error al cargar el seguro:", error);
-        toast({
-          title: "Error",
-          description: "No se pudo cargar la información del seguro.",
-          variant: "destructive",
-        });
       }
     };
 
     fetchOS();
   }, [patient?.ID_Seguro, patient?.ID_Paciente, toast]);
-
-  console.log("historial", history);
 
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;

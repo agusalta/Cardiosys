@@ -35,8 +35,6 @@ export default function PatientForm() {
     }
     setLoading(true);
     try {
-      console.log(patient);
-      // Lógica para enviar los datos al backend
       setPatient({
         nombre: "",
         apellido: "",

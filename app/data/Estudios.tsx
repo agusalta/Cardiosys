@@ -21,7 +21,6 @@ export function useEstudios() {
       }
     }
     fetchPatients();
-    console.log(estudios);
   }, []);
 
   return { estudios, loading };
