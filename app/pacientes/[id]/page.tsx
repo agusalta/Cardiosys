@@ -162,13 +162,13 @@ export default function PatientDetailsPage() {
         return;
       }
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/seguro/seguros/${patient.ID_Seguro}`
-        );
+        const url = `http://localhost:3000/api/seguro/seguros/${patient.ID_Seguro}`;
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error(
-            "Error al obtener el seguro del paciente = " + patient.ID_Paciente
+            `Error al obtener el seguro del paciente con ID_Paciente = ${patient.ID_Paciente}, ID_Seguro = ${patient.ID_Seguro}. ` +
+              `URL solicitada: ${url}. Respuesta del servidor: ${response.statusText} (${response.status})`
           );
         }
         const data = await response.json();
