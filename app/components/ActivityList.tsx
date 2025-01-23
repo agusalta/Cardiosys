@@ -48,7 +48,14 @@ export default function ActivityList({
               {new Date(activity.Fecha).toLocaleDateString("es-AR")}
             </TableCell>
             <TableCell>
-              <Link href={`/actividad/${activity.ID}`} passHref>
+              <Link
+                href={
+                  activity.Tipo === "Estudio"
+                    ? `/pacientes/${activity.ID}/historial-clinico/${activity.ID}`
+                    : `/pacientes/${activity.ID}`
+                }
+                passHref
+              >
                 <Button variant="outline" size="sm">
                   Ver Detalles
                 </Button>
