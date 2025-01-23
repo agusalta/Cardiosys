@@ -11,16 +11,7 @@ import {
   FileText,
   Microscope,
 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { getTipoEstudio } from "@/app/utils/getTipoEstudio";
-import Archivo from "@/app/types/Archivo";
-import { Label } from "@/components/ui/label";
 import ArchivoSelect from "./ArchivoSelect";
 
 async function getEstudio(estudioId: string) {
@@ -96,47 +87,53 @@ export default function EstudioDetailPage({
       <h1 className="text-3xl font-bold mb-6">Detalle del Estudio</h1>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <Card className="md:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-2xl font-bold">
+        <Card className="md:col-span-2 border border-gray-200 rounded-lg shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-2xl font-semibold text-gray-800">
               Información General
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <dl className="grid sm:grid-cols-2 gap-3 text-sm">
-              <div className="flex flex-col space-y-1">
-                <dt className="font-medium text-muted-foreground flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-gray-700">
+              <div className="flex flex-col space-y-2">
+                <dt className="font-medium text-gray-600 flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
                   Fecha
                 </dt>
-                <dd>
+                <dd className="text-lg font-semibold">
                   {new Date(estudio.Fecha).toLocaleDateString("es-AR", {
                     timeZone: "UTC",
                   })}
                 </dd>
               </div>
-              <div className="flex flex-col space-y-1">
-                <dt className="font-medium text-muted-foreground flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
+
+              <div className="flex flex-col space-y-2">
+                <dt className="font-medium text-gray-600 flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-primary" />
                   Asunto
                 </dt>
-                <dd>{estudio.Asunto}</dd>
+                <dd className="text-lg font-semibold">{estudio.Asunto}</dd>
               </div>
-              <div className="flex flex-col space-y-1">
-                <dt className="font-medium text-muted-foreground flex items-center gap-2">
-                  <Microscope className="h-4 w-4" />
+
+              <div className="flex flex-col space-y-2">
+                <dt className="font-medium text-gray-600 flex items-center gap-2">
+                  <Microscope className="h-5 w-5 text-primary" />
                   Tipo de Estudio
                 </dt>
-                <dd>{tipoEstudio}</dd>
+                <dd className="text-lg font-semibold">{tipoEstudio}</dd>
               </div>
-              <div className="flex flex-col space-y-1 sm:col-span-3">
-                <dt className="font-medium text-muted-foreground flex items-center gap-2">
-                  <Receipt className="h-4 w-4" />
+
+              <div className="flex flex-col space-y-2 sm:col-span-2">
+                <dt className="font-medium text-gray-600 flex items-center gap-2">
+                  <Receipt className="h-5 w-5 text-primary" />
                   Factura
                 </dt>
-                <dd>
+                <dd className="text-lg font-semibold">
                   {estudio.Factura ? (
-                    <Badge variant="secondary" className="text-base py-1 px-2">
+                    <Badge
+                      variant="secondary"
+                      className="text-base py-1 px-3 font-medium"
+                    >
                       {estudio.Factura}
                     </Badge>
                   ) : (

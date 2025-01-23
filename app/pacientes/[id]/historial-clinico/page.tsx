@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Delete, Receipt } from "@mui/icons-material";
+import { Edit, Delete, Receipt, FileOpen } from "@mui/icons-material";
 import { Badge } from "@/components/ui/badge";
 import type HistorialClinico from "@/app/types/HistorialClinico";
 import { useToast } from "@/hooks/use-toast";
@@ -454,14 +454,16 @@ export default function ClinicalHistoryPage() {
                       <Button variant="outline" size="sm" asChild>
                         <Link
                           href={`/pacientes/${id}/historial-clinico/${entry.ID_Estudio}`}
+                          title="Ver"
                         >
-                          Ver
+                          <FileOpen className="w-4 h-4" />
                         </Link>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleEdit(entry)}
+                        title="Editar"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -469,6 +471,7 @@ export default function ClinicalHistoryPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleDelete(entry.ID_Estudio)}
+                        title="Eliminar"
                       >
                         <Delete className="w-4 h-4" />
                       </Button>

@@ -7,7 +7,6 @@ import InsurancePieChart from "./components/InsurancePieChart";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import useStore from "./context/store";
-import { insuranceData } from "./data/ObraSocial";
 import Image from "next/image";
 import { usePatients } from "./data/Paciente";
 
@@ -34,7 +33,7 @@ export default function Home() {
             <CardTitle>Obra Social Más Usada</CardTitle>
           </CardHeader>
           <CardContent>
-            <InsurancePieChart data={insuranceData} />
+            {/* <InsurancePieChart data={insuranceData} /> */}
           </CardContent>
         </Card>
 
