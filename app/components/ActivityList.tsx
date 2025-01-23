@@ -51,7 +51,7 @@ export default function ActivityList({
               <Link
                 href={
                   activity.Tipo === "Estudio"
-                    ? `/pacientes/${activity.ID}/historial-clinico/${activity.ID}`
+                    ? `/pacientes/${activity.ID_Paciente}/historial-clinico/${activity.ID}`
                     : `/pacientes/${activity.ID}`
                 }
                 passHref
