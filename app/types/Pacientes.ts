@@ -1,6 +1,7 @@
 export default interface Paciente {
   ID_Paciente: number;
   ID_Seguro: number;
+  ID_Empresa?: number | null;
   Nombre: string;
   DNI: string;
   Apellido: string;

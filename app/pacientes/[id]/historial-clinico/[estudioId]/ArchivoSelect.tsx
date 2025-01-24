@@ -119,10 +119,10 @@ export default function ArchivoViewer({ archivos }: { archivos: Archivo[] }) {
               >
                 <FileText className="h-16 w-16 sm:h-24 sm:w-24 mb-4 text-gray-400" />
                 <p className="text-xl sm:text-2xl font-semibold mb-2">
-                  No hay archivo seleccionado
+                  No hay archivo PDF seleccionado
                 </p>
                 <p className="text-base sm:text-lg">
-                  Elija un archivo para visualizar
+                  Elija un archivo en formato PDF para visualizar
                 </p>
               </motion.div>
             )}

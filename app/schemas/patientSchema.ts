@@ -48,6 +48,7 @@ export const patientSchema = z.object({
     .int()
     .min(1, "Seleccione un seguro válido")
     .max(4, "El ID del seguro no es válido"),
+  ID_Empresa: z.number().int().nullable(),
 });
 
 export type PatientFormData = z.infer<typeof patientSchema>;

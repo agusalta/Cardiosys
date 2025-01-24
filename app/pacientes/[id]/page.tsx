@@ -21,10 +21,10 @@ import {
   MonitorWeight,
   MonitorHeart,
   AccessAlarm,
-  PersonRemoveAlt1,
   HealthAndSafety,
   History,
 } from "@mui/icons-material";
+import BusinessIcon from "@mui/icons-material/Business";
 import Link from "next/link";
 import {
   Table,
@@ -43,25 +43,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { patientSchema, PatientFormData } from "@/app/schemas/patientSchema";
-import Paciente from "@/app/types/Pacientes";
+import {
+  patientSchema,
+  type PatientFormData,
+} from "@/app/schemas/patientSchema";
+import type Paciente from "@/app/types/Pacientes";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { format, parse } from "date-fns";
 import { useHistorialClinico } from "@/app/data/HistorialClinico";
-
-function calcularEdad(fechaNacimiento: string): number {
-  const nacimiento = new Date(fechaNacimiento);
-  const hoy = new Date();
-  let edad = hoy.getFullYear() - nacimiento.getFullYear();
-  const mes = hoy.getMonth() - nacimiento.getMonth();
-
-  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
-    edad--;
-  }
-
-  return edad;
-}
+import { useSeguro } from "@/app/data/ObraSocial";
+import type EmpresaSeguro from "@/app/types/EmpresaSeguro";
+import { format, parse } from "date-fns";
 
 const calcularIMC = (peso: number, altura: number) => {
   if (!peso || !altura) return "N/A";
@@ -85,22 +77,39 @@ function calcularSC(peso: number, altura: number): number | string {
   const superficieCorporal =
     scc * Math.pow(peso, 0.425) * Math.pow(alturaCm, 0.725);
 
-  return parseFloat(superficieCorporal.toFixed(2));
+  return Number.parseFloat(superficieCorporal.toFixed(2));
 }
 
 interface Os {
+  ID_Seguro: number;
   TipoSeguro: string;
+}
+
+function calcularEdad(fechaNacimiento: string): number {
+  const nacimiento = new Date(fechaNacimiento);
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mes = hoy.getMonth() - nacimiento.getMonth();
+
+  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+    edad--;
+  }
+
+  return edad;
 }
 
 export default function PatientDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
   const [patient, setPatient] = useState<Paciente | null>(null);
+  const [EmpresaPrepaga, setEmpresaPrepagas] = useState<EmpresaSeguro[]>([]);
+  const [seguros, setSeguros] = useState<Os[]>([]);
   const [os, setOs] = useState<Os | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+  const { getSeguroById, getAllSeguros, getEmpresaPrepagas } = useSeguro();
 
   const defaultValues: PatientFormData = {
     Nombre: "",
@@ -115,6 +124,7 @@ export default function PatientDetailsPage() {
     FrecuenciaCardiaca: 0,
     Sexo: "M",
     ID_Seguro: 0,
+    ID_Empresa: 0,
   };
 
   const {
@@ -129,6 +139,7 @@ export default function PatientDetailsPage() {
   });
 
   const { historial } = useHistorialClinico(patient?.ID_Paciente);
+  const edad = calcularEdad(watch("FechaNacimiento"));
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -155,37 +166,49 @@ export default function PatientDetailsPage() {
     fetchPatients();
   }, [id, reset, toast]);
 
+  const handleGetOsById = async () => {
+    if (!patient?.ID_Seguro) {
+      setOs(null);
+      return;
+    }
+
+    try {
+      const seguro = await getSeguroById(patient.ID_Seguro);
+      setOs(seguro);
+    } catch (error) {
+      console.error("Error al cargar el seguro:", error);
+    }
+  };
+
+  const handleGetAllSeguros = async () => {
+    try {
+      const seguros = await getAllSeguros();
+      setSeguros(seguros);
+      console.log(seguros);
+      return;
+    } catch (error) {
+      console.error("Error al cargar los seguros:", error);
+    }
+  };
+
+  const handleGetEmpresasPrepagas = async () => {
+    try {
+      const empresas = await getEmpresaPrepagas();
+      setEmpresaPrepagas(empresas);
+    } catch (error) {
+      console.error("Error al cargar las empresas:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchOS = async () => {
-      if (!patient?.ID_Seguro) {
-        setOs(null);
-        return;
-      }
-      try {
-        const url = `http://localhost:3000/api/seguro/seguros/${patient.ID_Seguro}`;
-        const response = await fetch(url);
-
-        if (!response.ok) {
-          throw new Error(
-            `Error al obtener el seguro del paciente con ID_Paciente = ${patient.ID_Paciente}, ID_Seguro = ${patient.ID_Seguro}. ` +
-              `URL solicitada: ${url}. Respuesta del servidor: ${response.statusText} (${response.status})`
-          );
-        }
-        const data = await response.json();
-        setOs(data);
-      } catch (error) {
-        console.error("Error al cargar el seguro:", error);
-      }
-    };
-
-    fetchOS();
+    handleGetOsById();
+    handleGetAllSeguros();
+    handleGetEmpresasPrepagas();
   }, [patient?.ID_Seguro, patient?.ID_Paciente, toast]);
 
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;
   }
-
-  const edad = calcularEdad(watch("FechaNacimiento"));
 
   const handleEditToggle = () => {
     setIsEditing((prev) => !prev);
@@ -222,7 +245,10 @@ export default function PatientDetailsPage() {
         variant: "default",
       });
 
-      router.push("/");
+      // agregar un timer antes de redireccionar
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } catch (error) {
       console.error("Error inesperado:", error);
 
@@ -454,19 +480,14 @@ export default function PatientDetailsPage() {
                       render={({ field }) => (
                         <Input
                           {...field}
-                          type="text"
-                          placeholder="DD/MM/AAAA"
+                          type="date"
                           value={
                             field.value
-                              ? format(new Date(field.value), "dd/MM/yyyy")
+                              ? format(new Date(field.value), "yyyy-MM-dd") // El formato correcto para un input de tipo date
                               : ""
                           }
                           onChange={(e) => {
-                            const parsed = parse(
-                              e.target.value,
-                              "dd/MM/yyyy",
-                              new Date()
-                            );
+                            const parsed = new Date(e.target.value); // Parsear el valor como fecha
                             field.onChange(parsed.toISOString());
                           }}
                           className={`w-48 ${
@@ -512,7 +533,7 @@ export default function PatientDetailsPage() {
                           type="number"
                           step="0.01"
                           onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
+                            field.onChange(Number.parseFloat(e.target.value))
                           }
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
@@ -545,7 +566,7 @@ export default function PatientDetailsPage() {
                           type="number"
                           step="0.1"
                           onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
+                            field.onChange(Number.parseFloat(e.target.value))
                           }
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
@@ -678,7 +699,7 @@ export default function PatientDetailsPage() {
                       render={({ field }) => (
                         <Select
                           onValueChange={(value) =>
-                            field.onChange(parseInt(value))
+                            field.onChange(Number.parseInt(value))
                           }
                           value={field.value?.toString()}
                           disabled={!isEditing}
@@ -691,14 +712,9 @@ export default function PatientDetailsPage() {
                             <SelectValue placeholder="Seleccionar obra social" />
                           </SelectTrigger>
                           <SelectContent>
-                            {[
-                              { ID_Seguro: 2, TipoSeguro: "IOMA" },
-                              { ID_Seguro: 1, TipoSeguro: "PAMI" },
-                              { ID_Seguro: 3, TipoSeguro: "Particular" },
-                              { ID_Seguro: 4, TipoSeguro: "Prepaga" },
-                            ].map((seguro) => (
+                            {seguros.map((seguro) => (
                               <SelectItem
-                                key={seguro.ID_Seguro}
+                                key={seguro.ID_Seguro.toString()}
                                 value={seguro.ID_Seguro.toString()}
                               >
                                 {seguro.TipoSeguro}
@@ -716,6 +732,55 @@ export default function PatientDetailsPage() {
                   )}
                 </div>
               </CardContent>
+              {os?.ID_Seguro === 4 && (
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="font-semibold">
+                        <BusinessIcon className="inline-block mr-2" />
+                        Empresa
+                      </div>
+                      <Controller
+                        name="ID_Empresa"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            onValueChange={(value) =>
+                              field.onChange(Number.parseInt(value))
+                            }
+                            value={field.value?.toString()}
+                            disabled={!isEditing}
+                          >
+                            <SelectTrigger
+                              className={`w-48 ${
+                                isEditing ? "bg-white" : "bg-gray-100"
+                              }`}
+                            >
+                              <SelectValue placeholder="Seleccionar empresa" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {os &&
+                                EmpresaPrepaga.map((empresa) => (
+                                  <SelectItem
+                                    key={empresa.ID_Empresa}
+                                    value={empresa.ID_Empresa.toString()}
+                                  >
+                                    {empresa.NombreEmpresa}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                    </div>
+                    {errors.ID_Empresa && (
+                      <p className="text-red-500 text-sm">
+                        {errors.ID_Empresa.message}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              )}
               <CardContent>
                 <div className="flex justify-between items-center">
                   <div className="font-semibold">

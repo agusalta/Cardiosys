@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,6 +24,10 @@ import {
 } from "@/components/ui/select";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { useRouter } from "next/navigation";
+import { useSeguro } from "@/app/data/ObraSocial";
+import Os from "@/app/types/Seguro";
+import EmpresaSeguro from "@/app/types/EmpresaSeguro";
 
 export default function CreatePatientForm() {
   const [formData, setFormData] = useState({
@@ -36,9 +41,42 @@ export default function CreatePatientForm() {
     peso: "",
     sexo: "",
     obraSocial: "",
+    prepaidType: "",
+    empresaId: "", // Added empresaId to the state
   });
 
+  const [showEmpresaSelect, setShowEmpresaSelect] = useState(false);
+  const [seguros, setSeguros] = useState<Os[]>([]);
+  const [EmpresaPrepaga, setEmpresaPrepagas] = useState<EmpresaSeguro[]>([]);
+  const { getEmpresaPrepagas, getAllSeguros } = useSeguro();
+
+  const handleGetEmpresasPrepagas = async () => {
+    try {
+      const empresas = await getEmpresaPrepagas();
+      setEmpresaPrepagas(empresas);
+    } catch (error) {
+      console.error("Error al cargar las empresas:", error);
+    }
+  };
+
+  const handleGetAllSeguros = async () => {
+    try {
+      const seguros = await getAllSeguros();
+      setSeguros(seguros);
+      console.log(seguros);
+      return;
+    } catch (error) {
+      console.error("Error al cargar los seguros:", error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetEmpresasPrepagas();
+    handleGetAllSeguros();
+  }, []);
+
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,6 +91,15 @@ export default function CreatePatientForm() {
       ...prevState,
       [name]: value,
     }));
+    if (name === "obraSocial") {
+      setShowEmpresaSelect(value === "4");
+      if (value !== "4") {
+        setFormData((prevState) => ({
+          ...prevState,
+          empresaId: "",
+        }));
+      }
+    }
   };
 
   const handlePhoneChange = (value: string) => {
@@ -85,7 +132,11 @@ export default function CreatePatientForm() {
 
     const patientData = {
       ID_Paciente: 0,
-      ID_Seguro: 1,
+      ID_Seguro: Number.parseInt(formData.obraSocial),
+      ID_Empresa:
+        formData.obraSocial === "4"
+          ? Number.parseInt(formData.empresaId)
+          : null,
       Nombre: formData.nombre,
       Apellido: formData.apellido,
       DNI: formData.dni,
@@ -108,11 +159,9 @@ export default function CreatePatientForm() {
         body: JSON.stringify(patientData),
       });
 
-      // Si la respuesta del servidor no es ok, maneja el error
       if (!response.ok) {
         const errorData = await response.json();
-        const errorMessage =
-          errorData?.message || "Error desconocido al crear el paciente";
+        const errorMessage = errorData?.message;
         throw new Error(errorMessage);
       }
 
@@ -125,7 +174,6 @@ export default function CreatePatientForm() {
         duration: 5000,
       });
 
-      // Resetear el formulario después de un envío exitoso
       setFormData({
         nombre: "",
         apellido: "",
@@ -137,18 +185,18 @@ export default function CreatePatientForm() {
         peso: "",
         sexo: "",
         obraSocial: "",
+        prepaidType: "",
+        empresaId: "",
       });
-    } catch (error: any) {
-      // Si ocurre un error, maneja el error de manera detallada
-      const errorMessage =
-        error?.message ||
-        "Hubo un problema al crear el paciente. Por favor, inténtelo de nuevo.";
 
-      console.error("Error:", error);
+      const url = `/pacientes/${data.ID_Paciente}`;
+      router.push(url);
+    } catch (error: any) {
+      console.error("Error:", error?.message);
 
       toast({
         title: "Error",
-        description: errorMessage,
+        description: error?.message,
         variant: "destructive",
         duration: 5000,
       });
@@ -362,18 +410,53 @@ export default function CreatePatientForm() {
                       onValueChange={(value) =>
                         handleSelectChange("obraSocial", value)
                       }
+                      value={formData.obraSocial}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione la obra social" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">PAMI</SelectItem>
-                        <SelectItem value="2">IOMA</SelectItem>
-                        <SelectItem value="3">Particular</SelectItem>
-                        <SelectItem value="4">Prepaga</SelectItem>
+                        {seguros.map((seguro) => (
+                          <SelectItem
+                            key={seguro.ID_Seguro.toString()}
+                            value={seguro.ID_Seguro.toString()}
+                          >
+                            {seguro.TipoSeguro}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
+                  {showEmpresaSelect && (
+                    <div>
+                      <label
+                        htmlFor="empresaId"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Empresa
+                      </label>
+                      <Select
+                        onValueChange={(value) =>
+                          handleSelectChange("empresaId", value)
+                        }
+                        value={formData.empresaId}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccione la empresa" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {EmpresaPrepaga.map((empresa) => (
+                            <SelectItem
+                              key={empresa.ID_Empresa}
+                              value={empresa.ID_Empresa.toString()}
+                            >
+                              {empresa.NombreEmpresa}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>
