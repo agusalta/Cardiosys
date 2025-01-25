@@ -42,6 +42,7 @@ import { useTipoEstudio } from "../data/TipoEstudio";
 import type TipoEstudio from "../types/TipoEstudio";
 import { useSeguro } from "../data/ObraSocial";
 import useCostoEstudio from "../data/CostoEstudio";
+import Seguro from "../types/Seguro";
 
 ChartJS.register(
   CategoryScale,
@@ -64,7 +65,8 @@ export default function EstudiosPage() {
   );
   const { fetchTipoEstudios } = useTipoEstudio();
   const { getCostoEstudio, updateCostoEstudio } = useCostoEstudio();
-  const { seguros } = useSeguro();
+  const [seguros, setSeguros] = useState<Seguro[]>([]);
+  const { getAllSeguros } = useSeguro();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -73,6 +75,7 @@ export default function EstudiosPage() {
         studies.map((study: TipoEstudioConCosto) => ({ ...study, costo: 0 }))
       )
     );
+    getAllSeguros().then((seguros) => setSeguros(seguros));
   }, []);
 
   useEffect(() => {
@@ -123,12 +126,12 @@ export default function EstudiosPage() {
         study.costo
       );
 
-      await fetchUpdatedCosts();
-
       toast({
         title: "Éxito",
         description: "Costo actualizado exitosamente",
       });
+
+      await fetchUpdatedCosts();
     } catch (error) {
       console.error("Error al actualizar el costo:", error);
 
@@ -208,7 +211,7 @@ export default function EstudiosPage() {
           </SelectTrigger>
           <SelectContent>
             {seguros &&
-              seguros.map((s) => (
+              seguros.map((s: Seguro) => (
                 <SelectItem key={s.ID_Seguro} value={String(s.ID_Seguro)}>
                   {s.TipoSeguro}
                 </SelectItem>

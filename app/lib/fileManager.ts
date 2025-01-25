@@ -96,6 +96,5 @@ export async function deleteArchivo(idArchivo: number) {
     const responseData = await response.json();
   } catch (error: any) {
     console.error("Error:", error.message);
-    alert("No se pudo eliminar el archivo: " + error.message);
   }
 }

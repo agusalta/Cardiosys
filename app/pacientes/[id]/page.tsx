@@ -9,6 +9,7 @@ import WcIcon from "@mui/icons-material/Wc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EditIcon } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ import {
   AccessAlarm,
   HealthAndSafety,
   History,
+  Delete,
 } from "@mui/icons-material";
 import BusinessIcon from "@mui/icons-material/Business";
 import Link from "next/link";
@@ -326,7 +328,10 @@ export default function PatientDetailsPage() {
           )}
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button>Eliminar Paciente</Button>
+              <Button>
+                <Delete className="w-4 h-4" />
+                Eliminar Paciente
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>

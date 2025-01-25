@@ -7,6 +7,7 @@ import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AddIcon from "@mui/icons-material/Add";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import {
   Table,
   TableBody,
@@ -25,7 +26,13 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Delete, Receipt, FileOpen } from "@mui/icons-material";
+import {
+  Edit,
+  Delete,
+  Receipt,
+  FileOpen,
+  DeleteForever,
+} from "@mui/icons-material";
 import { Badge } from "@/components/ui/badge";
 import type HistorialClinico from "@/app/types/HistorialClinico";
 import { useToast } from "@/hooks/use-toast";
@@ -46,7 +53,10 @@ import {
 } from "@/app/lib/fileManager";
 import { getTipoEstudio } from "@/app/utils/getTipoEstudio";
 import { fetchArchivoContentById } from "@/app/lib/fileManager";
-import { usePatients } from "@/app/data/Paciente";
+import useCostoEstudio from "@/app/data/CostoEstudio";
+import Paciente from "@/app/types/Pacientes";
+import { set } from "zod";
+import ExportDialog from "@/app/components/ExportDialog";
 
 interface ArchivoEstudio {
   ID_Archivo: number;
@@ -60,6 +70,7 @@ interface StudyFiles {
 export default function ClinicalHistoryPage() {
   const { id } = useParams();
   const [historial, setHistorial] = useState<HistorialClinico[]>([]);
+  const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [nombreCompleto, setNombreCompleto] = useState<string>("");
@@ -67,6 +78,7 @@ export default function ClinicalHistoryPage() {
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
@@ -78,6 +90,23 @@ export default function ClinicalHistoryPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [studyFiles, setStudyFiles] = useState<StudyFiles>({});
   const [editingFiles, setEditingFiles] = useState<ArchivoEstudio[]>([]);
+  const { getCostoEstudio } = useCostoEstudio();
+  const [costoEstudio, setCostoEstudio] = useState<number | null>(null);
+
+  const handleGetCostoEstudio = async (ID_TipoEstudio: number) => {
+    if (!id || !paciente) return;
+    try {
+      const costo = await getCostoEstudio(paciente?.ID_Seguro, ID_TipoEstudio);
+      setCostoEstudio(costo);
+    } catch (error) {
+      console.error("Error al obtener el costo del estudio:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!id || !paciente || !editingEntry) return;
+    handleGetCostoEstudio(editingEntry?.ID_TipoEstudio);
+  }, [editingEntry]);
 
   useEffect(() => {
     if (!id) return;
@@ -162,8 +191,9 @@ export default function ClinicalHistoryPage() {
           throw new Error(`Error: ${response.statusText}`);
         }
         const data = await response.json();
-        const nombreCompleto = `${data.Nombre} ${data.Apellido}`;
 
+        const nombreCompleto = `${data.Nombre} ${data.Apellido}`;
+        setPaciente(data);
         setNombreCompleto(nombreCompleto);
       } catch (error) {
         console.error("Error:", error);
@@ -184,6 +214,10 @@ export default function ClinicalHistoryPage() {
     setEditingFiles(studyFiles[entry.ID_Estudio] || []);
     setIsDialogOpen(true);
     setIsCreating(false);
+  };
+
+  const handleExportar = async () => {
+    setIsExporting(true);
   };
 
   const handleDelete = (entryId: number) => {
@@ -236,9 +270,12 @@ export default function ClinicalHistoryPage() {
         ? await getTipoEstudio(entry.ID_TipoEstudio)
         : "Cargando...";
 
+      const totalEstudio = Number(costoEstudio) + (Number(entry.Factura) || 0);
+
       const entryWithNombreEstudio = {
         ...entry,
         NombreTipoEstudio: tipoEstudioNombre,
+        Factura: totalEstudio,
       };
 
       const url = isCreating
@@ -318,6 +355,18 @@ export default function ClinicalHistoryPage() {
       setIsCreating(false);
       setFiles([]);
       setEditingFiles([]);
+
+      if (isCreating) {
+        toast({
+          title: "Éxito",
+          description: "El estudio se ha creado correctamente.",
+        });
+      } else {
+        toast({
+          title: "Éxito",
+          description: "El estudio se ha actualizado correctamente.",
+        });
+      }
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -382,12 +431,20 @@ export default function ClinicalHistoryPage() {
           className="w-1/2 italic "
         />
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => setSearchQuery("")}>
+          <Button
+            variant="outline"
+            onClick={() => setSearchQuery("")}
+            title="Limpiar búsqueda"
+          >
             <SearchOffIcon className="text-xl md:text-2xl" />
           </Button>
-          <Button onClick={handleCreate}>
-            <AddIcon className="text-xl md:text-2xl mr-2" />
-            <span className="hidden md:inline">Agregar un nuevo estudio</span>
+          <Button onClick={handleCreate} title="Crear nuevo estudio">
+            <AddIcon className="text-xl md:text-2xl" />
+            <span className="hidden md:inline">Nuevo Estudio</span>
+          </Button>
+          <Button onClick={handleExportar} title="Exportar historial como PDF">
+            <PictureAsPdfIcon className="text-xl md:text-2xl" />
+            <span className="hidden md:inline">Exportar Historial</span>
           </Button>
         </div>
       </div>
@@ -401,7 +458,7 @@ export default function ClinicalHistoryPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Fecha</TableHead>
-                <TableHead>Asunto</TableHead>
+                <TableHead>Motivo de consulta</TableHead>
                 <TableHead>Tipo de Estudio</TableHead>
                 <TableHead>Factura</TableHead>
                 <TableHead>Archivo(s)</TableHead>
@@ -496,7 +553,7 @@ export default function ClinicalHistoryPage() {
           }
         }}
       >
-        <DialogContent className="max-w-[450px] sm:max-w-[650px]">
+        <DialogContent className="max-w-[500px] sm:max-w-[650px]">
           <DialogHeader>
             <DialogTitle>
               {isCreating
@@ -565,7 +622,7 @@ export default function ClinicalHistoryPage() {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="asunto" className="text-right">
-                    Asunto
+                    Motivo de consulta
                   </Label>
                   <Input
                     id="asunto"
@@ -596,24 +653,63 @@ export default function ClinicalHistoryPage() {
                     className="col-span-3"
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="factura" className="text-right">
-                    Factura
-                  </Label>
-                  <Input
-                    id="factura"
-                    type="number"
-                    min={0}
-                    value={editingEntry.Factura || 0}
-                    onChange={(e) =>
-                      setEditingEntry({
-                        ...editingEntry,
-                        Factura: Number(e.target.value) || 0,
-                      })
-                    }
-                    className="col-span-3"
-                  />
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="factura" className="text-right font-medium">
+                      Monto de consulta
+                    </Label>
+                    <Input
+                      id="factura"
+                      type="number"
+                      min={0}
+                      value={editingEntry.Factura || ""}
+                      onChange={(e) =>
+                        setEditingEntry({
+                          ...editingEntry,
+                          Factura: Number(e.target.value) || 0,
+                        })
+                      }
+                      className="col-span-3"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right font-medium">
+                      Costo del estudio:
+                    </Label>
+                    <div className="col-span-3">
+                      <Input
+                        type="text"
+                        value={costoEstudio?.toLocaleString("es-AR", {
+                          style: "currency",
+                          currency: "ARS",
+                        })}
+                        disabled
+                        className="font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right font-medium">Total:</Label>
+                    <div className="col-span-3">
+                      <Input
+                        type="text"
+                        value={(
+                          Number(costoEstudio) +
+                          Number(editingEntry.Factura || 0)
+                        ).toLocaleString("es-AR", {
+                          style: "currency",
+                          currency: "ARS",
+                        })}
+                        disabled
+                        className="font-bold"
+                      />
+                    </div>
+                  </div>
                 </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="archivo" className="text-right">
                     Archivo(s) existentes
@@ -631,7 +727,7 @@ export default function ClinicalHistoryPage() {
                           size="sm"
                           onClick={(e) => handleDeleteArchive(file.ID_Archivo)}
                         >
-                          Eliminar
+                          <DeleteForever className="w-4 h-4" />
                         </Button>
                       </div>
                     ))}
@@ -701,6 +797,12 @@ export default function ClinicalHistoryPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ExportDialog
+        isExporting={isExporting}
+        setIsExporting={setIsExporting}
+        historial={historial}
+      />
     </div>
   );
 }

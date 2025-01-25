@@ -5,6 +5,19 @@ export function usePatients() {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
 
+  async function getPatientById(id: number) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/pacientes/${id}`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error al obtener el paciente:", error);
+    }
+  }
+
   useEffect(() => {
     async function fetchPatients() {
       try {
@@ -23,5 +36,5 @@ export function usePatients() {
     fetchPatients();
   }, []);
 
-  return { patients, loading };
+  return { patients, loading, getPatientById };
 }

@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { Sidebar } from "./components/Sidebar";
 import { MobileNav } from "./components/MobileNav";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,7 @@ export default function RootLayout({
               <h1 className="text-2xl font-bold ml-4">CardioSys</h1>
             </header>
             <main className="flex-1 overflow-y-auto p-6">{children}</main>
+            <Toaster />
           </div>
         </div>
       </body>
