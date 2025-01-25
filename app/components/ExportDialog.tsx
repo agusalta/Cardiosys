@@ -13,7 +13,7 @@ import type HistorialClinico from "../types/HistorialClinico";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { usePatients } from "../data/Paciente";
-import Paciente from "../types/Pacientes";
+import type Paciente from "../types/Pacientes";
 
 const ExportDialog = ({
   isExporting,
@@ -85,23 +85,26 @@ const ExportDialog = ({
     });
 
     // Add font support for special characters
-    pdf.setFont("Lato", "normal");
+    pdf.setFont("helvetica", "normal");
 
-    // Title
-    pdf.setFontSize(22);
-    pdf.text("Historial Clínico", 14, 20);
+    // Header
+    pdf.setFillColor(41, 128, 185); // A nice blue color
+    pdf.rect(0, 0, 210, 40, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(24);
+    pdf.text("Historial Clínico", 105, 25, { align: "center" });
 
-    // Patient info - with null checks
-    pdf.setFontSize(14);
+    // Patient info
+    pdf.setFillColor(236, 240, 241); // Light gray background
+    pdf.rect(0, 40, 210, 35, "F");
+    pdf.setTextColor(44, 62, 80); // Dark blue text
+    pdf.setFontSize(12);
+
     const patientName = patient
       ? `${patient?.Nombre || "No disponible"} ${
           patient?.Apellido || "No disponible"
         }`
       : "Paciente: No disponible";
-    pdf.text(`Paciente: ${patientName}`, 14, 30);
-
-    // Patient details - with null checks
-    pdf.setFontSize(11);
     const patientEmail = patient?.Email ? patient.Email : "No disponible";
     const patientDNI = patient?.DNI ? patient.DNI : "No disponible";
     const patientPeriod =
@@ -112,9 +115,10 @@ const ExportDialog = ({
           )}`
         : "Período: No disponible";
 
-    pdf.text(`Correo electrónico: ${patientEmail}`, 14, 40);
-    pdf.text(`DNI: ${patientDNI}`, 14, 46);
-    pdf.text(patientPeriod, 14, 54);
+    pdf.text(`Paciente: ${patientName}`, 15, 50);
+    pdf.text(`Correo electrónico: ${patientEmail}`, 15, 57);
+    pdf.text(`DNI: ${patientDNI}`, 15, 64);
+    pdf.text(patientPeriod, 15, 71);
 
     // Table setup
     const tableColumn = [
@@ -134,16 +138,46 @@ const ExportDialog = ({
     (pdf as any).autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 60, // Ajuste aquí para que no se sobreponga con los datos del paciente
-      styles: { fontSize: 8 },
+      startY: 80,
+      styles: {
+        fontSize: 8,
+        cellPadding: 3,
+        lineColor: [189, 195, 199],
+        lineWidth: 0.1,
+      },
+      headStyles: {
+        fillColor: [52, 152, 219],
+        textColor: 255,
+        fontSize: 10,
+        fontStyle: "bold",
+      },
+      alternateRowStyles: {
+        fillColor: [241, 245, 249],
+      },
       columnStyles: {
         0: { cellWidth: 20 }, // Fecha
         1: { cellWidth: 30 }, // Asunto
         2: { cellWidth: 40 }, // Nombre del Estudio
-        3: { cellWidth: 30 }, // Factura
-        4: { cellWidth: 70 }, // Observación (más grande)
+        3: { cellWidth: 25 }, // Factura
+        4: { cellWidth: 75 }, // Observación (más grande)
       },
     });
+
+    // Footer
+    const pageCount = (pdf as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(128);
+      pdf.text(
+        `Página ${i} de ${pageCount}`,
+        pdf.internal.pageSize.width / 2,
+        pdf.internal.pageSize.height - 10,
+        {
+          align: "center",
+        }
+      );
+    }
 
     pdf.save("historial_clinico.pdf");
     setIsLoading(false);
