@@ -1,16 +1,15 @@
 export default function useCostoEstudio() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   async function getCostoEstudio(ID_Seguro: number, ID_TipoEstudio: number) {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/costoEstudio/get`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ID_Seguro, ID_TipoEstudio }),
-        }
-      );
+      const response = await fetch(`${backendUrl}/costoEstudio/get`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ID_Seguro, ID_TipoEstudio }),
+      });
 
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
@@ -30,16 +29,13 @@ export default function useCostoEstudio() {
     Costo: number
   ) {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/costoEstudio/update`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ID_TipoEstudio, ID_Seguro, Costo }),
-        }
-      );
+      const response = await fetch(`${backendUrl}/costoEstudio/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ID_TipoEstudio, ID_Seguro, Costo }),
+      });
 
       if (!response.ok) {
         const errorDetails = await response.json().catch(() => null);

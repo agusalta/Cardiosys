@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Home, Users, FileText, Settings, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/" },
@@ -17,26 +18,28 @@ const menuItems = [
 export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const pathname = usePathname(); // Hook para obtener el pathname actual
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleLogout = async () => {
-    await fetch("http://localhost:3000/api/logout");
+    await fetch(`${backendUrl}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    document.cookie = "auth=; path=/; max-age=0; SameSite=Strict; Secure";
+    setIsLoggedIn(false);
     router.push("/login");
   };
 
-  // No renderizar el MobileNav si el pathname es /login
-  if (pathname === "/login") {
+  if (!isLoggedIn) {
+    console.log("MobileNav not rendered due to login page or not logged in");
     return null;
   }
 
   return (
-    <div
-      className={cn(
-        "fixed bottom-0 left-0 w-full bg-background shadow-md z-50",
-        className
-      )}
-    >
-      <div className="flex justify-between items-center px-4 py-2">
+    <div className={cn("fixed top-0 left-0 w-full z-50", className)}>
+      <div className="flex justify-end items-center px-4 py-2">
         <Button
           variant="ghost"
           className="p-2"
@@ -47,7 +50,7 @@ export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
       </div>
 
       {isOpen && (
-        <div className="bg-background shadow-lg">
+        <div className="absolute top-full left-0 w-full bg-background shadow-lg">
           <nav className="flex flex-col space-y-2 px-4 py-4">
             {menuItems.map((item) => (
               <Button
@@ -55,7 +58,7 @@ export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
                 key={item.href}
                 variant="ghost"
                 className="w-full justify-start text-lg"
-                onClick={() => setIsOpen(false)} // Cierra el menú al hacer clic
+                onClick={() => setIsOpen(false)}
               >
                 <Link href={item.href}>
                   <div className="flex items-center">

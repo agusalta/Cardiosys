@@ -18,6 +18,7 @@ export default function ConfiguracionPage() {
   const { fontSize, setFontSize } = useConfig();
   const [localFontSize, setLocalFontSize] = useState<number>(fontSize);
   const { toast } = useToast();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleSliderChange = (value: number[]) => {
     setLocalFontSize(value[0]);
@@ -25,7 +26,7 @@ export default function ConfiguracionPage() {
 
   const handleApplyChanges = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/config/1", {
+      const response = await fetch(`${backendUrl}/config/1`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

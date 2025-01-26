@@ -12,11 +12,12 @@ export default function PatientsPage() {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/pacientes");
+        const response = await fetch(`${backendUrl}/pacientes`);
         if (!response.ok) {
           throw new Error("Error al obtener los pacientes");
         }

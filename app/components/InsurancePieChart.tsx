@@ -34,9 +34,10 @@ const COLORS = [
 
 export default function InsurancePieChart() {
   const [data, setData] = useState<InsuranceData[]>([]);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/seguro/empresa/cant")
+    fetch(`${backendUrl}/seguro/empresa/cant`)
       .then((response) => response.json())
       .then(setData)
       .catch((error) => console.error("Error fetching insurance data:", error));

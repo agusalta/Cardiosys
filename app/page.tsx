@@ -15,8 +15,10 @@ export default function Home() {
   const [totalPacientes, setTotalPacientes] = useState(0);
   const [monthTotalPatients, setMonthTotal] = useState(0);
   const [monthTotalCollected, setMonthTotalCollected] = useState(0);
-  const { clinicToday, clinicImage, updateClinicForToday } = useStore();
+  const { clinicImage, updateClinicForToday } = useStore();
   const { activities, loading } = useActivity();
+
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     updateClinicForToday();
@@ -24,9 +26,7 @@ export default function Home() {
 
   const getTotalPacientes = async (): Promise<number> => {
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/pacientes/get/count"
-      );
+      const response = await fetch(`${backendUrl}/pacientes/get/count`);
 
       if (!response.ok) {
         throw new Error("No se pudo traer el conteo total de pacientes");
@@ -42,9 +42,7 @@ export default function Home() {
 
   const getPacientesNuevosEsteMes = async (): Promise<number> => {
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/pacientes/get/month"
-      );
+      const response = await fetch(`${backendUrl}/pacientes/get/month`);
 
       if (!response.ok) {
         throw new Error("No se pudo traer el conteo total de pacientes");
@@ -60,9 +58,7 @@ export default function Home() {
 
   const getMonthTotalCollected = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/estudio/get/count"
-      );
+      const response = await fetch(`${backendUrl}/estudio/get/count`);
       if (!response.ok) {
         throw new Error("No se pudo traer el conteo total de pacientes");
       }

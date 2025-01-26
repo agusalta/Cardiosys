@@ -36,11 +36,12 @@ export function AddClinicalHistoryEntry({
     ID_TipoEstudio: 1,
   });
   const { toast } = useToast();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/api/estudio", {
+      const response = await fetch(`${backendUrl}/estudio`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

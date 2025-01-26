@@ -4,11 +4,12 @@ import Actividad from "../types/Activity";
 export function useActivity() {
   const [activities, setActivities] = useState<Actividad[]>([]);
   const [loading, setLoading] = useState(true);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     async function fetchActivities() {
       try {
-        const response = await fetch("http://localhost:3000/api/activity");
+        const response = await fetch(`${backendUrl}/activity`);
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }

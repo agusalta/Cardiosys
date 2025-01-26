@@ -5,10 +5,11 @@ export function useTipoEstudio(id?: number) {
   const [tipoEstudio, setTipoEstudio] = useState<TipoEstudio | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   async function fetchTipoEstudios() {
     try {
-      const response = await fetch("http://localhost:3000/api/tipoEstudio");
+      const response = await fetch(`${backendUrl}/tipoEstudio`);
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
@@ -24,9 +25,7 @@ export function useTipoEstudio(id?: number) {
   useEffect(() => {
     const fetchTipoEstudio = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/tipoEstudio/${id}`
-        );
+        const response = await fetch(`${backendUrl}/tipoEstudio/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch tipo estudio");
         }

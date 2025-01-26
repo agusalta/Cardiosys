@@ -92,6 +92,7 @@ export default function ClinicalHistoryPage() {
   const [editingFiles, setEditingFiles] = useState<ArchivoEstudio[]>([]);
   const { getCostoEstudio } = useCostoEstudio();
   const [costoEstudio, setCostoEstudio] = useState<number | null>(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleGetCostoEstudio = async (ID_TipoEstudio: number) => {
     if (!id || !paciente) return;
@@ -117,7 +118,7 @@ export default function ClinicalHistoryPage() {
 
     const fetchHistorial = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/estudio/${id}`);
+        const response = await fetch(`${backendUrl}/estudio/${id}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch historial clínico");
@@ -150,7 +151,7 @@ export default function ClinicalHistoryPage() {
   useEffect(() => {
     const fetchStudyTypes = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/tipoEstudio`);
+        const response = await fetch(`${backendUrl}/tipoEstudio`);
         if (!response.ok) {
           throw new Error("Failed to fetch study types");
         }
@@ -184,9 +185,7 @@ export default function ClinicalHistoryPage() {
   useEffect(() => {
     async function fetchNombre() {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/pacientes/${id}`
-        );
+        const response = await fetch(`${backendUrl}/pacientes/${id}`);
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
@@ -229,7 +228,7 @@ export default function ClinicalHistoryPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/estudio/${deleteConfirmation.entryId}`,
+        `${backendUrl}/estudio/${deleteConfirmation.entryId}`,
         {
           method: "DELETE",
           headers: {
@@ -279,8 +278,8 @@ export default function ClinicalHistoryPage() {
       };
 
       const url = isCreating
-        ? "http://localhost:3000/api/estudio"
-        : `http://localhost:3000/api/estudio/${entryWithNombreEstudio.ID_Estudio}`;
+        ? `${backendUrl}/estudio`
+        : `${backendUrl}/estudio/${entryWithNombreEstudio.ID_Estudio}`;
       const method = isCreating ? "POST" : "PUT";
 
       const response = await fetch(url, {
@@ -305,16 +304,13 @@ export default function ClinicalHistoryPage() {
       // Si es una actualización, asociar archivos existentes al estudio
       if (!isCreating) {
         const updatedFiles = editingFiles.map((file) => file.ID_Archivo);
-        await fetch(
-          `http://localhost:3000/api/archivo/archivos/${entry.ID_Estudio}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ archivos: updatedFiles }),
-          }
-        );
+        await fetch(`${backendUrl}/archivo/archivos/${entry.ID_Estudio}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ archivos: updatedFiles }),
+        });
       }
 
       // Si hay archivos nuevos, cargarlos y asignarles el ID_Estudio

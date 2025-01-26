@@ -5,12 +5,11 @@ export function useHistorialClinico(patientId: number | undefined) {
   const [historial, setHistorial] = useState<HistorialClinico[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const getTipoEstudio = useCallback(async (id: number) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/tipoEstudio/${id}`
-      );
+      const response = await fetch(`${backendUrl}/tipoEstudio/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch tipo de estudio");
       }
@@ -32,9 +31,7 @@ export function useHistorialClinico(patientId: number | undefined) {
 
     const fetchHistorial = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/estudio/${patientId}`
-        );
+        const response = await fetch(`${backendUrl}/estudio/${patientId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch historial clínico");
         }

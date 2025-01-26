@@ -17,11 +17,12 @@ const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [fontSize, setFontSize] = useState<number>(16);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/config");
+        const response = await fetch(`${backendUrl}/config`);
         if (response.ok) {
           const data = await response.json();
           console.log(data.config.FontSize);

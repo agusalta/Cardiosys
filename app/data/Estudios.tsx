@@ -4,11 +4,12 @@ import Estudio from "../types/Estudio";
 export function useEstudios() {
   const [estudios, setEstudios] = useState<Estudio[]>([]);
   const [loading, setLoading] = useState(true);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     async function fetchPatients() {
       try {
-        const response = await fetch("http://localhost:3000/api/estudio");
+        const response = await fetch(`${backendUrl}/estudio`);
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }

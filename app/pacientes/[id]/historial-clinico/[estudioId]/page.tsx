@@ -15,12 +15,11 @@ import { getTipoEstudio } from "@/app/utils/getTipoEstudio";
 import ArchivoSelect from "./ArchivoSelect";
 
 async function getEstudio(estudioId: string) {
-  const res = await fetch(
-    `http://localhost:3000/api/estudio/search/${estudioId}`,
-    {
-      cache: "no-store",
-    }
-  );
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const res = await fetch(`${backendUrl}/estudio/search/${estudioId}`, {
+    cache: "no-store",
+  });
   if (!res.ok) {
     throw new Error("Failed to fetch estudio");
   }
@@ -28,12 +27,12 @@ async function getEstudio(estudioId: string) {
 }
 
 async function getArchivosEstudio(estudioId: string) {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   const ID_Estudio = Number(estudioId);
 
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/archivo/estudio/${ID_Estudio}`
-    );
+    const response = await fetch(`${backendUrl}/archivo/estudio/${ID_Estudio}`);
 
     if (!response.ok) {
       throw new Error("No se pudo obtener los archivos");

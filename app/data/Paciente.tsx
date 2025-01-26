@@ -4,10 +4,11 @@ import Paciente from "../types/Pacientes";
 export function usePatients() {
   const [patients, setPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   async function getPatientById(id: number) {
     try {
-      const response = await fetch(`http://localhost:3000/api/pacientes/${id}`);
+      const response = await fetch(`${backendUrl}/pacientes/${id}`);
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
@@ -21,7 +22,7 @@ export function usePatients() {
   useEffect(() => {
     async function fetchPatients() {
       try {
-        const response = await fetch("http://localhost:3000/api/pacientes");
+        const response = await fetch(`${backendUrl}/pacientes`);
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }

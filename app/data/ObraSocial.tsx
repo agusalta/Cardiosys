@@ -1,9 +1,9 @@
 export function useSeguro() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   async function getSeguroById(idSeguro: number) {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/seguro/${idSeguro}`
-      );
+      const response = await fetch(`${backendUrl}/seguro/${idSeguro}`);
 
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
@@ -19,7 +19,7 @@ export function useSeguro() {
 
   async function getAllSeguros() {
     try {
-      const response = await fetch("http://localhost:3000/api/seguro/seguros");
+      const response = await fetch(`${backendUrl}/seguro/seguros`);
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
@@ -33,9 +33,7 @@ export function useSeguro() {
 
   async function getEmpresaPrepagas() {
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/seguro/prepaga/empresas"
-      );
+      const response = await fetch(`${backendUrl}/seguro/prepaga/empresas`);
 
       if (!response.ok) {
         throw new Error("Error al obtener las empresas");

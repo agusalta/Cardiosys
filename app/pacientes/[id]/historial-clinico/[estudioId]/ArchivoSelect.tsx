@@ -18,13 +18,12 @@ import { PDFDocument } from "pdf-lib";
 export default function ArchivoViewer({ archivos }: { archivos: Archivo[] }) {
   const [selectedArchivo, setSelectedArchivo] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleArchivoChange = async (ID_Archivo: string) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/archivo/${ID_Archivo}`
-      );
+      const response = await fetch(`${backendUrl}/archivo/${ID_Archivo}`);
       if (!response.ok) {
         throw new Error(`Error al obtener el archivo: ${response.statusText}`);
       }

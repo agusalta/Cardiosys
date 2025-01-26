@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -10,12 +11,14 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const { toast } = useToast();
+  const { setIsLoggedIn } = useAuth();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/api/login", {
+      const res = await fetch(`${backendUrl}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -23,14 +26,13 @@ export default function LoginPage() {
 
       if (res.ok) {
         const data = await res.json();
-        // Set the auth cookie with the token value
         document.cookie = `auth=${data.token}; path=/; max-age=3600; SameSite=Strict; Secure`;
 
         toast({
           title: "Sesión iniciada",
           description: "Ahora puedes acceder a tus datos.",
         });
-
+        setIsLoggedIn(true);
         router.push("/");
       } else {
         const data = await res.json();

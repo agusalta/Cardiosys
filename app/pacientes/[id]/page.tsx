@@ -142,13 +142,12 @@ export default function PatientDetailsPage() {
 
   const { historial } = useHistorialClinico(patient?.ID_Paciente);
   const edad = calcularEdad(watch("FechaNacimiento"));
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/pacientes/${id}`
-        );
+        const response = await fetch(`${backendUrl}}/pacientes/${id}`);
         if (!response.ok) {
           throw new Error("Error al obtener el paciente con el id = " + id);
         }
@@ -222,7 +221,7 @@ export default function PatientDetailsPage() {
   async function handleDeletePatient() {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/pacientes/${patient?.ID_Paciente}`,
+        `${backendUrl}/pacientes/${patient?.ID_Paciente}`,
         {
           method: "DELETE",
         }
@@ -277,16 +276,13 @@ export default function PatientDetailsPage() {
         Sexo: data.Sexo,
       };
 
-      const response = await fetch(
-        `http://localhost:3000/api/pacientes/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formattedData),
-        }
-      );
+      const response = await fetch(`${backendUrl}/pacientes/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();

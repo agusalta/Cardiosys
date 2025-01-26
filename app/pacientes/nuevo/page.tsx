@@ -49,6 +49,7 @@ export default function CreatePatientForm() {
   const [seguros, setSeguros] = useState<Os[]>([]);
   const [EmpresaPrepaga, setEmpresaPrepagas] = useState<EmpresaSeguro[]>([]);
   const { getEmpresaPrepagas, getAllSeguros } = useSeguro();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleGetEmpresasPrepagas = async () => {
     try {
@@ -151,7 +152,7 @@ export default function CreatePatientForm() {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/pacientes", {
+      const response = await fetch(`${backendUrl}/pacientes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
