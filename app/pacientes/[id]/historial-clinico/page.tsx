@@ -509,6 +509,8 @@ export default function ClinicalHistoryPage() {
                               file.ID_Archivo
                             );
                           }}
+                          disabled
+                          className="text-border"
                         >
                           {file.NombreArchivo || `File ${index + 1}`}
                         </Button>
@@ -716,7 +718,7 @@ export default function ClinicalHistoryPage() {
                           currency: "ARS",
                         })}
                         disabled
-                        className="font-bold"
+                        className="font-bold text-danger"
                       />
                     </div>
                   </div>
