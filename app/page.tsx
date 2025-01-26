@@ -2,13 +2,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import PatientList from "./components/PatientList";
-import InsurancePieChart from "./components/InsurancePieChart";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import useStore from "./context/store";
 import Image from "next/image";
-import { usePatients } from "./data/Paciente";
 import ActivityList from "./components/ActivityList";
 import { useActivity } from "./data/Activity";
 
@@ -106,14 +103,11 @@ export default function Home() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Panel de Control</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Obra Social Más Usada */}
         <Card className="md:col-span-1 md:row-span-2">
           <CardHeader>
             <CardTitle>Obra Social Más Usada</CardTitle>
           </CardHeader>
-          <CardContent>
-            {/* <InsurancePieChart data={insuranceData} /> */}
-          </CardContent>
+          <CardContent></CardContent>
         </Card>
 
         {/* Resumen Mensual */}

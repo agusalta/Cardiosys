@@ -42,7 +42,7 @@ import { useTipoEstudio } from "../data/TipoEstudio";
 import type TipoEstudio from "../types/TipoEstudio";
 import { useSeguro } from "../data/ObraSocial";
 import useCostoEstudio from "../data/CostoEstudio";
-import Seguro from "../types/Seguro";
+import type Seguro from "../types/Seguro";
 
 ChartJS.register(
   CategoryScale,
@@ -168,12 +168,12 @@ export default function EstudiosPage() {
   };
 
   // Nuevo gráfico de distribución de costos
-  const costDistributionData = {
+  const studiesDistributionData = {
     labels: studiesWithCost.map((study) => study.NombreEstudio),
     datasets: [
       {
-        label: "Distribución de costos",
-        data: studiesWithCost.map((study) => study.costo),
+        label: "Cantidad de estudios",
+        data: studiesWithCost.map((study) => (study.costo > 0 ? 1 : 0)),
         backgroundColor: [
           "hsl(var(--primary))",
           "hsl(var(--secondary))",
@@ -188,7 +188,7 @@ export default function EstudiosPage() {
     ],
   };
 
-  const costDistributionOptions = {
+  const studiesDistributionOptions = {
     responsive: true,
     plugins: {
       legend: {
@@ -196,7 +196,10 @@ export default function EstudiosPage() {
       },
       title: {
         display: true,
-        text: "Distribución de costos de estudios",
+        text: `Distribución de estudios para ${
+          seguros.find((s) => s.ID_Seguro === Number(selectedInsurance))
+            ?.TipoSeguro || "seguro seleccionado"
+        }`,
       },
     },
   };
@@ -291,14 +294,14 @@ export default function EstudiosPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Distribución de Costos de Estudios</CardTitle>
+              <CardTitle>Distribución de Estudios por Tipo</CardTitle>
             </CardHeader>
             <CardContent>
               <div style={{ height: "450px", width: "100%" }}>
                 <Pie
-                  data={costDistributionData}
+                  data={studiesDistributionData}
                   options={{
-                    ...costDistributionOptions,
+                    ...studiesDistributionOptions,
                     maintainAspectRatio: false,
                   }}
                 />

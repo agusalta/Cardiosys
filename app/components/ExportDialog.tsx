@@ -179,7 +179,7 @@ const ExportDialog = ({
       );
     }
 
-    pdf.save("historial_clinico.pdf");
+    pdf.save(`Informe-${patientName}.pdf`);
     setIsLoading(false);
   };
 
