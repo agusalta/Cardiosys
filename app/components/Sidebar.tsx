@@ -9,6 +9,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import useStore from "../context/store";
+import { usePathname, useRouter } from "next/navigation";
 
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/" },
@@ -30,18 +32,35 @@ const menuItems = [
 
 export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { clinicToday } = useStore(); // Accede al estado global
+  const { clinicToday } = useStore();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleLogout = async () => {
+    await fetch("http://localhost:3000/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    document.cookie = "auth=; path=/; max-age=0; SameSite=Strict; Secure";
+
+    router.push("/login");
+  };
 
   const clinicEmoji =
     clinicToday === "Pinamed"
       ? "🌲"
       : clinicToday === "Clínica del Sol"
       ? "🌞"
-      : ""; // Determina el emoji según la clínica
+      : "";
 
   useEffect(() => {
     // Aquí puedes actualizar el estado global si es necesario.
-  }, [clinicToday]);
+  }, []); // Removed unnecessary dependency: clinicToday
+
+  if (pathname === "/login") {
+    return null;
+  }
 
   return (
     <div
@@ -52,14 +71,14 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
       )}
     >
       <div className="flex flex-col h-full py-4">
-        <div className="px-3 py-2">
+        <div className="px-3 py-2 flex flex-col h-full">
           {!isCollapsed && (
             <h2 className="mb-2 px-4 text-2xl font-semibold tracking-tight">
               CardioSys {clinicEmoji}
             </h2>
           )}
 
-          <div className="space-y-1">
+          <div className="space-y-1 flex-grow">
             {menuItems.map((item) => (
               <TooltipProvider key={item.href}>
                 <Tooltip>
@@ -88,6 +107,27 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
               </TooltipProvider>
             ))}
           </div>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-lg mt-auto",
+                    isCollapsed && "justify-center px-2"
+                  )}
+                  onClick={handleLogout}
+                >
+                  <LogOut className={cn("h-8 w-8", !isCollapsed && "mr-2")} />
+                  {!isCollapsed && <span>Cerrar Sesión</span>}
+                </Button>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">Cerrar Sesión</TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
       <Button

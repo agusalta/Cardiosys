@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Home, Users, FileText, Settings, Menu } from "lucide-react";
+import { Home, Users, FileText, Settings, Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { usePathname, useRouter } from "next/navigation";
 
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/" },
@@ -13,32 +14,68 @@ const menuItems = [
   { icon: Settings, label: "Configuración", href: "/configuracion" },
 ];
 
-export function MobileNav() {
-  const [open, setOpen] = useState(false);
+export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname(); // Hook para obtener el pathname actual
+
+  const handleLogout = async () => {
+    await fetch("http://localhost:3000/api/logout");
+    router.push("/login");
+  };
+
+  // No renderizar el MobileNav si el pathname es /login
+  if (pathname === "/login") {
+    return null;
+  }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" className="md:hidden">
-          <Menu />
-          <span className="sr-only">Toggle menu</span>
+    <div
+      className={cn(
+        "fixed bottom-0 left-0 w-full bg-background shadow-md z-50",
+        className
+      )}
+    >
+      <div className="flex justify-between items-center px-4 py-2">
+        <Button
+          variant="ghost"
+          className="p-2"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-        <nav className="flex flex-col space-y-4">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center space-x-2 text-sm font-medium"
-              onClick={() => setOpen(false)}
+      </div>
+
+      {isOpen && (
+        <div className="bg-background shadow-lg">
+          <nav className="flex flex-col space-y-2 px-4 py-4">
+            {menuItems.map((item) => (
+              <Button
+                asChild
+                key={item.href}
+                variant="ghost"
+                className="w-full justify-start text-lg"
+                onClick={() => setIsOpen(false)} // Cierra el menú al hacer clic
+              >
+                <Link href={item.href}>
+                  <div className="flex items-center">
+                    <item.icon className="h-6 w-6 mr-2" />
+                    <span>{item.label}</span>
+                  </div>
+                </Link>
+              </Button>
+            ))}
+
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-lg text-red-600"
+              onClick={handleLogout}
             >
-              <item.icon className="h-6 w-6" />
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-      </SheetContent>
-    </Sheet>
+              Cerrar Sesión
+            </Button>
+          </nav>
+        </div>
+      )}
+    </div>
   );
 }
