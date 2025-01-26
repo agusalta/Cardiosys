@@ -220,7 +220,7 @@ export default function EstudiosPage() {
   return (
     <div className="container mx-auto p-6 space-y-6 ">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-h1">Estudios Cardiológicos</h1>
+        <h1 className="text-4xl font-bold text-h1">Estudios Cardiológicos</h1>
         <Select onValueChange={setSelectedInsurance} value={selectedInsurance}>
           <SelectTrigger className="w-[210px]">
             <SelectValue placeholder="Seleccionar Obra Social" />
