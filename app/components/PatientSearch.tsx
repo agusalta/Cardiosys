@@ -1,20 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import type Paciente from "../types/Pacientes";
 
 interface PatientSearchProps {
-  onSearch: (query: string) => void;
+  patients: Paciente[];
+  onFilteredPatientsChange: (filteredPatients: Paciente[]) => void;
 }
 
-export function PatientSearch({ onSearch }: PatientSearchProps) {
+// Función para eliminar acentos
+function removeAccents(str: string): string {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+export function PatientSearch({
+  patients,
+  onFilteredPatientsChange,
+}: PatientSearchProps) {
   const [query, setQuery] = useState("");
 
+  const filteredPatients = useMemo(() => {
+    const normalizedQuery = removeAccents(query.toLowerCase());
+    return patients.filter((patient) =>
+      removeAccents(
+        `${patient.Nombre} ${patient.Apellido} ${patient.DNI}`.toLowerCase()
+      ).includes(normalizedQuery)
+    );
+  }, [query, patients]);
+
+  useEffect(() => {
+    onFilteredPatientsChange(filteredPatients);
+  }, [filteredPatients, onFilteredPatientsChange]);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuery = e.target.value;
-    setQuery(newQuery);
-    onSearch(newQuery);
+    setQuery(e.target.value);
   };
 
   return (
@@ -23,7 +44,7 @@ export function PatientSearch({ onSearch }: PatientSearchProps) {
       <Input
         type="search"
         placeholder="Buscar por DNI, Nombre o Apellido"
-        className="pl-8 w-96 italic "
+        className="pl-8 w-full md:w-96 italic"
         value={query}
         onChange={handleSearch}
       />

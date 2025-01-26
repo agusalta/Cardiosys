@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -19,23 +19,36 @@ interface PatientListProps {
 
 export default function PatientList({ patients }: PatientListProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [displayedPatients, setDisplayedPatients] = useState<Paciente[]>([]);
   const patientsPerPage = 5;
+
+  const totalPages = useMemo(
+    () => Math.ceil(patients.length / patientsPerPage),
+    [patients.length]
+  );
+
+  useEffect(() => {
+    const indexOfLastPatient = currentPage * patientsPerPage;
+    const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
+    setDisplayedPatients(
+      patients.slice(indexOfFirstPatient, indexOfLastPatient)
+    );
+  }, [patients, currentPage, patientsPerPage]);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage((prevPage) => {
+      const newPage = Math.max(1, Math.min(pageNumber, totalPages));
+      return newPage;
+    });
+  };
+
+  const handleFirstPage = () => {
+    setCurrentPage(1);
+  };
 
   if (!patients || patients.length === 0) {
     return <p>No hay pacientes para mostrar.</p>;
   }
-
-  const indexOfLastPatient = currentPage * patientsPerPage;
-  const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
-  const currentPatients = patients.slice(
-    indexOfFirstPatient,
-    indexOfLastPatient
-  );
-  const totalPages = Math.ceil(patients.length / patientsPerPage);
-
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
 
   return (
     <div>
@@ -50,7 +63,7 @@ export default function PatientList({ patients }: PatientListProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {currentPatients.map((patient) => (
+          {displayedPatients.map((patient) => (
             <TableRow key={patient.ID_Paciente}>
               <TableCell className="capitalize">{patient.Nombre}</TableCell>
               <TableCell className="capitalize">{patient.Apellido}</TableCell>
@@ -63,7 +76,7 @@ export default function PatientList({ patients }: PatientListProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="font-bold border-2 bg-background button-text"
+                    className="font-bold border-2 rounded-lg button-text"
                   >
                     Ver Detalles
                   </Button>
@@ -75,17 +88,24 @@ export default function PatientList({ patients }: PatientListProps) {
       </Table>
       <div className="flex justify-between items-center mt-4">
         <p className="text-sm text-muted-foreground">
-          Mostrando {indexOfFirstPatient + 1} -{" "}
-          {Math.min(indexOfLastPatient, patients.length)} de {patients.length}{" "}
-          pacientes
+          Mostrando {(currentPage - 1) * patientsPerPage + 1} -{" "}
+          {Math.min(currentPage * patientsPerPage, patients.length)} de{" "}
+          {patients.length} pacientes
         </p>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
+            onClick={handleFirstPage}
+            disabled={currentPage === 1}
+          >
+            Primera Página
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="font-bold border-2 bg-background button-text"
           >
             Anterior
           </Button>
@@ -94,7 +114,6 @@ export default function PatientList({ patients }: PatientListProps) {
             size="sm"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="font-bold border-2 bg-background button-text"
           >
             Siguiente
           </Button>

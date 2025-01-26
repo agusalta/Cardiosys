@@ -6,11 +6,11 @@ import { PatientSearch } from "../components/PatientSearch";
 import PatientList from "../components/PatientList";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Paciente from "../types/Pacientes";
+import type Paciente from "../types/Pacientes";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Paciente[]>([]);
-  const [originalPatients, setOriginalPatients] = useState<Paciente[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function PatientsPage() {
         }
         const data = await response.json();
         setPatients(data);
-        setOriginalPatients(data);
+        setFilteredPatients(data);
       } catch (error) {
         console.error("Error al cargar los pacientes:", error);
       } finally {
@@ -33,19 +33,8 @@ export default function PatientsPage() {
     fetchPatients();
   }, []);
 
-  const handleSearch = (query: string) => {
-    if (query.trim() === "") {
-      setPatients(originalPatients);
-    } else {
-      const filteredPatients = originalPatients.filter((patient) => {
-        const matchesQuery =
-          patient.Nombre.toLowerCase().includes(query.toLowerCase()) ||
-          patient.Apellido.toLowerCase().includes(query.toLowerCase()) ||
-          patient.DNI.includes(query);
-        return matchesQuery;
-      });
-      setPatients(filteredPatients);
-    }
+  const handleFilteredPatientsChange = (newFilteredPatients: Paciente[]) => {
+    setFilteredPatients(newFilteredPatients);
   };
 
   if (loading) {
@@ -57,7 +46,10 @@ export default function PatientsPage() {
       <h1 className="text-4xl font-bold text-h1">Pacientes</h1>
       <div className="flex justify-between items-center space-x-4">
         <div className="flex items-center space-x-4 w-full sm:w-auto">
-          <PatientSearch onSearch={(query) => handleSearch(query)} />
+          <PatientSearch
+            patients={patients}
+            onFilteredPatientsChange={handleFilteredPatientsChange}
+          />
         </div>
         <Button asChild className="button-text bg-button font-semibold">
           <Link href="/pacientes/nuevo" className="flex items-center gap-2">
@@ -68,7 +60,7 @@ export default function PatientsPage() {
           </Link>
         </Button>
       </div>
-      <PatientList patients={patients} limit={Infinity} />
+      <PatientList patients={filteredPatients} />
     </div>
   );
 }
