@@ -207,13 +207,15 @@ export default function CreatePatientForm() {
     <>
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Crear Nuevo Paciente</CardTitle>
+          <CardTitle className="text-h1 text-2xl">
+            Crear Nuevo Paciente
+          </CardTitle>
           <CardDescription>
             Ingrese los datos del nuevo paciente en el formulario a
             continuación.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="text-paragraph">
           <form onSubmit={handleSubmit} className="space-y-8">
             <Tabs defaultValue="personal" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
@@ -460,7 +462,7 @@ export default function CreatePatientForm() {
                 </div>
               </TabsContent>
             </Tabs>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full button-text font-bold">
               Crear Paciente
             </Button>
           </form>
