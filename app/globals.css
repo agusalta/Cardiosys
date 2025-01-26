@@ -41,6 +41,7 @@
 :root {
   font-size: 16px;
   --background: #fffffe;
+  --foreground: #272343;
   --h1-color: #272343;
   --paragraph: #2d334a;
   --button: #ffd803;
@@ -48,6 +49,47 @@
   --border: #272343;
   --tertiary: #bae8e8;
   --danger: #e74c3c;
+  --popover: #fffffe;
+  --popover-foreground: #272343;
+  --primary: #ffd803;
+  --primary-foreground: #272343;
+  --secondary: #bae8e8;
+  --secondary-foreground: #272343;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #bae8e8;
+  --accent-foreground: #272343;
+  --destructive: #e74c3c;
+  --destructive-foreground: #fffffe;
+  --card: #fffffe;
+  --card-foreground: #272343;
+}
+
+/* Modo oscuro */
+.dark {
+  --background: #272343;
+  --foreground: #fffffe;
+  --h1-color: #fffffe;
+  --paragraph: #bae8e8;
+  --button: #ffd803;
+  --button-text: #272343;
+  --border: #ffd803;
+  --tertiary: #2d334a;
+  --danger: #e74c3c;
+  --popover: #272343;
+  --popover-foreground: #fffffe;
+  --primary: #ffd803;
+  --primary-foreground: #272343;
+  --secondary: #2d334a;
+  --secondary-foreground: #fffffe;
+  --muted: #374151;
+  --muted-foreground: #9ca3af;
+  --accent: #2d334a;
+  --accent-foreground: #fffffe;
+  --destructive: #e74c3c;
+  --destructive-foreground: #fffffe;
+  --card: #272343;
+  --card-foreground: #fffffe;
 }
 
 /* Aplicar Regular como predeterminado */

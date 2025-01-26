@@ -181,7 +181,6 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Clínica de Hoy */}
         <Card className="md:col-span-1  border-2 rounded-lg">
           <CardHeader>
             <CardTitle className="text-h1 text-2xl ">Clínica de Hoy:</CardTitle>
@@ -196,7 +195,7 @@ export default function Home() {
                 height={200}
               />
             ) : (
-              <p>No hay imagen disponible.</p>
+              <p>Ninguna, buen fin de semana!</p>
             )}
           </CardContent>
         </Card>
