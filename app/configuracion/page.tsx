@@ -71,7 +71,6 @@ export default function ConfiguracionPage() {
               value={[localFontSize]}
               onValueChange={handleSliderChange}
               className="w-full h-2 bg-gray-200 rounded-lg"
-              thumbClassName="w-4 h-4 bg-blue-500 rounded-full shadow-lg"
             />
           </div>
         </CardContent>

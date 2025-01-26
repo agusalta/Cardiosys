@@ -268,7 +268,7 @@ export default function EstudiosPage() {
                           )
                         }
                         disabled={!selectedInsurance}
-                        className="w-25 text-left"
+                        className="w-24 text-left"
                       />
                     </TableCell>
                     <TableCell className="text-right">
