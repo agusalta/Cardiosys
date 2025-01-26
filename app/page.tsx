@@ -8,6 +8,7 @@ import useStore from "./context/store";
 import Image from "next/image";
 import ActivityList from "./components/ActivityList";
 import { useActivity } from "./data/Activity";
+import InsurancePieChart from "./components/InsurancePieChart";
 
 export default function Home() {
   const [showTotal, setShowTotal] = useState(true);
@@ -100,26 +101,23 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Panel de Control</h1>
+    <div className="space-y-6 bg-background">
+      <h1 className="text-4xl font-extrabold text-h1 h1">Panel de Control</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1 md:row-span-2">
-          <CardHeader>
-            <CardTitle>Obra Social Más Usada</CardTitle>
-          </CardHeader>
-          <CardContent></CardContent>
+        <Card className="md:col-span-1 md:row-span-2 flex justify-center items-center border rounded-lg">
+          <InsurancePieChart />
         </Card>
 
         {/* Resumen Mensual */}
-        <Card className="md:col-span-2">
+        <Card className="md:col-span-2  border-2 rounded-lg">
           <CardHeader>
-            <CardTitle>Resumen Mensual</CardTitle>
+            <CardTitle className="text-h1 text-2xl ">Resumen Mensual</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col md:grid md:grid-cols-3 md:gap-2">
+          <CardContent className="flex flex-col md:grid md:grid-cols-3 md:gap-2 text-paragraph ">
             <div className="mb-4 md:mb-0">
               <h3 className="text-lg font-semibold">Pacientes Nuevos</h3>
-              <p className="text-3xl font-bold">{monthTotalPatients}</p>
-              <p className="text-sm text-muted-foreground">Este mes</p>
+              <p className="text-2xl font-bold">{monthTotalPatients}</p>
+              <p className="text-sm text-muted-foreground italic">Este mes</p>
             </div>
             <div className="relative mb-4 md:mb-0">
               <h3 className="text-lg font-semibold flex items-center">
@@ -136,7 +134,7 @@ export default function Home() {
                   )}
                 </button>
               </h3>
-              <p className="text-3xl font-bold">
+              <p className="text-2xl font-bold">
                 {showTotal
                   ? "******"
                   : `${monthTotalCollected.toLocaleString("es-AR", {
@@ -145,30 +143,38 @@ export default function Home() {
                       minimumFractionDigits: 0,
                     })}`}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm  text-muted-foreground italic">
                 Facturas particulares
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold">Total Pacientes</h3>
-              <p className="text-3xl font-bold">{totalPacientes}</p>
+              <p className="text-2xl font-bold">{totalPacientes}</p>
+              <p className="text-sm text-muted-foreground italic">
+                Desde el inicio
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Visitas Recientes */}
-        <Card className="md:col-span-2 md:row-span-2">
+        <Card className="md:col-span-2 md:row-span-2 border-2 rounded-lg">
           <CardHeader>
-            <CardTitle>Visitas Recientes</CardTitle>
+            <CardTitle className="text-h1 text-2xl ">
+              Visitas Recientes
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <p>Cargando actividad reciente...</p>
+              <p className="text-paragraph">Cargando actividad reciente...</p>
             ) : (
               <ActivityList activities={activities} limit={5} />
             )}
             <div className="mt-4">
-              <Link href="/pacientes" className="text-blue-500 hover:underline">
+              <Link
+                href="/pacientes"
+                className="text-blue-700 text-muted-foreground italic hover:underline"
+              >
                 Ver todos los pacientes
               </Link>
             </div>
@@ -176,14 +182,14 @@ export default function Home() {
         </Card>
 
         {/* Clínica de Hoy */}
-        <Card className="md:col-span-1">
+        <Card className="md:col-span-1  border-2 rounded-lg">
           <CardHeader>
-            <CardTitle>Clínica de Hoy: {clinicToday}</CardTitle>
+            <CardTitle className="text-h1 text-2xl ">Clínica de Hoy:</CardTitle>
           </CardHeader>
           <CardContent>
             {clinicImage ? (
               <Image
-                src={clinicImage}
+                src={clinicImage || "/placeholder.svg"}
                 alt="Clínica de Hoy"
                 className="object-cover mx-auto"
                 width={200}

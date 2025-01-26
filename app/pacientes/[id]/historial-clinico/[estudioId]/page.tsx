@@ -77,16 +77,19 @@ export default function EstudioDetailPage({
           href={`/pacientes/${resolvedParams.id}/historial-clinico`}
           passHref
         >
-          <Button variant="outline" className="gap-2">
+          <Button
+            variant="outline"
+            className="gap-2 font-bold border-2 rounded-lg button-text bg-button"
+          >
             <ArrowLeft className="h-4 w-4" />
             Volver al Historial Clínico
           </Button>
         </Link>
       </div>
 
-      <h1 className="text-3xl font-bold mb-6">Detalle del Estudio</h1>
+      <h1 className="text-3xl font-bold mb-6 text-h1">Detalle del Estudio</h1>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 text-paragraph">
         <Card className="md:col-span-2 border border-gray-200 rounded-lg shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="text-2xl font-semibold text-gray-800">

@@ -54,12 +54,12 @@ export default function PatientsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Pacientes</h1>
+      <h1 className="text-4xl font-bold text-h1">Pacientes</h1>
       <div className="flex justify-between items-center space-x-4">
         <div className="flex items-center space-x-4 w-full sm:w-auto">
           <PatientSearch onSearch={(query) => handleSearch(query)} />
         </div>
-        <Button asChild>
+        <Button asChild className="button-text bg-button font-semibold">
           <Link href="/pacientes/nuevo" className="flex items-center gap-2">
             <AddIcon className="text-xl md:text-2xl" />
             <span className="hidden md:inline text-xs sm:text-sm">

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { HistorialClinico } from "@/app/data/HistorialClinico";
+import HistorialClinico from "../types/HistorialClinico";
 
 interface AddClinicalHistoryEntryProps {
   isOpen: boolean;
@@ -31,7 +31,7 @@ export function AddClinicalHistoryEntry({
     Fecha: new Date().toISOString().split("T")[0],
     Asunto: "",
     Observacion: "",
-    Factura: null,
+    Factura: undefined,
     ID_Paciente: patientId,
     ID_TipoEstudio: 1,
   });
@@ -132,7 +132,10 @@ export function AddClinicalHistoryEntry({
                 type="text"
                 value={newEntry.Factura || ""}
                 onChange={(e) =>
-                  setNewEntry({ ...newEntry, Factura: e.target.value || null })
+                  setNewEntry({
+                    ...newEntry,
+                    Factura: Number(e.target.value) || undefined,
+                  })
                 }
                 className="col-span-3"
               />

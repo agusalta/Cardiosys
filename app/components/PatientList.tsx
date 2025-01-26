@@ -28,7 +28,7 @@ export default function PatientList({
   const displayedPatients = limit ? patients.slice(0, limit) : patients;
 
   return (
-    <Table>
+    <Table className="text-paragraph">
       <TableHeader>
         <TableRow>
           <TableHead>Nombre</TableHead>
@@ -49,7 +49,11 @@ export default function PatientList({
             </TableCell>
             <TableCell>
               <Link href={`/pacientes/${patient.ID_Paciente}`} passHref>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="font-bold border-2 rounded-lg button-text"
+                >
                   Ver Detalles
                 </Button>
               </Link>

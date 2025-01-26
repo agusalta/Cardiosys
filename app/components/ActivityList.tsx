@@ -28,7 +28,7 @@ export default function ActivityList({
   const displayedActivities = limit ? activities.slice(0, limit) : activities;
 
   return (
-    <Table>
+    <Table className=" text-paragraph">
       <TableHeader>
         <TableRow>
           <TableHead>Tipo de Actividad</TableHead>
@@ -56,7 +56,11 @@ export default function ActivityList({
                 }
                 passHref
               >
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="font-bold border-2 rounded-lg button-text"
+                >
                   Ver Detalles
                 </Button>
               </Link>

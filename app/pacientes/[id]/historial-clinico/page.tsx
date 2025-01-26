@@ -418,7 +418,7 @@ export default function ClinicalHistoryPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold">
+      <h1 className="text-3xl font-bold text-h1">
         Historial Clínico de {nombreCompleto}
       </h1>
 
@@ -435,14 +435,23 @@ export default function ClinicalHistoryPage() {
             variant="outline"
             onClick={() => setSearchQuery("")}
             title="Limpiar búsqueda"
+            className="font-bold border-2 rounded-lg button-text bg-background"
           >
             <SearchOffIcon className="text-xl md:text-2xl" />
           </Button>
-          <Button onClick={handleCreate} title="Crear nuevo estudio">
+          <Button
+            onClick={handleCreate}
+            title="Crear nuevo estudio"
+            className="font-bold border-2 rounded-lg button-text bg-button"
+          >
             <AddIcon className="text-xl md:text-2xl" />
             <span className="hidden md:inline">Nuevo Estudio</span>
           </Button>
-          <Button onClick={handleExportar} title="Exportar historial como PDF">
+          <Button
+            onClick={handleExportar}
+            title="Exportar historial como PDF"
+            className="font-bold border-2 rounded-lg button-text bg-button"
+          >
             <PictureAsPdfIcon className="text-xl md:text-2xl" />
             <span className="hidden md:inline">Exportar Historial</span>
           </Button>
@@ -451,10 +460,10 @@ export default function ClinicalHistoryPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Estudios</CardTitle>
+          <CardTitle className="text-2xl">Estudios</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table className="text-paragraph">
             <TableHeader>
               <TableRow>
                 <TableHead>Fecha</TableHead>
@@ -512,6 +521,7 @@ export default function ClinicalHistoryPage() {
                         <Link
                           href={`/pacientes/${id}/historial-clinico/${entry.ID_Estudio}`}
                           title="Ver"
+                          className="font-bold border-2 rounded-lg button-text bg-background"
                         >
                           <FileOpen className="w-4 h-4" />
                         </Link>
@@ -521,16 +531,18 @@ export default function ClinicalHistoryPage() {
                         size="sm"
                         onClick={() => handleEdit(entry)}
                         title="Editar"
+                        className="font-bold border-2 rounded-lg button-text bg-tertiary"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-4 h-4 text-black" />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleDelete(entry.ID_Estudio)}
                         title="Eliminar"
+                        className="font-bold border-2 rounded-lg button-text bg-danger"
                       >
-                        <Delete className="w-4 h-4" />
+                        <Delete className="w-4 h-4 text-background" />
                       </Button>
                     </div>
                   </TableCell>
@@ -553,7 +565,7 @@ export default function ClinicalHistoryPage() {
           }
         }}
       >
-        <DialogContent className="max-w-[500px] sm:max-w-[650px]">
+        <DialogContent className="max-w-[600px] sm:max-w-[650px] max-h-[80vh] overflow-y-auto text-paragraph">
           <DialogHeader>
             <DialogTitle>
               {isCreating
@@ -726,8 +738,10 @@ export default function ClinicalHistoryPage() {
                           variant="destructive"
                           size="sm"
                           onClick={(e) => handleDeleteArchive(file.ID_Archivo)}
+                          className="font-bold border-2 rounded-lg button-text bg-danger"
+                          title="Borrar archivo para siempre"
                         >
-                          <DeleteForever className="w-4 h-4" />
+                          <DeleteForever className="w-4 h-4 text-background" />
                         </Button>
                       </div>
                     ))}
@@ -755,11 +769,15 @@ export default function ClinicalHistoryPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setIsDialogOpen(false)}
+                  className="font-bold border-2 rounded-lg button-text bg-background"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">
-                  {isCreating ? "Crear" : "Guardar cambios"}
+                <Button
+                  type="submit"
+                  className="font-bold border-2 rounded-lg button-text bg-button"
+                >
+                  {isCreating ? "Cargar estudio" : "Guardar cambios"}
                 </Button>
               </DialogFooter>
             </form>
@@ -773,7 +791,7 @@ export default function ClinicalHistoryPage() {
           setDeleteConfirmation({ isOpen, entryId: null });
         }}
       >
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] text-paragraph">
           <DialogHeader>
             <DialogTitle>Confirmar eliminación</DialogTitle>
             <DialogDescription>
@@ -791,7 +809,12 @@ export default function ClinicalHistoryPage() {
             >
               Cancelar
             </Button>
-            <Button type="button" variant="destructive" onClick={confirmDelete}>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={confirmDelete}
+              className="font-bold border-2 rounded-lg text-background bg-danger"
+            >
               Eliminar
             </Button>
           </DialogFooter>

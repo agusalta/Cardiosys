@@ -7,8 +7,7 @@ export const patientSchema = z.object({
   Email: z.string().email("Ingrese un email válido"),
   Telefono: z
     .string()
-    .regex(/^[\d\s]{12,20}$/, "El teléfono debe tener entre 12 y 20 dígitos"),
-
+    .regex(/^[\d\s]{1,20}$/, "El teléfono debe tener entre 1 y 20 dígitos"),
   FechaNacimiento: z.string().refine((date) => {
     const today = new Date();
     const birthDate = new Date(date);

@@ -33,7 +33,7 @@ export function MobileNav() {
               className="flex items-center space-x-2 text-sm font-medium"
               onClick={() => setOpen(false)}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-6 w-6" />
               <span>{item.label}</span>
             </Link>
           ))}

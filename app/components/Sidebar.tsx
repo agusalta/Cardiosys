@@ -54,7 +54,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
       <div className="flex flex-col h-full py-4">
         <div className="px-3 py-2">
           {!isCollapsed && (
-            <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+            <h2 className="mb-2 px-4 text-2xl font-semibold tracking-tight">
               CardioSys {clinicEmoji}
             </h2>
           )}
@@ -68,13 +68,13 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
                       asChild
                       variant="ghost"
                       className={cn(
-                        "w-full justify-start",
+                        "w-full justify-start text-lg",
                         isCollapsed && "justify-center px-2"
                       )}
                     >
                       <Link href={item.href}>
                         <item.icon
-                          className={cn("h-4 w-4", !isCollapsed && "mr-2")}
+                          className={cn("h-8 w-8", !isCollapsed && "mr-2")}
                         />
                         {!isCollapsed && <span>{item.label}</span>}
                       </Link>

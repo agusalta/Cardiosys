@@ -315,20 +315,28 @@ export default function PatientDetailsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-4 sm:space-y-0">
-        <h1 className="text-3xl font-bold">Detalles del Paciente</h1>
+        <h1 className="text-3xl font-bold text-h1">Detalles del Paciente</h1>
         <div className="flex flex-wrap justify-center sm:justify-end items-center gap-2 sm:space-x-4">
-          <Button onClick={handleEditToggle} variant="outline">
-            <EditIcon className="text-xl md:text-2xl" />
+          <Button
+            onClick={handleEditToggle}
+            variant="outline"
+            className="font-bold border-2 rounded-lg button-text bg-background "
+          >
+            {!isEditing && <EditIcon className="text-xl md:text-2xl" />}
             {isEditing ? "Cancelar" : "Editar"}
           </Button>
           {isEditing && (
-            <Button onClick={handleSubmit(onSubmit)} variant="default">
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              variant="default"
+              className="font-bold border-2 rounded-lg button-text bg-button "
+            >
               Guardar
             </Button>
           )}
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="font-bold border-2 rounded-lg text-background bg-danger">
                 <Delete className="w-4 h-4" />
                 Eliminar Paciente
               </Button>
@@ -349,6 +357,7 @@ export default function PatientDetailsPage() {
                   onClick={handleDeletePatient}
                   disabled={isDeleting}
                   variant="destructive"
+                  className="font-bold border-2 rounded-lg text-background bg-danger"
                 >
                   {isDeleting ? "Eliminando..." : "Confirmar Eliminación"}
                 </Button>
@@ -358,12 +367,12 @@ export default function PatientDetailsPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="text-paragraph">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <Card className="w-full">
               <CardHeader>
-                <CardTitle>Datos del paciente</CardTitle>
+                <CardTitle className="text-2xl">Datos del paciente</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -520,7 +529,7 @@ export default function PatientDetailsPage() {
 
             <Card className="w-full">
               <CardHeader>
-                <CardTitle>Signos Vitales</CardTitle>
+                <CardTitle className="text-2xl">Signos Vitales</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -689,7 +698,9 @@ export default function PatientDetailsPage() {
           <div className="space-y-6">
             <Card className="w-full">
               <CardHeader>
-                <CardTitle>Información Adicional</CardTitle>
+                <CardTitle className="text-2xl">
+                  Información Adicional
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -826,13 +837,18 @@ export default function PatientDetailsPage() {
             <Card className="w-full h-fit">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle>Historial Clínico</CardTitle>
-                  <Button asChild variant="outline" size="sm">
+                  <CardTitle className="text-2xl">Historial Clínico</CardTitle>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="font-bold border-2 rounded-lg button-text bg-button"
+                  >
                     <Link href={`/pacientes/${id}/historial-clinico`}>
+                      <History className="md:mr-0" />
                       <span className="hidden md:inline mr-2">
                         Ver Historial Completo
                       </span>
-                      <History className="md:mr-0" />
                     </Link>
                   </Button>
                 </div>

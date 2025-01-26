@@ -45,15 +45,17 @@ const ExportDialog = ({
       setCantidadEstudios(filtrados.length);
       setError(null);
 
-      const patientId = filtrados[0].ID_Paciente;
-      getPatientById(patientId).then(setPatient);
-      console.log(patient);
+      if (filtrados.length > 0) {
+        const patientId = filtrados[0].ID_Paciente;
+        getPatientById(patientId).then(setPatient);
+      } else {
+        setPatient(null); // Si no hay estudios, reseteamos el paciente
+      }
     } else {
       setEstudiosFiltrados([]);
       setCantidadEstudios(null);
     }
   }, [fechaDesde, fechaHasta, historial]);
-
   const handleExport = () => {
     if (!fechaDesde || !fechaHasta) {
       setError("Por favor selecciona ambas fechas para filtrar.");
@@ -132,7 +134,7 @@ const ExportDialog = ({
       format(new Date(estudio.Fecha), "dd/MM/yyyy"),
       estudio.Asunto,
       estudio.NombreTipoEstudio,
-      `$${estudio.Factura.toFixed(2)}`,
+      `$${estudio.Factura?.toFixed(2)}`,
       estudio.Observacion,
     ]);
     (pdf as any).autoTable({
@@ -237,7 +239,7 @@ const ExportDialog = ({
                 id="fechaDesde"
                 value={fechaDesde ? format(fechaDesde, "yyyy-MM-dd") : ""}
                 onChange={(e) => handleDateChange(e, setFechaDesde)}
-                className="w-full"
+                className="w-full font-bold border-2 rounded-lg button-text bg-background"
               />
             </div>
             <div className="flex-1">
@@ -252,25 +254,38 @@ const ExportDialog = ({
                 id="fechaHasta"
                 value={fechaHasta ? format(fechaHasta, "yyyy-MM-dd") : ""}
                 onChange={(e) => handleDateChange(e, setFechaHasta)}
-                className="w-full"
+                className="w-full font-bold border-2 rounded-lg button-text bg-background"
               />
             </div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={setToday} variant="outline" className="flex-1">
+            <Button
+              onClick={setToday}
+              variant="outline"
+              className="flex-1 font-bold border-2 rounded-lg button-text bg-background"
+            >
               Hoy
             </Button>
-            <Button onClick={setLastWeek} variant="outline" className="flex-1">
+            <Button
+              onClick={setLastWeek}
+              variant="outline"
+              className="flex-1 font-bold border-2 rounded-lg button-text bg-background"
+            >
               Última semana
             </Button>
-            <Button onClick={setLastMonth} variant="outline" className="flex-1">
+            <Button
+              onClick={setLastMonth}
+              variant="outline"
+              className="flex-1 font-bold border-2 rounded-lg button-text bg-background"
+            >
               Último mes
             </Button>
           </div>
           <Button
             onClick={handleExport}
-            className="w-full mt-4"
             disabled={isLoading || cantidadEstudios === 0}
+            title="Exportar historial como PDF"
+            className="w-full mt-4 font-bold border-2 rounded-lg button-text bg-button"
           >
             {isLoading ? "Exportando..." : "Exportar"}
           </Button>
@@ -278,10 +293,12 @@ const ExportDialog = ({
             <p className="text-center text-sm mt-2 text-red-500">{error}</p>
           )}
           {cantidadEstudios !== null && !error && (
-            <p className="text-center text-sm mt-2">
+            <p className="text-center text-sm mt-2 text-black text-border font-bold italic">
               {cantidadEstudios === 0
                 ? "No se encontraron estudios en este rango."
-                : `Se encontraron ${cantidadEstudios} estudio(s).`}
+                : cantidadEstudios === 1
+                ? "Se encontró un estudio."
+                : `Se encontraron ${cantidadEstudios} estudios.`}
             </p>
           )}
         </div>

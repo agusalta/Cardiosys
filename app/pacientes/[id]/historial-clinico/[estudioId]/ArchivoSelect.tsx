@@ -55,7 +55,7 @@ export default function ArchivoViewer({ archivos }: { archivos: Archivo[] }) {
   }, [selectedArchivo]);
 
   return (
-    <div className="container mx-auto p-4 h-screen flex flex-col">
+    <div className="container mx-auto p-4 h-screen flex flex-col text-paragraph">
       <Card className="mb-4 text-black border-none shadow-none">
         <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4 ">
           <Label
@@ -67,11 +67,11 @@ export default function ArchivoViewer({ archivos }: { archivos: Archivo[] }) {
           <Select onValueChange={handleArchivoChange}>
             <SelectTrigger
               id="archivoSelect"
-              className="w-full sm:w-64 bg-white text-black"
+              className="w-full sm:w-64 bg-white text-black border border-gray-300 rounded-md" // Fondo blanco y borde gris
             >
               <SelectValue placeholder="Elegir archivo" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white text-black">
               {archivos.map((a: Archivo) => (
                 <SelectItem key={a.ID_Archivo} value={String(a.ID_Archivo)}>
                   {a.NombreArchivo}
@@ -82,7 +82,7 @@ export default function ArchivoViewer({ archivos }: { archivos: Archivo[] }) {
         </CardContent>
       </Card>
 
-      <Card className="flex-grow overflow-hidden">
+      <Card className="flex-grow overflow-hidden text-paragraph">
         <CardContent className="p-0 h-full relative">
           <AnimatePresence mode="wait">
             {loading ? (

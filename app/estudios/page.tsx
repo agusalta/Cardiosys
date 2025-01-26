@@ -143,13 +143,35 @@ export default function EstudiosPage() {
     }
   };
 
+  const COLORS = [
+    "#3498db", // Bright blue
+    "#e74c3c", // Soft red
+    "#2ecc71", // Emerald green
+    "#f39c12", // Orange
+    "#9b59b6", // Amethyst purple
+    "#1abc9c", // Turquoise
+    "#34495e", // Dark blue gray
+    "#d35400", // Pumpkin orange
+    "#16a085", // Sea green
+    "#f1c40f", // Yellow
+    "#e67e22", // Carrot orange
+    "#95a5a6", // Concrete gray
+    "#2c3e50", // Midnight blue
+    "#8e44ad", // Purple
+    "#27ae60", // Green
+    "#2980b9", // Bright blue
+    "#8e44ad", // Purple
+    "#c0392b", // Strong red
+    "#f4c542", // Light yellow
+  ];
+
   const chartData = {
     labels: studiesWithCost.map((study) => study.NombreEstudio),
     datasets: [
       {
         label: "Costo de estudios",
         data: studiesWithCost.map((study) => study.costo),
-        backgroundColor: "hsl(var(--primary))",
+        backgroundColor: COLORS,
       },
     ],
   };
@@ -174,16 +196,7 @@ export default function EstudiosPage() {
       {
         label: "Cantidad de estudios",
         data: studiesWithCost.map((study) => (study.costo > 0 ? 1 : 0)),
-        backgroundColor: [
-          "hsl(var(--primary))",
-          "hsl(var(--secondary))",
-          "hsl(var(--accent))",
-          "hsl(var(--muted))",
-          "hsl(var(--card))",
-          "hsl(var(--card-foreground))",
-          "hsl(var(--popover))",
-          "hsl(var(--popover-foreground))",
-        ],
+        backgroundColor: COLORS,
       },
     ],
   };
@@ -205,9 +218,9 @@ export default function EstudiosPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-6 space-y-6 ">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Estudios Cardiológicos</h1>
+        <h1 className="text-3xl font-bold text-h1">Estudios Cardiológicos</h1>
         <Select onValueChange={setSelectedInsurance} value={selectedInsurance}>
           <SelectTrigger className="w-[210px]">
             <SelectValue placeholder="Seleccionar Obra Social" />
@@ -223,10 +236,10 @@ export default function EstudiosPage() {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-paragraph">
         <Card>
           <CardHeader>
-            <CardTitle>Lista de Estudios</CardTitle>
+            <CardTitle className="text-2xl">Lista de Estudios</CardTitle>
             <CardDescription>
               Gestiona los costos de los estudios cardiológicos
             </CardDescription>
@@ -236,7 +249,7 @@ export default function EstudiosPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Nombre del Estudio</TableHead>
-                  <TableHead className="text-right">Costo</TableHead>
+                  <TableHead className="text-center">Costo</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -255,7 +268,7 @@ export default function EstudiosPage() {
                           )
                         }
                         disabled={!selectedInsurance}
-                        className="w-24 text-right"
+                        className="w-25 text-left"
                       />
                     </TableCell>
                     <TableCell className="text-right">
@@ -263,7 +276,7 @@ export default function EstudiosPage() {
                         onClick={() => handleUpdateCost(study)}
                         size="sm"
                         variant="outline"
-                        className="w-full sm:w-auto"
+                        className="w-full sm:w-auto button-text bg-button font-bold"
                         disabled={!selectedInsurance}
                       >
                         <SaveIcon className="w-4 h-4 sm:mr-2" />
