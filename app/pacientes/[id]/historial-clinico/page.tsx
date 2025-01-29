@@ -146,7 +146,7 @@ export default function ClinicalHistoryPage() {
     };
 
     fetchHistorial();
-  }, [backendUrl, id]);
+  }, [id]);
 
   useEffect(() => {
     const fetchStudyTypes = async () => {
@@ -180,7 +180,7 @@ export default function ClinicalHistoryPage() {
     if (historial.length > 0) {
       fetchFiles();
     }
-  }, [historial, backendUrl]);
+  }, [historial]);
 
   useEffect(() => {
     async function fetchNombre() {
@@ -202,7 +202,7 @@ export default function ClinicalHistoryPage() {
     }
 
     fetchNombre();
-  }, [backendUrl]);
+  }, []);
 
   const handleEdit = (entry: HistorialClinico) => {
     const formattedDate = formatDateForInput(entry.Fecha);

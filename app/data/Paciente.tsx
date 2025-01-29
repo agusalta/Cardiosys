@@ -35,7 +35,7 @@ export function usePatients() {
       }
     }
     fetchPatients();
-  }, [backendUrl]);
+  }, []);
 
   return { patients, loading, getPatientById };
 }

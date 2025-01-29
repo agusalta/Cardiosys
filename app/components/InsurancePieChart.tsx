@@ -36,7 +36,7 @@ export default function InsurancePieChart() {
       .catch((error: any) =>
         console.error("Error fetching insurance data:", error)
       );
-  }, [backendUrl]);
+  }, []);
 
   const totalPatients = data.reduce(
     (sum, item) => sum + item.NumeroDePacientes,

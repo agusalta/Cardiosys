@@ -165,7 +165,7 @@ export default function PatientDetailsPage() {
     };
 
     fetchPatients();
-  }, [id, reset, toast, backendUrl]);
+  }, [id, reset, toast]);
 
   const handleGetOsById = async () => {
     if (!patient?.ID_Seguro) {
