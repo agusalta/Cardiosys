@@ -165,7 +165,7 @@ export default function PatientDetailsPage() {
     };
 
     fetchPatients();
-  }, [id, reset, toast]);
+  }, []);
 
   const handleGetOsById = async () => {
     if (!patient?.ID_Seguro) {
@@ -205,14 +205,7 @@ export default function PatientDetailsPage() {
     handleGetOsById();
     handleGetAllSeguros();
     handleGetEmpresasPrepagas();
-  }, [
-    patient?.ID_Seguro,
-    patient?.ID_Paciente,
-    toast,
-    handleGetOsById,
-    handleGetAllSeguros,
-    handleGetEmpresasPrepagas,
-  ]);
+  }, []);
 
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;
