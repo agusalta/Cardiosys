@@ -55,7 +55,8 @@ const ExportDialog = ({
       setEstudiosFiltrados([]);
       setCantidadEstudios(null);
     }
-  }, [fechaDesde, fechaHasta, historial]);
+  }, [fechaDesde, fechaHasta, historial, getPatientById]);
+
   const handleExport = () => {
     if (!fechaDesde || !fechaHasta) {
       setError("Por favor selecciona ambas fechas para filtrar.");

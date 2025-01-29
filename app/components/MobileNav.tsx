@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Home, Users, FileText, Settings, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";

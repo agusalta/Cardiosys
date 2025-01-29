@@ -18,11 +18,13 @@
         "name": "next"
       }
     ],
-    "baseUrl": ".", // Asegúrate de que esta propiedad esté configurada
+    "baseUrl": ".",
     "paths": {
       "@/*": ["*"],
-      "@/components/*": ["components/*"] // Mapeo para acceder a 'components' de forma directa
-    }
+      "@/components/*": ["components/*"]
+    },
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": [
     "next-env.d.ts",

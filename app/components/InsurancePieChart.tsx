@@ -2,14 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Legend,
-  Tooltip,
-} from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
@@ -40,8 +33,10 @@ export default function InsurancePieChart() {
     fetch(`${backendUrl}/seguro/empresa/cant`)
       .then((response) => response.json())
       .then(setData)
-      .catch((error) => console.error("Error fetching insurance data:", error));
-  }, []);
+      .catch((error: any) =>
+        console.error("Error fetching insurance data:", error)
+      );
+  }, [backendUrl]);
 
   const totalPatients = data.reduce(
     (sum, item) => sum + item.NumeroDePacientes,
