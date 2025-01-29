@@ -149,7 +149,7 @@ export default function PatientDetailsPage() {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch(`${backendUrl}}/pacientes/${id}`);
+        const response = await fetch(`${backendUrl}/pacientes/${id}`);
         if (!response.ok) {
           throw new Error("Error al obtener el paciente con el id = " + id);
         }
