@@ -25,8 +25,8 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { useRouter } from "next/navigation";
 import { useSeguro } from "@/app/data/ObraSocial";
-import Os from "@/app/types/Seguro";
-import EmpresaSeguro from "@/app/types/EmpresaSeguro";
+import type Os from "@/app/types/Seguro";
+import type EmpresaSeguro from "@/app/types/EmpresaSeguro";
 
 export default function CreatePatientForm() {
   const [formData, setFormData] = useState({
@@ -62,9 +62,15 @@ export default function CreatePatientForm() {
   const handleGetAllSeguros = async () => {
     try {
       const seguros = await getAllSeguros();
-      setSeguros(seguros);
-      console.log(seguros);
-      return;
+      if (
+        seguros.length > 0 &&
+        !seguros.every(
+          (seguro: Os) => seguros[0].ID_Seguro === seguro.ID_Seguro
+        )
+      ) {
+        setSeguros(seguros);
+        console.log(seguros);
+      }
     } catch (error) {
       console.error("Error al cargar los seguros:", error);
     }
@@ -73,7 +79,7 @@ export default function CreatePatientForm() {
   useEffect(() => {
     handleGetEmpresasPrepagas();
     handleGetAllSeguros();
-  }, [handleGetEmpresasPrepagas, handleGetAllSeguros]);
+  }, []);
 
   const { toast } = useToast();
   const router = useRouter();
