@@ -22,7 +22,7 @@ export function useActivity() {
       }
     }
     fetchActivities();
-  }, []);
+  }, [backendUrl]);
 
   return { activities, loading };
 }

@@ -10,7 +10,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -74,7 +73,7 @@ export default function CreatePatientForm() {
   useEffect(() => {
     handleGetEmpresasPrepagas();
     handleGetAllSeguros();
-  }, []);
+  }, [handleGetEmpresasPrepagas, handleGetAllSeguros]);
 
   const { toast } = useToast();
   const router = useRouter();

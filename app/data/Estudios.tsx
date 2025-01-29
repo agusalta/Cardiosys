@@ -22,7 +22,7 @@ export function useEstudios() {
       }
     }
     fetchPatients();
-  }, []);
+  }, [backendUrl]);
 
   return { estudios, loading };
 }

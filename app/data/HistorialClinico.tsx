@@ -7,20 +7,23 @@ export function useHistorialClinico(patientId: number | undefined) {
   const [error, setError] = useState<string | null>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const getTipoEstudio = useCallback(async (id: number) => {
-    try {
-      const response = await fetch(`${backendUrl}/tipoEstudio/${id}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch tipo de estudio");
+  const getTipoEstudio = useCallback(
+    async (id: number) => {
+      try {
+        const response = await fetch(`${backendUrl}/tipoEstudio/${id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch tipo de estudio");
+        }
+        const data = await response.json();
+        return data[0]?.NombreEstudio ?? "Cargando...";
+      } catch (err: any) {
+        console.error("Error fetching tipo de estudio:", err);
+        setError(err.message);
+        return "Error al cargar tipo de estudio";
       }
-      const data = await response.json();
-      return data[0]?.NombreEstudio ?? "Cargando...";
-    } catch (err: any) {
-      console.error("Error fetching tipo de estudio:", err);
-      setError(err.message);
-      return "Error al cargar tipo de estudio";
-    }
-  }, []);
+    },
+    [backendUrl]
+  );
 
   useEffect(() => {
     if (!patientId) return;
@@ -58,7 +61,7 @@ export function useHistorialClinico(patientId: number | undefined) {
     };
 
     fetchHistorial();
-  }, [patientId, getTipoEstudio]);
+  }, [patientId, getTipoEstudio, backendUrl]);
 
   return { historial, loading, error, setHistorial };
 }

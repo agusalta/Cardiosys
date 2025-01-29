@@ -107,7 +107,7 @@ export default function ClinicalHistoryPage() {
   useEffect(() => {
     if (!id || !paciente || !editingEntry) return;
     handleGetCostoEstudio(editingEntry?.ID_TipoEstudio);
-  }, [editingEntry]);
+  }, [editingEntry, handleGetCostoEstudio, id, paciente]);
 
   useEffect(() => {
     if (!id) return;
@@ -146,7 +146,7 @@ export default function ClinicalHistoryPage() {
     };
 
     fetchHistorial();
-  }, []);
+  }, [backendUrl, id]);
 
   useEffect(() => {
     const fetchStudyTypes = async () => {
@@ -180,7 +180,7 @@ export default function ClinicalHistoryPage() {
     if (historial.length > 0) {
       fetchFiles();
     }
-  }, [historial]);
+  }, [historial, backendUrl]);
 
   useEffect(() => {
     async function fetchNombre() {
@@ -202,7 +202,7 @@ export default function ClinicalHistoryPage() {
     }
 
     fetchNombre();
-  }, []);
+  }, [backendUrl]);
 
   const handleEdit = (entry: HistorialClinico) => {
     const formattedDate = formatDateForInput(entry.Fecha);
@@ -315,7 +315,7 @@ export default function ClinicalHistoryPage() {
 
       // Si hay archivos nuevos, cargarlos y asignarles el ID_Estudio
       if (files.length > 0) {
-        const uploadedFiles = await uploadFiles(files, estudioId);
+        await uploadFiles(files, estudioId);
       }
 
       if (isCreating) {
@@ -501,9 +501,7 @@ export default function ClinicalHistoryPage() {
                         <Button
                           variant="link"
                           onClick={async () => {
-                            const content = await fetchArchivoContentById(
-                              file.ID_Archivo
-                            );
+                            await fetchArchivoContentById(file.ID_Archivo);
                           }}
                           disabled
                           className="text-border"
@@ -735,7 +733,7 @@ export default function ClinicalHistoryPage() {
                           type="button"
                           variant="destructive"
                           size="sm"
-                          onClick={(e) => handleDeleteArchive(file.ID_Archivo)}
+                          onClick={() => handleDeleteArchive(file.ID_Archivo)}
                           className="font-bold border-2 rounded-lg button-text bg-danger"
                           title="Borrar archivo para siempre"
                         >

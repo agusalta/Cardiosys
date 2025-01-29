@@ -3,7 +3,7 @@ export async function uploadFiles(files: File[], ID_Estudio: number) {
     // Itera sobre los archivos y los sube uno por uno
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-    for (let file of files) {
+    for (const file of files) {
       const formData = new FormData();
 
       formData.append("Archivo", file);
@@ -20,8 +20,7 @@ export async function uploadFiles(files: File[], ID_Estudio: number) {
         );
       }
 
-      // Si todo va bien, puedes manejar la respuesta (si necesitas hacer algo con la respuesta)
-      const result = await response.json();
+      await response.json();
     }
 
     return { message: "All files uploaded successfully" };

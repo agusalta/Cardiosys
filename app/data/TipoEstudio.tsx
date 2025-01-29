@@ -39,7 +39,7 @@ export function useTipoEstudio(id?: number) {
     };
 
     fetchTipoEstudio();
-  }, [id]);
+  }, [id, backendUrl]);
 
   return { tipoEstudio, fetchTipoEstudios, loading, error };
 }

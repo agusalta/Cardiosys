@@ -36,7 +36,7 @@ export default function PatientList({ patients }: PatientListProps) {
   }, [patients, currentPage, patientsPerPage]);
 
   const handlePageChange = (pageNumber: number) => {
-    setCurrentPage((prevPage) => {
+    setCurrentPage(() => {
       const newPage = Math.max(1, Math.min(pageNumber, totalPages));
       return newPage;
     });

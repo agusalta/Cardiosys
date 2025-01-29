@@ -90,7 +90,11 @@ export default function Home() {
     handleGetPacientesTotales();
     handleGetMonthTotal();
     handleGetMonthTotalCollected();
-  }, []);
+  }, [
+    handleGetMonthTotal,
+    handleGetMonthTotalCollected,
+    handleGetPacientesTotales,
+  ]);
 
   const toggleVisibility = () => {
     setShowTotal((prev) => !prev);

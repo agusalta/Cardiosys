@@ -38,7 +38,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     };
 
     fetchConfig();
-  }, []);
+  }, [backendUrl]);
 
   console.log("fontSize", fontSize);
 

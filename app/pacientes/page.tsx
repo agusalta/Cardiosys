@@ -32,7 +32,7 @@ export default function PatientsPage() {
     };
 
     fetchPatients();
-  }, []);
+  }, [backendUrl]);
 
   const handleFilteredPatientsChange = (newFilteredPatients: Paciente[]) => {
     setFilteredPatients(newFilteredPatients);

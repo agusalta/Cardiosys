@@ -76,13 +76,7 @@ export default function EstudiosPage() {
       )
     );
     getAllSeguros().then((seguros) => setSeguros(seguros));
-  }, []);
-
-  useEffect(() => {
-    if (selectedInsurance) {
-      fetchUpdatedCosts();
-    }
-  }, [selectedInsurance]);
+  }, [fetchTipoEstudios, getAllSeguros]);
 
   const fetchUpdatedCosts = async () => {
     if (selectedInsurance) {
@@ -101,6 +95,12 @@ export default function EstudiosPage() {
       setStudiesWithCost(updatedStudies);
     }
   };
+
+  useEffect(() => {
+    if (selectedInsurance) {
+      fetchUpdatedCosts();
+    }
+  }, [selectedInsurance, fetchUpdatedCosts]);
 
   const handleCostChange = (id: number, newCost: number) => {
     setStudiesWithCost((prevStudies) =>

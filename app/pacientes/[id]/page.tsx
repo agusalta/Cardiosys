@@ -55,7 +55,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useHistorialClinico } from "@/app/data/HistorialClinico";
 import { useSeguro } from "@/app/data/ObraSocial";
 import type EmpresaSeguro from "@/app/types/EmpresaSeguro";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 
 const calcularIMC = (peso: number, altura: number) => {
   if (!peso || !altura) return "N/A";
@@ -165,7 +165,7 @@ export default function PatientDetailsPage() {
     };
 
     fetchPatients();
-  }, [id, reset, toast]);
+  }, [id, reset, toast, backendUrl]);
 
   const handleGetOsById = async () => {
     if (!patient?.ID_Seguro) {
@@ -205,7 +205,14 @@ export default function PatientDetailsPage() {
     handleGetOsById();
     handleGetAllSeguros();
     handleGetEmpresasPrepagas();
-  }, [patient?.ID_Seguro, patient?.ID_Paciente, toast]);
+  }, [
+    patient?.ID_Seguro,
+    patient?.ID_Paciente,
+    toast,
+    handleGetOsById,
+    handleGetAllSeguros,
+    handleGetEmpresasPrepagas,
+  ]);
 
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;
