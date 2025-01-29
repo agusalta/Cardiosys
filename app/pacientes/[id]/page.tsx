@@ -311,6 +311,12 @@ export default function PatientDetailsPage() {
     }
   };
 
+  const esPrepaga = seguros?.find(
+    (seguro) => seguro.TipoSeguro === "Prepaga"
+  )?.ID_Seguro;
+
+  const mostrarEmpresa = os?.ID_Seguro === esPrepaga;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-4 sm:space-y-0">
@@ -747,7 +753,7 @@ export default function PatientDetailsPage() {
                   )}
                 </div>
               </CardContent>
-              {os?.ID_Seguro === 4 && (
+              {mostrarEmpresa && (
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">

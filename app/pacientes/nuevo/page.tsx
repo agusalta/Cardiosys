@@ -92,14 +92,19 @@ export default function CreatePatientForm() {
     }));
   };
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = (name: any, value: any) => {
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+
     if (name === "obraSocial") {
-      setShowEmpresaSelect(value === "4");
-      if (value !== "4") {
+      // Encuentra el ID de la prepaga en la lista de seguros
+      const prepaga = seguros.find((seguro) => seguro.TipoSeguro === "Prepaga");
+
+      setShowEmpresaSelect(value === prepaga?.ID_Seguro.toString());
+
+      if (value !== prepaga?.ID_Seguro.toString()) {
         setFormData((prevState) => ({
           ...prevState,
           empresaId: "",

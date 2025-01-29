@@ -9,10 +9,10 @@ export const patientSchema = z.object({
     .string()
     .regex(/^[\d\s]{1,20}$/, "El teléfono debe tener entre 1 y 20 dígitos"),
   FechaNacimiento: z.string().refine((date) => {
-    const today = new Date();
-    const birthDate = new Date(date);
-    return birthDate < today;
+    const parsedDate = new Date(date);
+    return !isNaN(parsedDate.getTime()) && parsedDate < new Date();
   }, "La fecha de nacimiento no puede ser en el futuro"),
+
   Altura: z
     .union([z.string(), z.number()])
     .refine((val) => {
@@ -30,7 +30,7 @@ export const patientSchema = z.object({
 
   FrecuenciaRespiratoria: z
     .union([z.string(), z.number()])
-    .transform((val) => parseInt(val as string, 10))
+    .transform((val) => parseInt(val as string, 10) || 0)
     .refine((val) => val >= 1 && val <= 100, {
       message: "La frecuencia respiratoria debe estar entre 1 y 100",
     }),
@@ -45,12 +45,8 @@ export const patientSchema = z.object({
   Sexo: z.enum(["M", "F"], {
     errorMap: () => ({ message: "Seleccione un sexo válido" }),
   }),
-  ID_Seguro: z
-    .number()
-    .int()
-    .min(1, "Seleccione un seguro válido")
-    .max(4, "El ID del seguro no es válido"),
-  ID_Empresa: z.number().int().nullable(),
+  ID_Seguro: z.number().int(),
+  ID_Empresa: z.number().int().nullable().optional(),
 });
 
 export type PatientFormData = z.infer<typeof patientSchema>;
