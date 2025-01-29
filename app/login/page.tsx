@@ -36,7 +36,7 @@ export default function LoginPage() {
         router.push("/");
       } else {
         const data = await res.json();
-        console.error(data.message);
+        console.log(data.message);
         setError(data.message);
       }
     } catch (error: any) {
