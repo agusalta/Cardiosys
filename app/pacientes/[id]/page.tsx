@@ -112,6 +112,7 @@ export default function PatientDetailsPage() {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   const { getSeguroById, getAllSeguros, getEmpresaPrepagas } = useSeguro();
+  const { historial } = useHistorialClinico(patient?.ID_Paciente);
 
   const defaultValues: PatientFormData = {
     Nombre: "",
@@ -140,9 +141,10 @@ export default function PatientDetailsPage() {
     defaultValues,
   });
 
-  const { historial } = useHistorialClinico(patient?.ID_Paciente);
   const edad = calcularEdad(watch("FechaNacimiento"));
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  console.log("Backend URL:", backendUrl);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -152,6 +154,7 @@ export default function PatientDetailsPage() {
           throw new Error("Error al obtener el paciente con el id = " + id);
         }
         const data = await response.json();
+        console.log("Fetched patient data:", data);
         setPatient(data);
         reset(data);
       } catch (error) {
@@ -165,7 +168,7 @@ export default function PatientDetailsPage() {
     };
 
     fetchPatients();
-  }, []);
+  }, [reset]);
 
   const handleGetOsById = async () => {
     if (!patient?.ID_Seguro) {
