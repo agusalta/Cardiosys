@@ -19,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await fetch(`${backendUrl}/checkAuth`, {
+        const response = await fetch(`${backendUrl}/auth/checkAuth`, {
           method: "GET",
           credentials: "include",
         });

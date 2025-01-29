@@ -39,7 +39,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleLogout = async () => {
-    await fetch(`${backendUrl}/logout`, {
+    await fetch(`${backendUrl}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
