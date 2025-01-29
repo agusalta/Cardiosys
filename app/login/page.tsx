@@ -24,20 +24,28 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        document.cookie = `auth=${data.token}; path=/; max-age=3600; SameSite=Strict; Secure`;
+      const data = await res.text(); // Obtener el cuerpo de la respuesta como texto
 
-        toast({
-          title: "Sesión iniciada",
-          description: "Ahora puedes acceder a tus datos.",
-        });
-        setIsLoggedIn(true);
-        router.push("/");
+      if (res.ok) {
+        try {
+          const jsonData = JSON.parse(data); // Intentar parsear el texto como JSON
+          document.cookie = `auth=${jsonData.token}; path=/; max-age=3600; SameSite=Strict; Secure`;
+
+          toast({
+            title: "Sesión iniciada",
+            description: "Ahora puedes acceder a tus datos.",
+          });
+          setIsLoggedIn(true);
+          router.push("/");
+        } catch (error) {
+          console.error("Error al parsear JSON:", error);
+          setError("Error de formato en la respuesta del servidor.");
+        }
       } else {
-        const data = await res.json();
-        console.log(data.message);
-        setError(data.message);
+        console.log(data); // Verificar qué datos está recibiendo
+        const errorData = JSON.parse(data);
+        console.log(errorData.message);
+        setError(errorData.message);
       }
     } catch (error: any) {
       console.error(error.message);
