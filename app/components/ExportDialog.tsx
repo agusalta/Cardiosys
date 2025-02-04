@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -35,40 +35,27 @@ const ExportDialog = ({
   >([]);
   const { getPatientById } = usePatients();
 
-  const prevCantidadEstudiosRef = useRef<number | null>(null);
-
   useEffect(() => {
     if (fechaDesde && fechaHasta) {
       const filtrados = historial.filter(({ Fecha }) => {
         const fechaEstudio = new Date(Fecha);
         return fechaEstudio >= fechaDesde && fechaEstudio <= fechaHasta;
       });
-
-      // Update estudiosFiltrados only if the filtered data changes
-      if (filtrados.length !== prevCantidadEstudiosRef.current) {
-        setEstudiosFiltrados(filtrados);
-        setCantidadEstudios(filtrados.length);
-        prevCantidadEstudiosRef.current = filtrados.length; // Update the ref
-      }
-
+      setEstudiosFiltrados(filtrados);
+      setCantidadEstudios(filtrados.length);
       setError(null);
 
       if (filtrados.length > 0) {
         const patientId = filtrados[0].ID_Paciente;
-
-        // Fetch patient data only if the patient ID changes
-        if (patientId !== patient?.ID_Paciente) {
-          getPatientById(patientId).then(setPatient);
-        }
+        getPatientById(patientId).then(setPatient);
       } else {
-        setPatient(null);
+        setPatient(null); // Si no hay estudios, reseteamos el paciente
       }
     } else {
       setEstudiosFiltrados([]);
       setCantidadEstudios(null);
-      setPatient(null);
     }
-  }, [fechaDesde, fechaHasta, historial, getPatientById, patient?.ID_Paciente]);
+  }, [fechaDesde, fechaHasta, historial]);
 
   const handleExport = () => {
     if (!fechaDesde || !fechaHasta) {
