@@ -25,10 +25,8 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
         const response = await fetch(`${backendUrl}/config`);
         if (response.ok) {
           const data = await response.json();
-          console.log(data.config.FontSize);
-          setFontSize(Number(data.config.FontSize));
 
-          document.documentElement.style.fontSize = `${data.fontSize}px`;
+          setFontSize(Number(data.config.FontSize));
         } else {
           console.error("Error al obtener la configuración desde el servidor.");
         }
@@ -39,8 +37,6 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
     fetchConfig();
   }, []);
-
-  console.log("fontSize", fontSize);
 
   return (
     <ConfigContext.Provider value={{ fontSize, setFontSize }}>

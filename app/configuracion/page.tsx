@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useConfig } from "@/app/context/ConfigContext";
 import {
   Card,
@@ -19,6 +19,11 @@ export default function ConfiguracionPage() {
   const [localFontSize, setLocalFontSize] = useState<number>(fontSize);
   const { toast } = useToast();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  // Sincronizar localFontSize con fontSize cuando cambie
+  useEffect(() => {
+    setLocalFontSize(fontSize);
+  }, [fontSize]);
 
   const handleSliderChange = (value: number[]) => {
     setLocalFontSize(value[0]);

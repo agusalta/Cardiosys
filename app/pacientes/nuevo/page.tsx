@@ -69,7 +69,6 @@ export default function CreatePatientForm() {
         )
       ) {
         setSeguros(seguros);
-        console.log(seguros);
       }
     } catch (error) {
       console.error("Error al cargar los seguros:", error);

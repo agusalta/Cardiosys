@@ -23,8 +23,6 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-      console.log(res);
-      console.log("URL:", res.url);
 
       const data = await res.text(); // Obtener el cuerpo de la respuesta como texto
 
@@ -32,7 +30,6 @@ export default function LoginPage() {
         try {
           const jsonData = JSON.parse(data); // Intentar parsear el texto como JSON
           document.cookie = `auth=${jsonData.token}; path=/; max-age=3600; SameSite=Strict; Secure`;
-          console.log(jsonData);
 
           toast({
             title: "Sesión iniciada",
@@ -45,9 +42,8 @@ export default function LoginPage() {
           setError("Error de formato en la respuesta del servidor.");
         }
       } else {
-        console.log(data); // Verificar qué datos está recibiendo
         const errorData = JSON.parse(data);
-        console.log(errorData.message);
+
         setError(errorData.message);
       }
     } catch (error: any) {

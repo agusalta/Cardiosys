@@ -10,7 +10,7 @@ export function useSeguro() {
       }
 
       const data = await response.json();
-      console.log(data);
+
       return data;
     } catch (e: any) {
       console.error(e.message);

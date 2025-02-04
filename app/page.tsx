@@ -84,7 +84,6 @@ export default function Home() {
   const handleGetMonthTotalCollected = async () => {
     const monthTotalCollected = await getMonthTotalCollected();
     setMonthTotalCollected(monthTotalCollected);
-    console.log("Month Total Collected: ", monthTotalCollected);
   };
 
   useEffect(() => {
