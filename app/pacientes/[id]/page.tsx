@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -144,37 +144,28 @@ export default function PatientDetailsPage() {
   const edad = calcularEdad(watch("FechaNacimiento"));
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  console.log("Backend URL:", backendUrl);
-
-  useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const response = await fetch(`${backendUrl}/pacientes/${id}`);
-        if (!response.ok) {
-          throw new Error("Error al obtener el paciente con el id = " + id);
-        }
-        const data = await response.json();
-        console.log("Fetched patient data:", data);
-        setPatient(data);
-        reset(data);
-      } catch (error) {
-        console.error("Error al cargar el paciente:", error);
-        toast({
-          title: "Error",
-          description: "No se pudo cargar la información del paciente.",
-          variant: "destructive",
-        });
+  // Memoizar funciones para evitar recrearlas en cada renderizado
+  const fetchPatientData = useCallback(async () => {
+    try {
+      const response = await fetch(`${backendUrl}/pacientes/${id}`);
+      if (!response.ok) {
+        throw new Error("Error al obtener el paciente con el id = " + id);
       }
-    };
-
-    fetchPatients();
-  }, [reset]);
-
-  const handleGetOsById = async () => {
-    if (!patient?.ID_Seguro) {
-      setOs(null);
-      return;
+      const patientData = await response.json();
+      setPatient(patientData);
+      reset(patientData); // Resetear el formulario con los datos del paciente
+    } catch (error) {
+      console.error("Error al cargar el paciente:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo cargar la información del paciente.",
+        variant: "destructive",
+      });
     }
+  }, [id, reset, toast, backendUrl]);
+
+  const fetchSeguroData = useCallback(async () => {
+    if (!patient?.ID_Seguro) return;
 
     try {
       const seguro = await getSeguroById(patient.ID_Seguro);
@@ -182,33 +173,39 @@ export default function PatientDetailsPage() {
     } catch (error) {
       console.error("Error al cargar el seguro:", error);
     }
-  };
+  }, [patient?.ID_Seguro, getSeguroById]);
 
-  const handleGetAllSeguros = async () => {
+  const fetchAllSeguros = useCallback(async () => {
     try {
       const seguros = await getAllSeguros();
       setSeguros(seguros);
-      console.log(seguros);
-      return;
     } catch (error) {
       console.error("Error al cargar los seguros:", error);
     }
-  };
+  }, [getAllSeguros]);
 
-  const handleGetEmpresasPrepagas = async () => {
+  const fetchEmpresasPrepagas = useCallback(async () => {
     try {
       const empresas = await getEmpresaPrepagas();
       setEmpresaPrepagas(empresas);
     } catch (error) {
       console.error("Error al cargar las empresas:", error);
     }
-  };
+  }, [getEmpresaPrepagas]);
 
+  // Cargar datos iniciales
   useEffect(() => {
-    handleGetOsById();
-    handleGetAllSeguros();
-    handleGetEmpresasPrepagas();
-  }, []);
+    fetchPatientData();
+  }, [fetchPatientData]);
+
+  // Cargar datos relacionados cuando el paciente cambia
+  useEffect(() => {
+    if (patient) {
+      fetchSeguroData();
+      fetchAllSeguros();
+      fetchEmpresasPrepagas();
+    }
+  }, [patient, fetchSeguroData, fetchAllSeguros, fetchEmpresasPrepagas]);
 
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;
@@ -217,11 +214,11 @@ export default function PatientDetailsPage() {
   const handleEditToggle = () => {
     setIsEditing((prev) => !prev);
     if (isEditing) {
-      reset(patient);
+      reset(patient); // Restaurar los valores originales al cancelar la edición
     }
   };
 
-  async function handleDeletePatient() {
+  const handleDeletePatient = async () => {
     try {
       const response = await fetch(
         `${backendUrl}/pacientes/${patient?.ID_Paciente}`,
@@ -231,16 +228,7 @@ export default function PatientDetailsPage() {
       );
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error("Error al eliminar el paciente:", {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorData,
-        });
-        throw new Error(
-          errorData?.message ||
-            `Error ${response.status}: ${response.statusText}`
-        );
+        throw new Error("Error al eliminar el paciente");
       }
 
       toast({
@@ -249,27 +237,22 @@ export default function PatientDetailsPage() {
         variant: "default",
       });
 
-      // agregar un timer antes de redireccionar
       setTimeout(() => {
         router.push("/");
       }, 2000);
     } catch (error) {
       console.error("Error inesperado:", error);
-
       toast({
         title: "Error",
         description:
-          error instanceof Error
-            ? error.message
-            : "No se pudo eliminar el paciente. Por favor, inténtelo de nuevo.",
+          "No se pudo eliminar el paciente. Por favor, inténtelo de nuevo.",
         variant: "destructive",
       });
     }
-  }
+  };
 
   const onSubmit = async (data: PatientFormData) => {
     try {
-      // Format the date as 'YYYY-MM-DD'
       const formattedData = {
         ...data,
         FechaNacimiento: new Date(data.FechaNacimiento)
@@ -288,8 +271,7 @@ export default function PatientDetailsPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al actualizar el paciente");
+        throw new Error("Error al actualizar el paciente");
       }
 
       const updatedPatient = await response.json();
@@ -299,13 +281,11 @@ export default function PatientDetailsPage() {
         title: "Éxito",
         description: `La información del paciente ${data.Apellido} se ha actualizado correctamente.`,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error al guardar los cambios:", error);
       toast({
         title: "Error",
-        description:
-          error.message ||
-          "No se pudo actualizar la información de este paciente.",
+        description: "No se pudo actualizar la información de este paciente.",
         variant: "destructive",
       });
     }
@@ -314,7 +294,6 @@ export default function PatientDetailsPage() {
   const esPrepaga = seguros?.find(
     (seguro) => seguro.TipoSeguro === "Prepaga"
   )?.ID_Seguro;
-
   const mostrarEmpresa = os?.ID_Seguro === esPrepaga;
 
   return (
@@ -780,15 +759,14 @@ export default function PatientDetailsPage() {
                               <SelectValue placeholder="Seleccionar empresa" />
                             </SelectTrigger>
                             <SelectContent>
-                              {os &&
-                                EmpresaPrepaga.map((empresa) => (
-                                  <SelectItem
-                                    key={empresa.ID_Empresa}
-                                    value={empresa.ID_Empresa.toString()}
-                                  >
-                                    {empresa.NombreEmpresa}
-                                  </SelectItem>
-                                ))}
+                              {EmpresaPrepaga.map((empresa) => (
+                                <SelectItem
+                                  key={empresa.ID_Empresa}
+                                  value={empresa.ID_Empresa.toString()}
+                                >
+                                  {empresa.NombreEmpresa}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         )}

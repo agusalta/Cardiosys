@@ -107,7 +107,7 @@ export default function ClinicalHistoryPage() {
   useEffect(() => {
     if (!id || !paciente || !editingEntry) return;
     handleGetCostoEstudio(editingEntry?.ID_TipoEstudio);
-  }, [editingEntry, handleGetCostoEstudio, id, paciente]);
+  }, [editingEntry, id, paciente]);
 
   useEffect(() => {
     if (!id) return;

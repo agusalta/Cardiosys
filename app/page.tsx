@@ -84,6 +84,7 @@ export default function Home() {
   const handleGetMonthTotalCollected = async () => {
     const monthTotalCollected = await getMonthTotalCollected();
     setMonthTotalCollected(monthTotalCollected);
+    console.log("Month Total Collected: ", monthTotalCollected);
   };
 
   useEffect(() => {
@@ -133,11 +134,13 @@ export default function Home() {
               <p className="text-2xl font-bold">
                 {showTotal
                   ? "******"
-                  : `${monthTotalCollected.toLocaleString("es-AR", {
+                  : monthTotalCollected !== undefined
+                  ? `${monthTotalCollected?.toLocaleString("es-AR", {
                       style: "currency",
                       currency: "ARS",
                       minimumFractionDigits: 0,
-                    })}`}
+                    })}`
+                  : "0"}
               </p>
               <p className="text-sm  text-muted-foreground italic">
                 Facturas particulares

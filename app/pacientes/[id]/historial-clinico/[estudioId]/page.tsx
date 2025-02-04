@@ -40,7 +40,7 @@ async function getArchivosEstudio(estudioId: string) {
 
     const data = await response.json();
     if (!data || data.length === 0) {
-      throw new Error("No se encontraron archivos para este estudio");
+      return [];
     }
 
     return data;

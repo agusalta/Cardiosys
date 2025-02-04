@@ -53,6 +53,10 @@ export default function ArchivoViewer({ archivos }: { archivos: Archivo[] }) {
     };
   }, [selectedArchivo]);
 
+  if (!archivos || archivos.length === 0) {
+    return <p>No hay archivos disponibles para visualizar</p>;
+  }
+
   return (
     <div className="container mx-auto p-4 h-screen flex flex-col text-paragraph">
       <Card className="mb-4 text-black border-none shadow-none">
