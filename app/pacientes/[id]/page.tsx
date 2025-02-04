@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -105,6 +105,7 @@ export default function PatientDetailsPage() {
   const router = useRouter();
   const [patient, setPatient] = useState<Paciente | null>(null);
   const [EmpresaPrepaga, setEmpresaPrepagas] = useState<EmpresaSeguro[]>([]);
+  const [esPrepaga, setEsPrepaga] = useState<boolean>(false);
   const [seguros, setSeguros] = useState<Os[]>([]);
   const [os, setOs] = useState<Os | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -207,6 +208,19 @@ export default function PatientDetailsPage() {
     }
   }, [patient, fetchSeguroData, fetchAllSeguros, fetchEmpresasPrepagas]);
 
+  const handleMostrarEmpresa = (selectedSeguroId: number) => {
+    const selectedSeguro = seguros.find(
+      (seguro) => seguro.ID_Seguro === selectedSeguroId
+    );
+    setEsPrepaga(selectedSeguro?.TipoSeguro === "Prepaga");
+  };
+
+  useEffect(() => {
+    if (patient && seguros.length > 0) {
+      handleMostrarEmpresa(patient.ID_Seguro);
+    }
+  }, [patient, seguros]);
+
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;
   }
@@ -290,11 +304,6 @@ export default function PatientDetailsPage() {
       });
     }
   };
-
-  const esPrepaga = seguros?.find(
-    (seguro) => seguro.TipoSeguro === "Prepaga"
-  )?.ID_Seguro;
-  const mostrarEmpresa = os?.ID_Seguro === esPrepaga;
 
   return (
     <div className="space-y-6">
@@ -698,9 +707,11 @@ export default function PatientDetailsPage() {
                       control={control}
                       render={({ field }) => (
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number.parseInt(value))
-                          }
+                          onValueChange={(value) => {
+                            const seguroId = Number.parseInt(value);
+                            field.onChange(seguroId);
+                            handleMostrarEmpresa(seguroId);
+                          }}
                           value={field.value?.toString()}
                           disabled={!isEditing}
                         >
@@ -732,7 +743,8 @@ export default function PatientDetailsPage() {
                   )}
                 </div>
               </CardContent>
-              {mostrarEmpresa && (
+
+              {esPrepaga && (
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
@@ -772,6 +784,7 @@ export default function PatientDetailsPage() {
                         )}
                       />
                     </div>
+
                     {errors.ID_Empresa && (
                       <p className="text-red-500 text-sm">
                         {errors.ID_Empresa.message}
