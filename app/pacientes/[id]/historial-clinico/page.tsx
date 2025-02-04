@@ -105,28 +105,38 @@ export default function ClinicalHistoryPage() {
   };
 
   useEffect(() => {
-    if (!id || !paciente || !editingEntry) return;
-    handleGetCostoEstudio(editingEntry?.ID_TipoEstudio);
-  }, [editingEntry, id, paciente]);
-
-  useEffect(() => {
     if (!id) return;
 
-    setHistorial([]);
-    setLoading(true);
-    setError(null);
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
-    const fetchHistorial = async () => {
       try {
-        const response = await fetch(`${backendUrl}/estudio/${id}`);
+        const [historialResponse, pacienteResponse, studyTypesResponse] =
+          await Promise.all([
+            fetch(`${backendUrl}/estudio/${id}`),
+            fetch(`${backendUrl}/pacientes/${id}`),
+            fetch(`${backendUrl}/tipoEstudio`),
+          ]);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch historial clínico");
+        if (
+          !historialResponse.ok ||
+          !pacienteResponse.ok ||
+          !studyTypesResponse.ok
+        ) {
+          throw new Error("Failed to fetch data");
         }
-        const data = await response.json();
+
+        const [historialData, pacienteData, studyTypesData] = await Promise.all(
+          [
+            historialResponse.json(),
+            pacienteResponse.json(),
+            studyTypesResponse.json(),
+          ]
+        );
 
         const updatedHistorial = await Promise.all(
-          data.map(async (entry: HistorialClinico) => {
+          historialData.map(async (entry: HistorialClinico) => {
             const tipoEstudioNombre = await getTipoEstudio(
               entry.ID_TipoEstudio
             );
@@ -136,35 +146,25 @@ export default function ClinicalHistoryPage() {
             };
           })
         );
+
         setHistorial(updatedHistorial);
+        setPaciente(pacienteData);
+        setNombreCompleto(`${pacienteData.Nombre} ${pacienteData.Apellido}`);
+        setStudyTypes(studyTypesData);
       } catch (err: any) {
-        console.error("Error fetching historial clínico:", err);
+        console.error("Error fetching data:", err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchHistorial();
-  }, [id]);
+    fetchData();
+  }, [id, backendUrl]);
 
   useEffect(() => {
-    const fetchStudyTypes = async () => {
-      try {
-        const response = await fetch(`${backendUrl}/tipoEstudio`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch study types");
-        }
-        const data = await response.json();
-        setStudyTypes(data);
-      } catch (error) {
-        console.error("Error fetching study types:", error);
-      }
-    };
-    fetchStudyTypes();
-  }, []);
+    if (!historial.length) return;
 
-  useEffect(() => {
     const fetchFiles = async () => {
       try {
         const filesByStudy: any = {};
@@ -177,10 +177,14 @@ export default function ClinicalHistoryPage() {
         console.error("Error fetching study files:", error);
       }
     };
-    if (historial.length > 0) {
-      fetchFiles();
-    }
+
+    fetchFiles();
   }, [historial]);
+
+  useEffect(() => {
+    if (!editingEntry || !paciente) return;
+    handleGetCostoEstudio(editingEntry.ID_TipoEstudio);
+  }, [editingEntry, paciente]);
 
   useEffect(() => {
     async function fetchNombre() {
