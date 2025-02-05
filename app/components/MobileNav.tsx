@@ -27,8 +27,7 @@ export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
       credentials: "include",
     });
 
-    document.cookie =
-      "auth=; path=/; max-age=0; SameSite=Strict; Secure; domain=https://sistema-medico-production.up.railway.app/";
+    document.cookie = "auth=; path=/; max-age=0; SameSite=Strict; Secure";
     setIsLoggedIn(false);
     router.push("/login");
   };
