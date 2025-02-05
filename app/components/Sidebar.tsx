@@ -49,6 +49,11 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
     router.push("/login");
   };
 
+  if (!isLoggedIn) {
+    console.log("Sidebar not rendered due to login page or not logged in");
+    return null;
+  }
+
   const clinicEmoji =
     clinicToday === "Pinamed"
       ? "🌲"
