@@ -44,7 +44,8 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
       credentials: "include",
     });
 
-    document.cookie = "auth=; path=/; max-age=0; SameSite=Strict; Secure";
+    document.cookie =
+      "auth=; path=/; max-age=0; SameSite=Strict; Secure; domain=https://sistema-medico-production.up.railway.app/";
     setIsLoggedIn(false);
     router.push("/login");
   };
@@ -59,7 +60,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
       ? "🌲"
       : clinicToday === "Clínica del Sol"
       ? "🌞"
-      : "";
+      : "🏥";
 
   if (!isLoggedIn) {
     return null;
