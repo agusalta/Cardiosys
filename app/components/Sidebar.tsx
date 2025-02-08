@@ -39,14 +39,25 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleLogout = async () => {
-    await fetch(`${backendUrl}/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      // Realiza la solicitud de logout al backend
+      const res = await fetch(`${backendUrl}/auth/logout`, {
+        method: "POST",
+        credentials: "include", // Asegúrate de que las cookies se envíen
+      });
 
-    document.cookie = "auth=; path=/; max-age=0; SameSite=Strict; Secure";
-    setIsLoggedIn(false);
-    router.push("/login");
+      if (res.ok) {
+        // Actualiza el estado de autenticación
+        setIsLoggedIn(false);
+        // Redirige al login
+        router.push("/login");
+      } else {
+        // Si hay un error, muestra un mensaje de error
+        console.error("Error al cerrar sesión");
+      }
+    } catch (error) {
+      console.error("Error en el logout:", error);
+    }
   };
 
   if (!isLoggedIn) {
