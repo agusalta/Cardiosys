@@ -38,94 +38,98 @@ export default function InsurancePieChart() {
       );
   }, []);
 
-  const totalPatients = data.reduce(
-    (sum, item) => sum + item.NumeroDePacientes,
-    0
-  );
+  const totalPatients = Array.isArray(data)
+    ? data.reduce((sum, item) => sum + (item.NumeroDePacientes || 0), 0)
+    : 0;
 
   return (
     <Card className="w-full h-full border-2 rounded-lg">
       <CardHeader>
-        <CardTitle className="text-left text-3xl text-bold">
+        <CardTitle className="text-left text-3xl font-bold">
           Distribución de Seguros
         </CardTitle>
       </CardHeader>
       <CardContent className="flex justify-center items-center h-[calc(100%-4rem)]">
-        <ChartContainer
-          config={{
-            ...Object.fromEntries(
-              data.map((item, index) => [
-                item.Seguro,
-                { label: item.Seguro, color: COLORS[index % COLORS.length] },
-              ])
-            ),
-          }}
-          className="w-full h-full max-w-md"
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius="80%"
-                fill="#8884d8"
-                dataKey="NumeroDePacientes"
-                label={({
-                  cx,
-                  cy,
-                  midAngle,
-                  innerRadius,
-                  outerRadius,
-                  percent,
-                }) => {
-                  const RADIAN = Math.PI / 180;
-                  const radius =
-                    innerRadius + (outerRadius - innerRadius) * 0.5;
-                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+        {Array.isArray(data) && data.length > 0 ? (
+          <ChartContainer
+            config={{
+              ...Object.fromEntries(
+                data.map((item, index) => [
+                  item.Seguro,
+                  { label: item.Seguro, color: COLORS[index % COLORS.length] },
+                ])
+              ),
+            }}
+            className="w-full h-full max-w-md"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius="80%"
+                  fill="#8884d8"
+                  dataKey="NumeroDePacientes"
+                  label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    percent,
+                  }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius =
+                      innerRadius + (outerRadius - innerRadius) * 0.5;
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="white"
-                      textAnchor={x > cx ? "start" : "end"}
-                      dominantBaseline="central"
-                      className="text-xs font-medium"
-                    >
-                      {`${(percent * 100).toFixed(0)}%`}
-                    </text>
-                  );
-                }}
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${entry.Seguro}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Legend
-                layout="vertical"
-                align="right"
-                verticalAlign="middle"
-                formatter={(value, entry, index) => (
-                  <span className="text-sm font-medium">
-                    {data[index]?.Seguro} (
-                    {(
-                      ((data[index]?.NumeroDePacientes || 0) / totalPatients) *
-                      100
-                    ).toFixed(1)}
-                    %)
-                  </span>
-                )}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        fill="white"
+                        textAnchor={x > cx ? "start" : "end"}
+                        dominantBaseline="central"
+                        className="text-xs font-medium"
+                      >
+                        {`${(percent * 100).toFixed(0)}%`}
+                      </text>
+                    );
+                  }}
+                >
+                  {data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${entry.Seguro}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Legend
+                  layout="vertical"
+                  align="right"
+                  verticalAlign="middle"
+                  formatter={(value, entry, index) => (
+                    <span className="text-sm font-medium">
+                      {data[index]?.Seguro} (
+                      {(
+                        ((data[index]?.NumeroDePacientes || 0) /
+                          totalPatients) *
+                        100
+                      ).toFixed(1)}
+                      %)
+                    </span>
+                  )}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        ) : (
+          <p className="text-gray-500 text-lg">No hay datos disponibles</p>
+        )}
       </CardContent>
     </Card>
   );
