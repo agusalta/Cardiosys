@@ -36,7 +36,7 @@ export default function ConfiguracionPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ fontSize: localFontSize }),
+        body: JSON.stringify({ FontSize: localFontSize }),
       });
 
       if (response.ok) {
@@ -49,7 +49,8 @@ export default function ConfiguracionPage() {
             "Se ha actualizado la configuración de la aplicación con éxito.",
         });
       } else {
-        console.error("Error al actualizar la configuración.");
+        const errorData = await response.json();
+        console.error("Error al actualizar la configuración:", errorData);
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
