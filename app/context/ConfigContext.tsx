@@ -39,13 +39,9 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
         const data = await response.json();
 
-        if (!data || !data.config || typeof data.config.FontSize !== "number") {
-          throw new Error(
-            "Formato de respuesta inválido: no se encontró 'config.FontSize'."
-          );
-        }
+        const fontSize = data.config.FontSize;
 
-        setFontSize(Number(data.config.FontSize));
+        setFontSize(Number(fontSize));
       } catch (error) {
         console.error("Error al cargar la configuración:", error);
       }
