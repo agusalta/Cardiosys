@@ -154,7 +154,11 @@ export default function PatientDetailsPage() {
       }
       const patientData = await response.json();
       setPatient(patientData);
-      if (patientData.ID_Empresa !== null) {
+
+      if (
+        (patientData.ID_Empresa !== null && patientData.ID_Seguro == 25) ||
+        patientData.ID_Seguro == 4
+      ) {
         setShowEmpresaSelect(true);
       }
       reset(patientData);
