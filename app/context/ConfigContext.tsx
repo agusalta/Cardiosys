@@ -21,15 +21,31 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const fetchConfig = async () => {
+      if (!backendUrl) {
+        console.error(
+          "La variable de entorno NEXT_PUBLIC_BACKEND_URL no está definida."
+        );
+        return;
+      }
+
       try {
         const response = await fetch(`${backendUrl}/config`);
-        if (response.ok) {
-          const data = await response.json();
 
-          setFontSize(Number(data.config.FontSize));
-        } else {
-          console.error("Error al obtener la configuración desde el servidor.");
+        if (!response.ok) {
+          throw new Error(
+            `Error en la respuesta del servidor: ${response.status} - ${response.statusText}`
+          );
         }
+
+        const data = await response.json();
+
+        if (!data || !data.config || typeof data.config.FontSize !== "number") {
+          throw new Error(
+            "Formato de respuesta inválido: no se encontró 'config.FontSize'."
+          );
+        }
+
+        setFontSize(Number(data.config.FontSize));
       } catch (error) {
         console.error("Error al cargar la configuración:", error);
       }

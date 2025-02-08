@@ -1,13 +1,13 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useActivity } from "./data/Activity";
 import useStore from "./context/store";
 import Image from "next/image";
 import ActivityList from "./components/ActivityList";
-import { useActivity } from "./data/Activity";
+
 import InsurancePieChart from "./components/InsurancePieChart";
 
 export default function Home() {
@@ -24,73 +24,55 @@ export default function Home() {
     updateClinicForToday();
   }, [updateClinicForToday]);
 
-  const getTotalPacientes = async (): Promise<number> => {
+  const getTotalPacientes = useCallback(async () => {
     try {
       const response = await fetch(`${backendUrl}/pacientes/get/count`);
-
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error("No se pudo traer el conteo total de pacientes");
-      }
 
       const data = await response.json();
-      return data;
-    } catch (error: any) {
-      console.error(error.message);
-      return 0;
+      setTotalPacientes(data.total || 0);
+    } catch (error) {
+      console.error(error);
+      setTotalPacientes(0);
     }
-  };
+  }, [backendUrl]);
 
-  const getPacientesNuevosEsteMes = async (): Promise<number> => {
+  const getPacientesNuevosEsteMes = useCallback(async () => {
     try {
       const response = await fetch(`${backendUrl}/pacientes/get/month`);
-
-      if (!response.ok) {
-        throw new Error("No se pudo traer el conteo total de pacientes");
-      }
+      if (!response.ok)
+        throw new Error(
+          "No se pudo traer el conteo total de pacientes este mes"
+        );
 
       const data = await response.json();
-      return data.total;
-    } catch (error: any) {
-      console.error(error.message);
-      return 0;
+      setMonthTotal(data.total || 0);
+    } catch (error) {
+      console.error(error);
+      setMonthTotal(0);
     }
-  };
+  }, [backendUrl]);
 
-  const getMonthTotalCollected = async () => {
+  const getMonthTotalCollected = useCallback(async () => {
     try {
       const response = await fetch(`${backendUrl}/estudio/get/count`);
-      if (!response.ok) {
-        throw new Error("No se pudo traer el conteo total de pacientes");
-      }
+      if (!response.ok)
+        throw new Error("No se pudo traer el conteo total del mes");
 
       const data = await response.json();
-      return data.totalRecaudado;
-    } catch (error: any) {
-      console.error(error.message);
-      return 0;
+      setMonthTotalCollected(data.totalRecaudado || 0);
+    } catch (error) {
+      console.error(error);
+      setMonthTotalCollected(0);
     }
-  };
-
-  const handleGetPacientesTotales = async () => {
-    const total = await getTotalPacientes();
-    setTotalPacientes(total);
-  };
-
-  const handleGetMonthTotal = async () => {
-    const monthTotalPatients = await getPacientesNuevosEsteMes();
-    setMonthTotal(monthTotalPatients);
-  };
-
-  const handleGetMonthTotalCollected = async () => {
-    const monthTotalCollected = await getMonthTotalCollected();
-    setMonthTotalCollected(monthTotalCollected);
-  };
+  }, [backendUrl]);
 
   useEffect(() => {
-    handleGetPacientesTotales();
-    handleGetMonthTotal();
-    handleGetMonthTotalCollected();
-  }, []);
+    getTotalPacientes();
+    getPacientesNuevosEsteMes();
+    getMonthTotalCollected();
+  }, [getTotalPacientes, getPacientesNuevosEsteMes, getMonthTotalCollected]);
 
   const toggleVisibility = () => {
     setShowTotal((prev) => !prev);
@@ -105,11 +87,11 @@ export default function Home() {
         </Card>
 
         {/* Resumen Mensual */}
-        <Card className="md:col-span-2  border-2 rounded-lg">
+        <Card className="md:col-span-2 border-2 rounded-lg">
           <CardHeader>
-            <CardTitle className="text-h1 text-2xl ">Resumen Mensual</CardTitle>
+            <CardTitle className="text-h1 text-2xl">Resumen Mensual</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col md:grid md:grid-cols-3 md:gap-2 text-paragraph ">
+          <CardContent className="flex flex-col md:grid md:grid-cols-3 md:gap-2 text-paragraph">
             <div className="mb-4 md:mb-0">
               <h3 className="text-lg font-semibold">Pacientes Nuevos</h3>
               <p className="text-2xl font-bold">{monthTotalPatients}</p>
@@ -133,15 +115,13 @@ export default function Home() {
               <p className="text-2xl font-bold">
                 {showTotal
                   ? "******"
-                  : monthTotalCollected !== undefined
-                  ? `${monthTotalCollected?.toLocaleString("es-AR", {
+                  : monthTotalCollected.toLocaleString("es-AR", {
                       style: "currency",
                       currency: "ARS",
                       minimumFractionDigits: 0,
-                    })}`
-                  : "0"}
+                    })}
               </p>
-              <p className="text-sm  text-muted-foreground italic">
+              <p className="text-sm text-muted-foreground italic">
                 Facturas particulares
               </p>
             </div>
@@ -158,7 +138,7 @@ export default function Home() {
         {/* Visitas Recientes */}
         <Card className="md:col-span-2 md:row-span-2 border-2 rounded-lg">
           <CardHeader>
-            <CardTitle className="text-h1 text-2xl ">
+            <CardTitle className="text-h1 text-2xl">
               Visitas Recientes
             </CardTitle>
           </CardHeader>
@@ -179,14 +159,15 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-1  border-2 rounded-lg">
+        {/* Clínica de Hoy */}
+        <Card className="md:col-span-1 border-2 rounded-lg">
           <CardHeader>
-            <CardTitle className="text-h1 text-2xl ">Clínica de Hoy:</CardTitle>
+            <CardTitle className="text-h1 text-2xl">Clínica de Hoy:</CardTitle>
           </CardHeader>
           <CardContent>
             {clinicImage ? (
               <Image
-                src={clinicImage || "/placeholder.svg"}
+                src={clinicImage}
                 alt="Clínica de Hoy"
                 className="object-cover mx-auto"
                 width={200}

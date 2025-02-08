@@ -1,33 +1,42 @@
 export function useSeguro() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+  if (!backendUrl) {
+    console.error("NEXT_PUBLIC_BACKEND_URL no está definido");
+    throw new Error(
+      "La variable de entorno NEXT_PUBLIC_BACKEND_URL no está configurada"
+    );
+  }
+
   async function getSeguroById(idSeguro: number) {
     try {
       const response = await fetch(`${backendUrl}/seguro/${idSeguro}`);
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        throw new Error(`Error al obtener el seguro: ${response.statusText}`);
       }
 
-      const data = await response.json();
-
-      return data;
-    } catch (e: any) {
-      console.error(e.message);
+      return await response.json();
+    } catch (error) {
+      console.error("Error en getSeguroById:", error);
+      return Promise.reject(error);
     }
   }
 
   async function getAllSeguros() {
     try {
       const response = await fetch(`${backendUrl}/seguro/seguros`);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      const data = await response.json();
 
-      return data;
+      if (!response.ok) {
+        throw new Error(
+          `Error al obtener todos los seguros: ${response.statusText}`
+        );
+      }
+
+      return await response.json();
     } catch (error) {
-      console.error("Error al cargar los pacientes:", error);
+      console.error("Error en getAllSeguros:", error);
+      return Promise.reject(error);
     }
   }
 
@@ -36,13 +45,15 @@ export function useSeguro() {
       const response = await fetch(`${backendUrl}/seguro/prepaga/empresas`);
 
       if (!response.ok) {
-        throw new Error("Error al obtener las empresas");
+        throw new Error(
+          `Error al obtener las empresas de prepagas: ${response.statusText}`
+        );
       }
-      const data = await response.json();
 
-      return data;
-    } catch (error: any) {
-      console.error(error.message);
+      return await response.json();
+    } catch (error) {
+      console.error("Error en getEmpresaPrepagas:", error);
+      return Promise.reject(error);
     }
   }
 

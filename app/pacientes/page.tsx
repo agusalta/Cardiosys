@@ -16,12 +16,28 @@ export default function PatientsPage() {
 
   useEffect(() => {
     const fetchPatients = async () => {
+      if (!backendUrl) {
+        console.error("Error: NEXT_PUBLIC_BACKEND_URL no está definido.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch(`${backendUrl}/pacientes`);
+
         if (!response.ok) {
-          throw new Error("Error al obtener los pacientes");
+          throw new Error(
+            `Error en la respuesta del servidor: ${response.status} - ${response.statusText}`
+          );
         }
+
         const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "Error: el servidor no devolvió un array de pacientes."
+          );
+        }
+
         setPatients(data);
         setFilteredPatients(data);
       } catch (error) {
