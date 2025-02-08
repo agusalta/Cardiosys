@@ -105,7 +105,7 @@ export default function PatientDetailsPage() {
   const router = useRouter();
   const [patient, setPatient] = useState<Paciente | null>(null);
   const [EmpresaPrepaga, setEmpresaPrepagas] = useState<EmpresaSeguro[]>([]);
-  const [esPrepaga, setEsPrepaga] = useState<boolean>(false);
+  const [showEmpresaSelect, setShowEmpresaSelect] = useState(false);
   const [seguros, setSeguros] = useState<Os[]>([]);
   const [os, setOs] = useState<Os | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -154,7 +154,10 @@ export default function PatientDetailsPage() {
       }
       const patientData = await response.json();
       setPatient(patientData);
-      reset(patientData); // Resetear el formulario con los datos del paciente
+      if (patientData.ID_Empresa !== null) {
+        setShowEmpresaSelect(true);
+      }
+      reset(patientData);
     } catch (error) {
       console.error("Error al cargar el paciente:", error);
       toast({
@@ -209,17 +212,10 @@ export default function PatientDetailsPage() {
   }, [patient, fetchSeguroData, fetchAllSeguros, fetchEmpresasPrepagas]);
 
   const handleMostrarEmpresa = (selectedSeguroId: number) => {
-    const selectedSeguro = seguros.find(
-      (seguro) => seguro.ID_Seguro === selectedSeguroId
-    );
-    setEsPrepaga(selectedSeguro?.TipoSeguro === "Prepaga");
-  };
+    const prepaga = seguros.find((seguro) => seguro.TipoSeguro === "Prepaga");
 
-  useEffect(() => {
-    if (patient && seguros.length > 0) {
-      handleMostrarEmpresa(patient.ID_Seguro);
-    }
-  }, [patient, seguros]);
+    setShowEmpresaSelect(selectedSeguroId === prepaga?.ID_Seguro);
+  };
 
   if (!patient) {
     return <p>Cargando detalles del paciente...</p>;
@@ -744,7 +740,7 @@ export default function PatientDetailsPage() {
                 </div>
               </CardContent>
 
-              {esPrepaga && (
+              {showEmpresaSelect && (
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
@@ -793,6 +789,7 @@ export default function PatientDetailsPage() {
                   </div>
                 </CardContent>
               )}
+
               <CardContent>
                 <div className="flex justify-between items-center">
                   <div className="font-semibold">
@@ -824,6 +821,7 @@ export default function PatientDetailsPage() {
                     )}
                   />
                 </div>
+
                 {errors.Sexo && (
                   <p className="text-red-500 text-sm">{errors.Sexo.message}</p>
                 )}
