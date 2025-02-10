@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,36 +8,21 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
+
   const { toast } = useToast();
-  const { setIsLoggedIn } = useAuth();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${backendUrl}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-        credentials: "include", // Asegúrate de incluir las cookies en la solicitud
+      await login(username, password);
+      toast({
+        title: "Sesión iniciada",
+        description: "Ahora puedes acceder a tus datos.",
       });
-
-      const data = await res.json(); // Obtener la respuesta en formato JSON
-
-      if (res.ok) {
-        toast({
-          title: "Sesión iniciada",
-          description: "Ahora puedes acceder a tus datos.",
-        });
-        setIsLoggedIn(true);
-        router.push("/");
-      } else {
-        setError(data.message || "Error desconocido");
-      }
     } catch (error: any) {
-      console.error(error.message);
+      setError(error.message || "Ocurrió un error al iniciar sesión.");
       toast({
         title: "Error",
         description: error.message || "Ocurrió un error al iniciar sesión.",

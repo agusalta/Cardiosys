@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/tooltip";
 
 import useStore from "../context/store";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 
 const menuItems = [
@@ -34,31 +33,7 @@ const menuItems = [
 export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { clinicToday } = useStore();
-  const router = useRouter();
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  const handleLogout = async () => {
-    try {
-      // Realiza la solicitud de logout al backend
-      const res = await fetch(`${backendUrl}/auth/logout`, {
-        method: "POST",
-        credentials: "include", // Asegúrate de que las cookies se envíen
-      });
-
-      if (res.ok) {
-        // Actualiza el estado de autenticación
-        setIsLoggedIn(false);
-        // Redirige al login
-        router.push("/login");
-      } else {
-        // Si hay un error, muestra un mensaje de error
-        console.error("Error al cerrar sesión");
-      }
-    } catch (error) {
-      console.error("Error en el logout:", error);
-    }
-  };
+  const { isLoggedIn, logout } = useAuth();
 
   if (!isLoggedIn) {
     console.log("Sidebar not rendered due to login page or not logged in");
@@ -130,7 +105,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
                       "w-full justify-start text-lg mt-auto",
                       isCollapsed && "justify-center px-2"
                     )}
-                    onClick={handleLogout}
+                    onClick={logout}
                   >
                     <LogOut className={cn("h-8 w-8", !isCollapsed && "mr-2")} />
                     {!isCollapsed && <span>Cerrar Sesión</span>}
