@@ -19,7 +19,6 @@ export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const { isLoggedIn, logout } = useAuth();
 
   if (!isLoggedIn) {
-    console.log("Sidebar not rendered due to login page or not logged in");
     return null;
   }
 

@@ -31,7 +31,7 @@ export default function Home() {
         throw new Error("No se pudo traer el conteo total de pacientes");
 
       const data = await response.json();
-      setTotalPacientes(data.total || 0);
+      setTotalPacientes(data);
     } catch (error) {
       console.error(error);
       setTotalPacientes(0);

@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 export function middleware(request) {
   const authCookie = request.cookies.get("auth");
 
-  console.log("auth cookie", authCookie);
-
   // If there's no auth cookie, redirect to login
   if (!authCookie) {
     const url = request.nextUrl.clone();
