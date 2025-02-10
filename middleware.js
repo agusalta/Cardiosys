@@ -3,12 +3,7 @@ import { NextResponse } from "next/server";
 export function middleware(request) {
   const authCookie = request.cookies.get("auth");
 
-  if (!authCookie) {
-    // If the auth cookie is not present, redirect to login
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  // If the auth cookie is present, allow the request to continue
+  console.log(authCookie);
   return NextResponse.next();
 }
 
