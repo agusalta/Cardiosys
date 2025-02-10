@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useSeguro } from "@/app/data/ObraSocial";
 import type Os from "@/app/types/Seguro";
 import type EmpresaSeguro from "@/app/types/EmpresaSeguro";
+import Loader from "@/app/components/Loader";
 
 export default function CreatePatientForm() {
   const [formData, setFormData] = useState({
@@ -48,6 +49,7 @@ export default function CreatePatientForm() {
   const [seguros, setSeguros] = useState<Os[]>([]);
   const [EmpresaPrepaga, setEmpresaPrepagas] = useState<EmpresaSeguro[]>([]);
   const { getEmpresaPrepagas, getAllSeguros } = useSeguro();
+  const [isLoading, setIsLoading] = useState(false);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleGetEmpresasPrepagas = async () => {
@@ -200,7 +202,12 @@ export default function CreatePatientForm() {
       });
 
       const url = `/pacientes/${data.ID_Paciente}`;
-      router.push(url);
+
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        router.push(url);
+      }, 3000);
     } catch (error: any) {
       console.error("Error:", error?.message);
 
@@ -212,6 +219,10 @@ export default function CreatePatientForm() {
       });
     }
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>

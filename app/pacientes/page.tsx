@@ -7,6 +7,7 @@ import PatientList from "../components/PatientList";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type Paciente from "../types/Pacientes";
+import Loader from "../components/Loader";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Paciente[]>([]);
@@ -55,7 +56,7 @@ export default function PatientsPage() {
   };
 
   if (loading) {
-    return <div>Cargando...</div>;
+    return <Loader />;
   }
 
   return (

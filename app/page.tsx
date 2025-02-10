@@ -9,6 +9,7 @@ import Image from "next/image";
 import ActivityList from "./components/ActivityList";
 
 import InsurancePieChart from "./components/InsurancePieChart";
+import Loader from "./components/Loader";
 
 export default function Home() {
   const [showTotal, setShowTotal] = useState(true);
@@ -94,7 +95,9 @@ export default function Home() {
           <CardContent className="flex flex-col md:grid md:grid-cols-3 md:gap-2 text-paragraph">
             <div className="mb-4 md:mb-0">
               <h3 className="text-lg font-semibold">Pacientes Nuevos</h3>
-              <p className="text-2xl font-bold">{monthTotalPatients}</p>
+              <p className="text-2xl font-bold text-slate-600">
+                {monthTotalPatients}
+              </p>
               <p className="text-sm text-muted-foreground italic">Este mes</p>
             </div>
             <div className="relative mb-4 md:mb-0">
@@ -112,7 +115,7 @@ export default function Home() {
                   )}
                 </button>
               </h3>
-              <p className="text-2xl font-bold">
+              <p className="text-2xl font-bold text-slate-600">
                 {showTotal
                   ? "******"
                   : monthTotalCollected.toLocaleString("es-AR", {
@@ -126,8 +129,10 @@ export default function Home() {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">Total Pacientes</h3>
-              <p className="text-2xl font-bold">{totalPacientes}</p>
+              <h3 className="text-lg font-semibold">Pacientes Totales</h3>
+              <p className="text-2xl font-bold text-slate-600">
+                {totalPacientes}
+              </p>
               <p className="text-sm text-muted-foreground italic">
                 Desde el inicio
               </p>
@@ -144,7 +149,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <p className="text-paragraph">Cargando actividad reciente...</p>
+              <Loader />
             ) : (
               <ActivityList activities={activities} limit={5} />
             )}

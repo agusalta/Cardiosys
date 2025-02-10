@@ -57,6 +57,7 @@ import useCostoEstudio from "@/app/data/CostoEstudio";
 import Paciente from "@/app/types/Pacientes";
 import { set } from "zod";
 import ExportDialog from "@/app/components/ExportDialog";
+import Loader from "@/app/components/Loader";
 
 interface ArchivoEstudio {
   ID_Archivo: number;
@@ -405,7 +406,7 @@ export default function ClinicalHistoryPage() {
   });
 
   if (loading) {
-    return <div>Cargando historial clínico de {nombreCompleto}</div>;
+    return <Loader />;
   }
 
   if (error) {

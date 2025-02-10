@@ -56,6 +56,7 @@ import { useHistorialClinico } from "@/app/data/HistorialClinico";
 import { useSeguro } from "@/app/data/ObraSocial";
 import type EmpresaSeguro from "@/app/types/EmpresaSeguro";
 import { format } from "date-fns";
+import Loader from "@/app/components/Loader";
 
 const calcularIMC = (peso: number, altura: number) => {
   if (!peso || !altura) return "N/A";
@@ -114,6 +115,7 @@ export default function PatientDetailsPage() {
   const { toast } = useToast();
   const { getSeguroById, getAllSeguros, getEmpresaPrepagas } = useSeguro();
   const { historial } = useHistorialClinico(patient?.ID_Paciente);
+  const [isLoading, setIsLoading] = useState(false);
 
   const defaultValues: PatientFormData = {
     Nombre: "",
@@ -221,8 +223,8 @@ export default function PatientDetailsPage() {
     setShowEmpresaSelect(selectedSeguroId === prepaga?.ID_Seguro);
   };
 
-  if (!patient) {
-    return <p>Cargando detalles del paciente...</p>;
+  if (!patient || isLoading) {
+    return <Loader />;
   }
 
   const handleEditToggle = () => {
@@ -251,9 +253,12 @@ export default function PatientDetailsPage() {
         variant: "default",
       });
 
+      setIsLoading(true);
+
       setTimeout(() => {
+        setIsLoading(false);
         router.push("/");
-      }, 2000);
+      }, 3000);
     } catch (error) {
       console.error("Error inesperado:", error);
       toast({
@@ -304,6 +309,10 @@ export default function PatientDetailsPage() {
       });
     }
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className="space-y-6">
