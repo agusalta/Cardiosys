@@ -125,7 +125,7 @@ body {
 /* Loader */
 
 .loader {
-  width: 100px;
+  width: 50px;
   aspect-ratio: 1;
   display: grid;
   border-radius: 50%;
