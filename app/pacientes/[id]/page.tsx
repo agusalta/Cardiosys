@@ -275,7 +275,7 @@ export default function PatientDetailsPage() {
     try {
       const formattedData = {
         ...data,
-        FechaNacimiento: new Date(data.FechaNacimiento)
+        FechaNacimiento: new Date(data?.FechaNacimiento)
           .toISOString()
           .split("T")[0],
         ID_Seguro: data.ID_Seguro,

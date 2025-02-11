@@ -5,7 +5,7 @@ export default interface Paciente {
   Nombre: string;
   DNI: string;
   Apellido: string;
-  Email: string;
+  Email: string | null;
   Telefono: string;
   FechaNacimiento: string;
   Altura: number;
