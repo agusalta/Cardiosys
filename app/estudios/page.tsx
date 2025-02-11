@@ -260,7 +260,7 @@ export default function EstudiosPage() {
                     <TableCell className="text-right">
                       <Input
                         type="number"
-                        value={study.costo}
+                        value={(study.costo && study.costo) || ""}
                         onChange={(e) =>
                           handleCostChange(
                             study.ID_TipoEstudio,
