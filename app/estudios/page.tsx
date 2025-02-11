@@ -58,16 +58,37 @@ interface TipoEstudioConCosto extends TipoEstudio {
   costo: number;
 }
 
+interface EstudiosMasRealizados {
+  Cantidad_Realizados: number;
+  Nombre_Estudio: string;
+}
+
 export default function EstudiosPage() {
   const [selectedInsurance, setSelectedInsurance] = useState("");
   const [studiesWithCost, setStudiesWithCost] = useState<TipoEstudioConCosto[]>(
     []
   );
+  const [estudiosMasRealizados, setEstudiosMasRealizados] = useState<
+    EstudiosMasRealizados[]
+  >([]);
   const { fetchTipoEstudios } = useTipoEstudio();
-  const { getCostoEstudio, updateCostoEstudio } = useCostoEstudio();
+  const { getCostoEstudio, updateCostoEstudio, getEstudiosMasRealizados } =
+    useCostoEstudio();
   const [seguros, setSeguros] = useState<Seguro[]>([]);
   const { getAllSeguros } = useSeguro();
   const { toast } = useToast();
+
+  const fetchEstudiosMasRealizados = async () => {
+    try {
+      const data = await getEstudiosMasRealizados();
+      setEstudiosMasRealizados(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching studies:", error);
+      setEstudiosMasRealizados([]);
+      return;
+    }
+  };
 
   useEffect(() => {
     fetchTipoEstudios().then((studies) =>
@@ -76,6 +97,7 @@ export default function EstudiosPage() {
       )
     );
     getAllSeguros().then((seguros) => setSeguros(seguros));
+    fetchEstudiosMasRealizados();
   }, []);
 
   useEffect(() => {
@@ -189,32 +211,16 @@ export default function EstudiosPage() {
     },
   };
 
-  // Nuevo gráfico de distribución de costos
+  // Nuevo gráfico de distribución por estudios mas realizados
   const studiesDistributionData = {
-    labels: studiesWithCost.map((study) => study.NombreEstudio),
+    labels: estudiosMasRealizados.map((study) => study.Nombre_Estudio),
     datasets: [
       {
         label: "Cantidad de estudios",
-        data: studiesWithCost.map((study) => (study.costo > 0 ? 1 : 0)),
+        data: estudiosMasRealizados.map((study) => study.Cantidad_Realizados),
         backgroundColor: COLORS,
       },
     ],
-  };
-
-  const studiesDistributionOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "right" as const,
-      },
-      title: {
-        display: true,
-        text: `Distribución de estudios para ${
-          seguros.find((s) => s.ID_Seguro === Number(selectedInsurance))
-            ?.TipoSeguro || "seguro seleccionado"
-        }`,
-      },
-    },
   };
 
   return (
@@ -293,7 +299,7 @@ export default function EstudiosPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Gráfico de Costos</CardTitle>
+              <CardTitle>Gráfico de costos</CardTitle>
             </CardHeader>
             <CardContent>
               <div style={{ height: "450px", width: "100%" }}>
@@ -307,14 +313,14 @@ export default function EstudiosPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Distribución de Estudios por Tipo</CardTitle>
+              <CardTitle>Cantidad de estudios realizados por tipo</CardTitle>
             </CardHeader>
             <CardContent>
               <div style={{ height: "450px", width: "100%" }}>
                 <Pie
                   data={studiesDistributionData}
                   options={{
-                    ...studiesDistributionOptions,
+                    ...estudiosMasRealizados,
                     maintainAspectRatio: false,
                   }}
                 />

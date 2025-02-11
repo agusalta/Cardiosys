@@ -60,5 +60,21 @@ export default function useCostoEstudio() {
       return null;
     }
   }
-  return { getCostoEstudio, updateCostoEstudio };
+
+  async function getEstudiosMasRealizados() {
+    try {
+      const response = await fetch(`${backendUrl}/estudio/get/realizados`);
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      console.error(error.message);
+      return null;
+    }
+  }
+  return { getCostoEstudio, updateCostoEstudio, getEstudiosMasRealizados };
 }
