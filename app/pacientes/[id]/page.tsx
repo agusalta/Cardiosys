@@ -431,6 +431,10 @@ export default function PatientDetailsPage() {
                       render={({ field }) => (
                         <Input
                           {...field}
+                          value={field.value || ""}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
                           }`}
@@ -452,6 +456,10 @@ export default function PatientDetailsPage() {
                         <Input
                           {...field}
                           type="email"
+                          value={field.value || ""}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
                           }`}
@@ -475,6 +483,10 @@ export default function PatientDetailsPage() {
                         <Input
                           {...field}
                           type="tel"
+                          value={field.value || ""}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
                           }`}
@@ -549,9 +561,13 @@ export default function PatientDetailsPage() {
                           {...field}
                           type="number"
                           step="0.01"
-                          onChange={(e) =>
-                            field.onChange(Number.parseFloat(e.target.value))
-                          }
+                          value={field.value || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(
+                              value === "" ? null : Number.parseFloat(value)
+                            );
+                          }}
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
                           }`}
@@ -582,9 +598,13 @@ export default function PatientDetailsPage() {
                           {...field}
                           type="number"
                           step="0.1"
-                          onChange={(e) =>
-                            field.onChange(Number.parseFloat(e.target.value))
-                          }
+                          value={field.value || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(
+                              value === "" ? null : Number.parseFloat(value)
+                            );
+                          }}
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
                           }`}
@@ -648,6 +668,13 @@ export default function PatientDetailsPage() {
                         <Input
                           {...field}
                           type="number"
+                          value={field.value || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(
+                              value === "" ? 0 : Number.parseInt(value, 10)
+                            );
+                          }}
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
                           }`}
@@ -677,6 +704,13 @@ export default function PatientDetailsPage() {
                         <Input
                           {...field}
                           type="number"
+                          value={field.value || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(
+                              value === "" ? 0 : Number.parseInt(value, 10)
+                            );
+                          }}
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"
                           }`}
@@ -815,9 +849,8 @@ export default function PatientDetailsPage() {
                     control={control}
                     render={({ field }) => (
                       <Select
-                        onValueChange={field.onChange}
-                        defaultValue={patient.Sexo || ""}
-                        value={field.value}
+                        onValueChange={(value) => field.onChange(value || null)}
+                        value={field.value || ""}
                         disabled={!isEditing}
                       >
                         <SelectTrigger
