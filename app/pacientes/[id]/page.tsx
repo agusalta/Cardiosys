@@ -257,6 +257,7 @@ export default function PatientDetailsPage() {
 
       setTimeout(() => {
         setIsLoading(false);
+        setIsOpen(false);
         router.push("/");
       }, 3000);
     } catch (error) {
