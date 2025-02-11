@@ -28,6 +28,7 @@ import { useSeguro } from "@/app/data/ObraSocial";
 import type Os from "@/app/types/Seguro";
 import type EmpresaSeguro from "@/app/types/EmpresaSeguro";
 import Loader from "@/app/components/Loader";
+import { HealthAndSafety, Info, Person } from "@mui/icons-material";
 
 export default function CreatePatientForm() {
   const [formData, setFormData] = useState({
@@ -50,6 +51,8 @@ export default function CreatePatientForm() {
   const [EmpresaPrepaga, setEmpresaPrepagas] = useState<EmpresaSeguro[]>([]);
   const { getEmpresaPrepagas, getAllSeguros } = useSeguro();
   const [isLoading, setIsLoading] = useState(false);
+  const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
+
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleGetEmpresasPrepagas = async () => {
@@ -91,6 +94,12 @@ export default function CreatePatientForm() {
       ...prevState,
       [name]: value,
     }));
+
+    if (formData.nombre && formData.apellido) {
+      setIsReadyToSubmit(true);
+    } else {
+      setIsReadyToSubmit(false);
+    }
   };
 
   const handleSelectChange = (name: any, value: any) => {
@@ -125,14 +134,8 @@ export default function CreatePatientForm() {
     e.preventDefault();
 
     // Validar datos antes de enviar la solicitud
-    if (
-      !formData.nombre ||
-      !formData.apellido ||
-      !formData.dni ||
-      !formData.correo
-    ) {
-      const validationError =
-        "Todos los campos obligatorios deben ser completados.";
+    if (!formData.nombre || !formData.apellido) {
+      const validationError = "Los campos Nombre y Apellido son obligatorios.";
       toast({
         title: "Error de validación",
         description: validationError,
@@ -151,15 +154,15 @@ export default function CreatePatientForm() {
           : null,
       Nombre: formData.nombre,
       Apellido: formData.apellido,
-      DNI: formData.dni,
-      Email: formData.correo,
-      Telefono: formData.telefono,
-      FechaNacimiento: formData.fechaNacimiento,
-      Altura: formData.altura,
-      Peso: formData.peso,
-      FrecuenciaCardiaca: 75,
-      FrecuenciaRespiratoria: 18,
-      Sexo: formData.sexo,
+      DNI: formData.dni || null,
+      Email: formData.correo || null,
+      Telefono: formData.telefono || null,
+      FechaNacimiento: formData.fechaNacimiento || null,
+      Altura: formData.altura ? Number(formData.altura) : null,
+      Peso: formData.peso ? Number(formData.peso) : null,
+      FrecuenciaCardiaca: null,
+      FrecuenciaRespiratoria: null,
+      Sexo: formData.sexo || null,
     };
 
     try {
@@ -239,44 +242,78 @@ export default function CreatePatientForm() {
         <CardContent className="text-paragraph">
           <form onSubmit={handleSubmit} className="space-y-8">
             <Tabs defaultValue="personal" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="personal">Datos Personales</TabsTrigger>
-                <TabsTrigger value="vitals">Signos Vitales</TabsTrigger>
-                <TabsTrigger value="additional">
-                  Información Adicional
+              <TabsList className="grid w-full grid-cols-3 sm:grid-cols-3 gap-4">
+                <TabsTrigger
+                  value="personal"
+                  className="flex flex-col items-center sm:block"
+                >
+                  <span className="sm:hidden">
+                    <Person />
+                  </span>
+                  <span className="hidden sm:inline">Datos Personales</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="vitals"
+                  className="flex flex-col items-center sm:block"
+                >
+                  <span className="sm:hidden">
+                    <HealthAndSafety />
+                  </span>
+                  <span className="hidden sm:inline">Signos Vitales</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="additional"
+                  className="flex flex-col items-center sm:block"
+                >
+                  <span className="sm:hidden">
+                    <Info />
+                  </span>
+                  <span className="hidden sm:inline">
+                    Información Adicional
+                  </span>
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="personal">
                 <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="nombre"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Nombre
-                    </label>
-                    <Input
-                      id="nombre"
-                      name="nombre"
-                      value={formData.nombre}
-                      onChange={handleInputChange}
-                      placeholder="Juan"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="apellido"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Apellido
-                    </label>
-                    <Input
-                      id="apellido"
-                      name="apellido"
-                      value={formData.apellido}
-                      onChange={handleInputChange}
-                      placeholder="Pérez"
-                    />
+                  <div className="space-y-4 border-b  pb-4">
+                    <div>
+                      <label
+                        htmlFor="nombre"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Nombre *
+                      </label>
+                      <Input
+                        id="nombre"
+                        name="nombre"
+                        value={formData.nombre}
+                        onChange={handleInputChange}
+                        placeholder="Juan"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="apellido"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Apellido *
+                      </label>
+                      <Input
+                        id="apellido"
+                        name="apellido"
+                        value={formData.apellido}
+                        onChange={handleInputChange}
+                        placeholder="Pérez"
+                      />
+                    </div>
+                    {isReadyToSubmit && (
+                      <div
+                        className="text-sm text-green-500 mt-2"
+                        role="tooltip"
+                      >
+                        ¡Formulario listo para enviar!
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label
@@ -337,7 +374,6 @@ export default function CreatePatientForm() {
                       onChange={handlePhoneChange}
                       inputProps={{
                         name: "telefono",
-                        required: true,
                         autoFocus: true,
                       }}
                       inputStyle={{
@@ -405,7 +441,7 @@ export default function CreatePatientForm() {
                       htmlFor="sexo"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Sexo
+                      Sexo *
                     </label>
                     <Select
                       onValueChange={(value) =>
@@ -427,7 +463,7 @@ export default function CreatePatientForm() {
                       htmlFor="obraSocial"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Obra Social
+                      Obra Social *
                     </label>
                     <Select
                       onValueChange={(value) =>
@@ -483,6 +519,7 @@ export default function CreatePatientForm() {
                 </div>
               </TabsContent>
             </Tabs>
+            <p className="text-sm text-gray-500">* Campos obligatorios</p>
             <Button type="submit" className="w-full button-text font-bold">
               Crear Paciente
             </Button>
