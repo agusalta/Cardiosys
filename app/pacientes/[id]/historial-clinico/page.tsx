@@ -54,10 +54,10 @@ import {
 import { getTipoEstudio } from "@/app/utils/getTipoEstudio";
 import { fetchArchivoContentById } from "@/app/lib/fileManager";
 import useCostoEstudio from "@/app/data/CostoEstudio";
-import Paciente from "@/app/types/Pacientes";
-import { set } from "zod";
+import type Paciente from "@/app/types/Pacientes";
 import ExportDialog from "@/app/components/ExportDialog";
 import Loader from "@/app/components/Loader";
+import Pagination from "@/app/components/Pagination";
 
 interface ArchivoEstudio {
   ID_Archivo: number;
@@ -94,6 +94,8 @@ export default function ClinicalHistoryPage() {
   const { getCostoEstudio } = useCostoEstudio();
   const [costoEstudio, setCostoEstudio] = useState<number | null>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const handleGetCostoEstudio = async (ID_TipoEstudio: number) => {
     if (!id || !paciente) return;
@@ -108,7 +110,7 @@ export default function ClinicalHistoryPage() {
   useEffect(() => {
     if (!id || !paciente || !editingEntry) return;
     handleGetCostoEstudio(editingEntry?.ID_TipoEstudio);
-  }, [editingEntry]);
+  }, [id, paciente, editingEntry]); // Added dependencies
 
   useEffect(() => {
     if (!id) return;
@@ -472,81 +474,100 @@ export default function ClinicalHistoryPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredHistory.map((entry) => (
-                <TableRow key={`history-${entry.ID_Estudio}`}>
-                  <TableCell>
-                    {new Date(entry.Fecha).toLocaleDateString("es-AR", {
-                      timeZone: "UTC",
-                    })}
-                  </TableCell>
-                  <TableCell>{entry.Asunto} </TableCell>
-                  <TableCell>{entry.NombreTipoEstudio}</TableCell>
-                  <TableCell>
-                    {entry.Factura ? (
-                      <Badge variant="secondary">
-                        <Receipt className="w-4 h-4 mr-2" />
-                        {new Intl.NumberFormat("es-AR", {
-                          style: "decimal",
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }).format(entry.Factura)}{" "}
-                        ARS
-                      </Badge>
-                    ) : (
-                      <span>No aplica</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {studyFiles[entry.ID_Estudio]?.map((file, index) => (
-                      <div key={file.ID_Archivo}>
+              {filteredHistory
+                .slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage
+                )
+                .map((entry) => (
+                  <TableRow key={`history-${entry.ID_Estudio}`}>
+                    <TableCell>
+                      {new Date(entry.Fecha).toLocaleDateString("es-AR", {
+                        timeZone: "UTC",
+                      })}
+                    </TableCell>
+                    <TableCell>{entry.Asunto} </TableCell>
+                    <TableCell>{entry.NombreTipoEstudio}</TableCell>
+                    <TableCell>
+                      {entry.Factura ? (
+                        <Badge variant="secondary">
+                          <Receipt className="w-4 h-4 mr-2" />
+                          {new Intl.NumberFormat("es-AR", {
+                            style: "decimal",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(entry.Factura)}{" "}
+                          ARS
+                        </Badge>
+                      ) : (
+                        <span>No aplica</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {studyFiles[entry.ID_Estudio]?.map((file, index) => (
+                        <div key={file.ID_Archivo}>
+                          <Button
+                            variant="link"
+                            onClick={async () => {
+                              await fetchArchivoContentById(file.ID_Archivo);
+                            }}
+                            disabled
+                            className="text-border"
+                          >
+                            {file.NombreArchivo || `File ${index + 1}`}
+                          </Button>
+                        </div>
+                      ))}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link
+                            href={`/pacientes/${id}/historial-clinico/${entry.ID_Estudio}`}
+                            title="Ver"
+                            className="font-bold border-2 rounded-lg button-text bg-background"
+                          >
+                            <FileOpen className="w-4 h-4" />
+                          </Link>
+                        </Button>
                         <Button
-                          variant="link"
-                          onClick={async () => {
-                            await fetchArchivoContentById(file.ID_Archivo);
-                          }}
-                          disabled
-                          className="text-border"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(entry)}
+                          title="Editar"
+                          className="font-bold border-2 rounded-lg button-text bg-tertiary"
                         >
-                          {file.NombreArchivo || `File ${index + 1}`}
+                          <Edit className="w-4 h-4 text-black" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(entry.ID_Estudio)}
+                          title="Eliminar"
+                          className="font-bold border-2 rounded-lg button-text bg-danger"
+                        >
+                          <Delete className="w-4 h-4 text-background" />
                         </Button>
                       </div>
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link
-                          href={`/pacientes/${id}/historial-clinico/${entry.ID_Estudio}`}
-                          title="Ver"
-                          className="font-bold border-2 rounded-lg button-text bg-background"
-                        >
-                          <FileOpen className="w-4 h-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(entry)}
-                        title="Editar"
-                        className="font-bold border-2 rounded-lg button-text bg-tertiary"
-                      >
-                        <Edit className="w-4 h-4 text-black" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(entry.ID_Estudio)}
-                        title="Eliminar"
-                        className="font-bold border-2 rounded-lg button-text bg-danger"
-                      >
-                        <Delete className="w-4 h-4 text-background" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(filteredHistory.length / itemsPerPage)}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+          <p className="text-sm text-muted-foreground mt-2">
+            Mostrando{" "}
+            {Math.min(
+              (currentPage - 1) * itemsPerPage + 1,
+              filteredHistory.length
+            )}{" "}
+            - {Math.min(currentPage * itemsPerPage, filteredHistory.length)} de{" "}
+            {filteredHistory.length} estudios
+          </p>
         </CardContent>
       </Card>
 
