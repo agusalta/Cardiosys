@@ -43,7 +43,7 @@ export default function InsurancePieChart() {
     : 0;
 
   return (
-    <Card className="w-full h-full border-2 rounded-lg">
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle className="text-left text-3xl font-bold">
           Distribución de Seguros
