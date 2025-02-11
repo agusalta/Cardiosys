@@ -24,6 +24,8 @@ export const patientSchema = z.object({
   FechaNacimiento: z
     .string()
     .or(z.literal(""))
+    .optional()
+    .nullable()
     .refine((date) => {
       if (!date) return true;
       const parsedDate = new Date(date);
