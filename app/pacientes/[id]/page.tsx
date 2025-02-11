@@ -88,8 +88,10 @@ interface Os {
   TipoSeguro: string;
 }
 
-function calcularEdad(fechaNacimiento: string): number {
+function calcularEdad(fechaNacimiento: string | null): number {
+  if (!fechaNacimiento) return 0;
   const nacimiento = new Date(fechaNacimiento);
+  if (isNaN(nacimiento.getTime())) return 0;
   const hoy = new Date();
   let edad = hoy.getFullYear() - nacimiento.getFullYear();
   const mes = hoy.getMonth() - nacimiento.getMonth();
@@ -144,7 +146,7 @@ export default function PatientDetailsPage() {
     defaultValues,
   });
 
-  const edad = calcularEdad(watch("FechaNacimiento"));
+  const edad = calcularEdad(watch("FechaNacimiento") || null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   // Memoizar funciones para evitar recrearlas en cada renderizado
@@ -236,6 +238,7 @@ export default function PatientDetailsPage() {
 
   const handleDeletePatient = async () => {
     try {
+      setIsDeleting(true);
       const response = await fetch(
         `${backendUrl}/pacientes/${patient?.ID_Paciente}`,
         {
@@ -244,6 +247,7 @@ export default function PatientDetailsPage() {
       );
 
       if (!response.ok) {
+        const errorData = await response.json();
         throw new Error("Error al eliminar el paciente");
       }
 
@@ -265,9 +269,13 @@ export default function PatientDetailsPage() {
       toast({
         title: "Error",
         description:
-          "No se pudo eliminar el paciente. Por favor, inténtelo de nuevo.",
+          error instanceof Error
+            ? error.message
+            : "Error desconocido al eliminar el paciente",
         variant: "destructive",
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -275,9 +283,9 @@ export default function PatientDetailsPage() {
     try {
       const formattedData = {
         ...data,
-        FechaNacimiento: new Date(data?.FechaNacimiento)
-          .toISOString()
-          .split("T")[0],
+        FechaNacimiento: data.FechaNacimiento
+          ? new Date(data.FechaNacimiento).toISOString().split("T")[0]
+          : null,
         ID_Seguro: data.ID_Seguro,
         Sexo: data.Sexo,
       };
@@ -295,7 +303,15 @@ export default function PatientDetailsPage() {
       }
 
       const updatedPatient = await response.json();
-      setPatient(updatedPatient);
+      if (updatedPatient.message) {
+        // This is likely an error or success message, not the updated patient data
+        toast({
+          title: "Éxito",
+          description: updatedPatient.message,
+        });
+      } else {
+        setPatient(updatedPatient);
+      }
       setIsEditing(false);
       toast({
         title: "Éxito",
@@ -512,12 +528,12 @@ export default function PatientDetailsPage() {
                           type="date"
                           value={
                             field.value
-                              ? format(new Date(field.value), "yyyy-MM-dd") // El formato correcto para un input de tipo date
+                              ? format(new Date(field.value), "yyyy-MM-dd")
                               : ""
                           }
                           onChange={(e) => {
-                            const parsed = new Date(e.target.value); // Parsear el valor como fecha
-                            field.onChange(parsed.toISOString());
+                            const value = e.target.value;
+                            field.onChange(value ? value : null);
                           }}
                           className={`w-48 ${
                             isEditing ? "bg-white" : "bg-gray-100"

@@ -23,11 +23,9 @@ export const patientSchema = z.object({
     .or(z.literal("")),
   FechaNacimiento: z
     .string()
-    .or(z.literal(""))
-    .optional()
     .nullable()
     .refine((date) => {
-      if (!date) return true;
+      if (!date) return true; // Allow null values
       const parsedDate = new Date(date);
       return !isNaN(parsedDate.getTime()) && parsedDate < new Date();
     }, "La fecha de nacimiento no puede ser en el futuro"),
