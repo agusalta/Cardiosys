@@ -562,7 +562,12 @@ export default function ClinicalHistoryPage() {
           }
         }}
       >
-        <DialogContent className="max-w-[600px] sm:max-w-[650px] max-h-[80vh] overflow-y-auto text-paragraph">
+        <DialogContent
+          className="max-w-[600px] sm:max-w-[650px] max-h-[80vh] overflow-y-auto text-paragraph"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>
               {isCreating

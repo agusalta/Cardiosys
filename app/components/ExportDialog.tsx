@@ -39,8 +39,20 @@ const ExportDialog = ({
     if (fechaDesde && fechaHasta) {
       const filtrados = historial.filter(({ Fecha }) => {
         const fechaEstudio = new Date(Fecha);
-        return fechaEstudio >= fechaDesde && fechaEstudio <= fechaHasta;
+
+        // Establece las horas a 00:00 para comparar solo la fecha (sin la hora)
+        const fechaDesdeSinHora = new Date(fechaDesde);
+        const fechaHastaSinHora = new Date(fechaHasta);
+
+        // Establece la hora de las fechas de comparación a las 23:59:59 para incluir todo el día
+        fechaDesdeSinHora.setHours(0, 0, 0, 0);
+        fechaHastaSinHora.setHours(23, 59, 59, 999);
+
+        return (
+          fechaEstudio >= fechaDesdeSinHora && fechaEstudio <= fechaHastaSinHora
+        );
       });
+
       setEstudiosFiltrados(filtrados);
       setCantidadEstudios(filtrados.length);
       setError(null);
@@ -128,16 +140,15 @@ const ExportDialog = ({
       "Fecha",
       "Asunto",
       "Nombre del Estudio",
-      "Factura",
-      "Observación",
+      "Observación", // Aquí hemos eliminado "Factura"
     ];
     const tableRows = estudiosFiltrados.map((estudio) => [
       format(new Date(estudio.Fecha), "dd/MM/yyyy"),
       estudio.Asunto,
       estudio.NombreTipoEstudio,
-      `$${estudio.Factura?.toFixed(2)}`,
-      estudio.Observacion,
+      estudio.Observacion, // Aquí también eliminamos la columna Factura
     ]);
+
     (pdf as any).autoTable({
       head: [tableColumn],
       body: tableRows,
@@ -161,11 +172,9 @@ const ExportDialog = ({
         0: { cellWidth: 20 }, // Fecha
         1: { cellWidth: 30 }, // Asunto
         2: { cellWidth: 40 }, // Nombre del Estudio
-        3: { cellWidth: 25 }, // Factura
-        4: { cellWidth: 75 }, // Observación (más grande)
+        3: { cellWidth: 75 }, // Observación (más grande)
       },
     });
-
     // Footer
     const pageCount = (pdf as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
