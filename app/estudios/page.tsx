@@ -213,13 +213,13 @@ export default function EstudiosPage() {
 
   // Nuevo gráfico de distribución por estudios mas realizados
   const studiesDistributionData = {
-    labels: estudiosMasRealizados?.map((study) => study.Nombre_Estudio) || [],
+    labels: estudiosMasRealizados?.map((study) => study?.Nombre_Estudio) || "",
     datasets: [
       {
         label: "Cantidad de estudios",
         data:
-          estudiosMasRealizados?.map((study) => study.Cantidad_Realizados) ||
-          [],
+          estudiosMasRealizados?.map((study) => study?.Cantidad_Realizados) ||
+          " ",
         backgroundColor: COLORS,
       },
     ],
