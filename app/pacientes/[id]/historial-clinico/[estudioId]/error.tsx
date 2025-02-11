@@ -37,9 +37,6 @@ export default function Error({
             soporte técnico.
           </p>
         </CardContent>
-        <CardFooter>
-          <Button onClick={reset}>Intentar nuevamente</Button>
-        </CardFooter>
       </Card>
     </div>
   );
