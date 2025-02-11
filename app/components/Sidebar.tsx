@@ -35,13 +35,6 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { clinicToday } = useStore();
   const { isLoggedIn, logout } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.push("/login");
-    }
-  }, [isLoggedIn, router]);
 
   if (!isLoggedIn) {
     return null;

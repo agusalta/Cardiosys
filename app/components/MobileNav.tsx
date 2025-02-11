@@ -20,12 +20,6 @@ export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const { isLoggedIn, logout } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.push("/login");
-    }
-  }, [isLoggedIn, router]);
-
   if (!isLoggedIn) {
     return null;
   }
