@@ -27,16 +27,12 @@ export default function PatientsPage() {
         const response = await fetch(`${backendUrl}/pacientes`);
 
         if (!response.ok) {
-          throw new Error(
-            `Error en la respuesta del servidor: ${response.status} - ${response.statusText}`
-          );
+          throw new Error(`Error en la respuesta del servidor`);
         }
 
         const data = await response.json();
         if (!Array.isArray(data)) {
-          throw new Error(
-            "Error: el servidor no devolvió un array de pacientes."
-          );
+          throw new Error("Error: el servidor no devolvió pacientes.");
         }
 
         setPatients(data);

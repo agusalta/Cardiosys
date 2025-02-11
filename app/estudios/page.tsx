@@ -68,12 +68,13 @@ export default function EstudiosPage() {
   const [studiesWithCost, setStudiesWithCost] = useState<TipoEstudioConCosto[]>(
     []
   );
-  const [estudiosMasRealizados, setEstudiosMasRealizados] = useState<
-    EstudiosMasRealizados[]
-  >([]);
+
   const { fetchTipoEstudios } = useTipoEstudio();
   const { getCostoEstudio, updateCostoEstudio, getEstudiosMasRealizados } =
     useCostoEstudio();
+  const [estudiosMasRealizados, setEstudiosMasRealizados] = useState<
+    EstudiosMasRealizados[]
+  >([]);
   const [seguros, setSeguros] = useState<Seguro[]>([]);
   const { getAllSeguros } = useSeguro();
   const { toast } = useToast();
@@ -81,12 +82,11 @@ export default function EstudiosPage() {
   const fetchEstudiosMasRealizados = async () => {
     try {
       const data = await getEstudiosMasRealizados();
+      console.log("Estudios más realizados:", data);
       setEstudiosMasRealizados(data);
-      console.log(data);
     } catch (error) {
       console.error("Error fetching studies:", error);
       setEstudiosMasRealizados([]);
-      return;
     }
   };
 
@@ -213,11 +213,13 @@ export default function EstudiosPage() {
 
   // Nuevo gráfico de distribución por estudios mas realizados
   const studiesDistributionData = {
-    labels: estudiosMasRealizados.map((study) => study.Nombre_Estudio),
+    labels: estudiosMasRealizados?.map((study) => study.Nombre_Estudio) || [],
     datasets: [
       {
         label: "Cantidad de estudios",
-        data: estudiosMasRealizados.map((study) => study.Cantidad_Realizados),
+        data:
+          estudiosMasRealizados?.map((study) => study.Cantidad_Realizados) ||
+          [],
         backgroundColor: COLORS,
       },
     ],
