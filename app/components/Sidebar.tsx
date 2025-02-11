@@ -21,8 +21,6 @@ import {
 } from "@/components/ui/tooltip";
 
 import useStore from "../context/store";
-import { useAuth } from "../context/AuthContext";
-import { useRouter } from "next/navigation";
 
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/" },
@@ -34,11 +32,6 @@ const menuItems = [
 export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { clinicToday } = useStore();
-  const { isLoggedIn, logout } = useAuth();
-
-  if (!isLoggedIn) {
-    return null;
-  }
 
   const clinicEmoji =
     clinicToday === "Pinamed"

@@ -5,8 +5,6 @@ import Link from "next/link";
 import { Home, Users, FileText, Settings, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "../context/AuthContext";
-import { useRouter } from "next/navigation";
 
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/" },
@@ -17,12 +15,6 @@ const menuItems = [
 
 export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
-  const router = useRouter();
-
-  if (!isLoggedIn) {
-    return null;
-  }
 
   return (
     <div className={cn("fixed top-0 left-0 w-full z-50", className)}>
