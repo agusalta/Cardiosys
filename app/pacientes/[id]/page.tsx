@@ -176,7 +176,7 @@ export default function PatientDetailsPage() {
     }
   }, [id, reset, toast, backendUrl]);
 
-  const fetchSeguroData = useCallback(async () => {
+  const fetchSeguroData = async () => {
     if (!patient?.ID_Seguro) return;
 
     try {
@@ -185,25 +185,25 @@ export default function PatientDetailsPage() {
     } catch (error) {
       console.error("Error al cargar el seguro:", error);
     }
-  }, [patient?.ID_Seguro, getSeguroById]);
+  };
 
-  const fetchAllSeguros = useCallback(async () => {
+  const fetchAllSeguros = async () => {
     try {
       const seguros = await getAllSeguros();
       setSeguros(seguros);
     } catch (error) {
       console.error("Error al cargar los seguros:", error);
     }
-  }, [getAllSeguros]);
+  };
 
-  const fetchEmpresasPrepagas = useCallback(async () => {
+  const fetchEmpresasPrepagas = async () => {
     try {
       const empresas = await getEmpresaPrepagas();
       setEmpresaPrepagas(empresas);
     } catch (error) {
       console.error("Error al cargar las empresas:", error);
     }
-  }, [getEmpresaPrepagas]);
+  };
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -217,7 +217,7 @@ export default function PatientDetailsPage() {
       fetchAllSeguros();
       fetchEmpresasPrepagas();
     }
-  }, [patient, fetchSeguroData, fetchAllSeguros, fetchEmpresasPrepagas]);
+  }, [patient]);
 
   const handleMostrarEmpresa = (selectedSeguroId: number) => {
     const prepaga = seguros.find((seguro) => seguro.TipoSeguro === "Prepaga");
