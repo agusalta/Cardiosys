@@ -45,7 +45,10 @@ CardioSys is a web application designed to manage patient information and activi
    npm install
 4. Configure the environment variables. 
    Create a *.env.local* file in the root of the project and add the following lines:
-   NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_PASSWORD, NEXT_PUBLIC_USERNAME.
+   ```bash
+   NEXT_PUBLIC_BACKEND_URL=your_backend_url
+   NEXT_PUBLIC_PASSWORD=your_auth_password
+   NEXT_PUBLIC_USERNAME=your_auth_username
 5. Start the application:
     ```bash
    npm run dev
