@@ -1,81 +1,63 @@
-# Sistema Médico CardioSys
+# CardioSys Medical System
 
-<img src="app/assets/demo/demo-preview.png" alt="Vista previa" style="max-width: 100%;" />
+<img src="app/assets/demo/demo-preview.png" alt="Preview" style="max-width: 100%;" />
 
-## Descripción
+## Description
 
-CardioSys es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica. 
-Proporciona un panel de control que muestra estadísticas clave, como el número total de pacientes, pacientes nuevos en el mes, 
-y el total recaudado. Además, permite visualizar las visitas recientes y la imagen de la clínica del día.
+CardioSys is a web application designed to manage patient information and activities within a clinic. It provides a dashboard that displays key statistics, such as the total number of patients, new patients in the current month, and total revenue. Additionally, it allows users to view recent visits and the clinic's daily image.
 
-## Características
+## Features
 
-- **Panel de Control**: Visualiza estadísticas importantes de la clínica.
-- **Resumen Mensual**: Muestra el número de pacientes nuevos, total recaudado y pacientes totales.
-- **Visitas Recientes**: Lista las actividades recientes en la clínica.
-- **Clínica de Hoy**: Muestra la imagen de la clínica actual.
+- **Dashboard**: Visualize important clinic statistics.
+- **Monthly Summary**: Display the number of new patients, total revenue, and total patients.
+- **Recent Visits**: List recent activities at the clinic.
+- **Today's Clinic**: Show the current image of the clinic.
 
-## Tecnologías Utilizadas
+## Technologies Used
 
-- **React**: Biblioteca de JavaScript para construir interfaces de usuario.
-- **Next.js**: Framework de React para aplicaciones web.
-- **Material-UI**: Biblioteca de componentes de interfaz de usuario.
-- **Axios**: Cliente HTTP para realizar solicitudes a la API.
-- **Context API**: Para la gestión del estado global de la aplicación.
+- **React**: JavaScript library for building user interfaces.
+- **Next.js**: React framework for web applications.
+- **Material-UI**: UI component library.
+- **Axios**: HTTP client for making API requests.
+- **Context API**: For managing the global state of the application.
 
-## Instalación
+## Installation
 
-1. Clona el repositorio:
-
+1. Clone the repository:
    ```bash
-   git clone https://github.com/tu_usuario/sistema-medico.git
-   ```
-
-2. Navega al directorio del proyecto:
-
+   git clone [https://github.com/agusalta/CardioSys](https://github.com/agusalta/Cardiosys.git)
+2. Navigate to the project directory:
    ```bash
    cd sistema-medico
-   ```
-
-3. Instala las dependencias:
-
+3. Install the dependencies:
    ```bash
    npm install
-   ```
-
-4. Configura las variables de entorno. Crea un archivo `.env.local` en la raíz del proyecto y añade la siguiente línea:
-
-   ```plaintext
-   NEXT_PUBLIC_BACKEND_URL=tu_url_del_backend
-   ```
-
-5. Inicia la aplicación:
-
-   ```bash
+4. Configure the environment variables. 
+   Create a *.env.local* file in the root of the project and add the following lines:
+   NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_PASSWORD, NEXT_PUBLIC_USERNAME.
+5. Start the application:
+    ```bash
    npm run dev
-   ```
+6. Clone the backend repository and start the server by following the steps in the repository:
+   ([https://github.com/agusalta/CardioSys-Back.git]).
+7. Open your browser and visit:
+   **http://localhost:3000**
 
-6. Abre tu navegador y visita `http://localhost:3000`.
+## Usage
 
-## Uso
+Once the application is running, you can login using your .env credentials and then you can access the dashboard where the clinic statistics are displayed. 
+You can interact with the buttons to toggle the visibility of total revenue and navigate to the patients section.
 
-Una vez que la aplicación esté en funcionamiento, podes acceder al panel de control donde se muestran las estadísticas de la clínica. 
-Podes interactuar con los botones para alternar la visibilidad de los totales recaudados y navegar a la sección de pacientes.
+## Contributions
 
-## Contribuciones
+Contributions are welcome. If you wish to contribute, please follow these steps:
 
-Las contribuciones son bienvenidas. Si deseas contribuir, por favor segui estos pasos:
+1. Fork the project.
+2. Create a new branch (`git checkout -b feature/new-feature`).
+3. Make your changes and commit them (`git commit -m 'Add new feature'`).
+4. Push your changes (`git push origin feature/new-feature`).
+5. Open a Pull Request.
 
-1. Hace un fork del proyecto.
-2. Crea una nueva rama (`git checkout -b feature/nueva-caracteristica`).
-3. Realiza tus cambios y haz un commit (`git commit -m 'Añadir nueva característica'`).
-4. Envía tus cambios (`git push origin feature/nueva-caracteristica`).
-5. Abrí un Pull Request.
+## Contact
 
-## Licencia
-
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
-
-## Contacto
-
-Para más información, puedes contactar a [tu_email@ejemplo.com](mailto:agustinaltamirano2024@gmail.com).
+For more information, you can contact [agustinaltamirano2024@gmail.com](mailto:agustinaltamirano2024@gmail.com).
