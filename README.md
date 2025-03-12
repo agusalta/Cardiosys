@@ -1,5 +1,7 @@
 # Sistema Médico
 
+[![Vista previa del proyecto](assets/demo/demo-preview.png)]
+
 ## Descripción
 
 Sistema Médico es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica. 
