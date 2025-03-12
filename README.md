@@ -2,7 +2,9 @@
 
 ## Descripción
 
-Sistema Médico es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica. Proporciona un panel de control que muestra estadísticas clave, como el número total de pacientes, pacientes nuevos en el mes, y el total recaudado. Además, permite visualizar las visitas recientes y la imagen de la clínica del día.
+Sistema Médico es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica. 
+Proporciona un panel de control que muestra estadísticas clave, como el número total de pacientes, pacientes nuevos en el mes, 
+y el total recaudado. Además, permite visualizar las visitas recientes y la imagen de la clínica del día.
 
 ## Características
 
@@ -55,17 +57,18 @@ Sistema Médico es una aplicación web diseñada para gestionar la información 
 
 ## Uso
 
-Una vez que la aplicación esté en funcionamiento, podrás acceder al panel de control donde se mostrarán las estadísticas de la clínica. Puedes interactuar con los botones para alternar la visibilidad de los totales recaudados y navegar a la sección de pacientes.
+Una vez que la aplicación esté en funcionamiento, podes acceder al panel de control donde se muestran las estadísticas de la clínica. 
+Podes interactuar con los botones para alternar la visibilidad de los totales recaudados y navegar a la sección de pacientes.
 
 ## Contribuciones
 
-Las contribuciones son bienvenidas. Si deseas contribuir, por favor sigue estos pasos:
+Las contribuciones son bienvenidas. Si deseas contribuir, por favor segui estos pasos:
 
-1. Haz un fork del proyecto.
+1. Hace un fork del proyecto.
 2. Crea una nueva rama (`git checkout -b feature/nueva-caracteristica`).
 3. Realiza tus cambios y haz un commit (`git commit -m 'Añadir nueva característica'`).
 4. Envía tus cambios (`git push origin feature/nueva-caracteristica`).
-5. Abre un Pull Request.
+5. Abrí un Pull Request.
 
 ## Licencia
 
@@ -73,4 +76,4 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE)
 
 ## Contacto
 
-Para más información, puedes contactar a [tu_email@ejemplo.com](mailto:tu_email@ejemplo.com).
+Para más información, puedes contactar a [tu_email@ejemplo.com](mailto:agustinaltamirano2024@gmail.com).
