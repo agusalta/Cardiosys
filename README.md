@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistema Médico
 
-## Getting Started
+## Descripción
 
-First, run the development server:
+Sistema Médico es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica. Proporciona un panel de control que muestra estadísticas clave, como el número total de pacientes, pacientes nuevos en el mes, y el total recaudado. Además, permite visualizar las visitas recientes y la imagen de la clínica del día.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Características
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Panel de Control**: Visualiza estadísticas importantes de la clínica.
+- **Resumen Mensual**: Muestra el número de pacientes nuevos, total recaudado y pacientes totales.
+- **Visitas Recientes**: Lista las actividades recientes en la clínica.
+- **Clínica de Hoy**: Muestra la imagen de la clínica actual.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tecnologías Utilizadas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **React**: Biblioteca de JavaScript para construir interfaces de usuario.
+- **Next.js**: Framework de React para aplicaciones web.
+- **Material-UI**: Biblioteca de componentes de interfaz de usuario.
+- **Axios**: Cliente HTTP para realizar solicitudes a la API.
+- **Context API**: Para la gestión del estado global de la aplicación.
 
-## Learn More
+## Instalación
 
-To learn more about Next.js, take a look at the following resources:
+1. Clona el repositorio:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   git clone https://github.com/tu_usuario/sistema-medico.git
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. Navega al directorio del proyecto:
 
-## Deploy on Vercel
+   ```bash
+   cd sistema-medico
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Instala las dependencias:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   npm install
+   ```
+
+4. Configura las variables de entorno. Crea un archivo `.env.local` en la raíz del proyecto y añade la siguiente línea:
+
+   ```plaintext
+   NEXT_PUBLIC_BACKEND_URL=tu_url_del_backend
+   ```
+
+5. Inicia la aplicación:
+
+   ```bash
+   npm run dev
+   ```
+
+6. Abre tu navegador y visita `http://localhost:3000`.
+
+## Uso
+
+Una vez que la aplicación esté en funcionamiento, podrás acceder al panel de control donde se mostrarán las estadísticas de la clínica. Puedes interactuar con los botones para alternar la visibilidad de los totales recaudados y navegar a la sección de pacientes.
+
+## Contribuciones
+
+Las contribuciones son bienvenidas. Si deseas contribuir, por favor sigue estos pasos:
+
+1. Haz un fork del proyecto.
+2. Crea una nueva rama (`git checkout -b feature/nueva-caracteristica`).
+3. Realiza tus cambios y haz un commit (`git commit -m 'Añadir nueva característica'`).
+4. Envía tus cambios (`git push origin feature/nueva-caracteristica`).
+5. Abre un Pull Request.
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+## Contacto
+
+Para más información, puedes contactar a [tu_email@ejemplo.com](mailto:tu_email@ejemplo.com).
