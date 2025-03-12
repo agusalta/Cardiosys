@@ -33,7 +33,11 @@ const menuItems = [
 export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { clinicToday } = useStore();
-  const { logout } = useAuth();
+  const { logout, isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return null;
+  }
 
   const clinicEmoji =
     clinicToday === "Pinamed"
