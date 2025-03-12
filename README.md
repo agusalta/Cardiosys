@@ -49,13 +49,13 @@ CardioSys is a web application designed to manage patient information and activi
    NEXT_PUBLIC_BACKEND_URL=your_backend_url
    NEXT_PUBLIC_PASSWORD=your_auth_password
    NEXT_PUBLIC_USERNAME=your_auth_username
-5. Start the application:
+5. Clone the backend repository and start the server by following the steps in the repository:
+   ([https://github.com/agusalta/CardioSys-Back.git]).
+6. Start the application:
     ```bash
    npm run dev
-6. Clone the backend repository and start the server by following the steps in the repository:
-   ([https://github.com/agusalta/CardioSys-Back.git]).
-7. Open your browser and visit:
-   **http://localhost:3000**
+7. Open your browser and visit default host:
+   **http://localhost:3001**
 
 ## Usage
 
