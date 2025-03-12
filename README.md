@@ -2,8 +2,8 @@
 
 ## Descripción
 
-Sistema Médico es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica. 
-Proporciona un panel de control que muestra estadísticas clave, como el número total de pacientes, pacientes nuevos en el mes, 
+Sistema Médico es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica.
+Proporciona un panel de control que muestra estadísticas clave, como el número total de pacientes, pacientes nuevos en el mes,
 y el total recaudado. Además, permite visualizar las visitas recientes y la imagen de la clínica del día.
 
 ## Características
@@ -57,7 +57,7 @@ y el total recaudado. Además, permite visualizar las visitas recientes y la ima
 
 ## Uso
 
-Una vez que la aplicación esté en funcionamiento, podes acceder al panel de control donde se muestran las estadísticas de la clínica. 
+Una vez que la aplicación esté en funcionamiento, podes acceder al panel de control donde se muestran las estadísticas de la clínica.
 Podes interactuar con los botones para alternar la visibilidad de los totales recaudados y navegar a la sección de pacientes.
 
 ## Contribuciones
