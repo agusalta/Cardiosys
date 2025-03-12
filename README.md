@@ -1,6 +1,6 @@
 # Sistema Médico CardioSys
 
-<img src="app/assets/demo/demo-preview.png" alt="Vista previa" width="385" height="217">
+<img src="app/assets/demo/demo-preview.png" alt="Vista previa" style="max-width: 100%;" />
 
 ## Descripción
 
