@@ -1,10 +1,10 @@
-# Sistema Médico
+# Sistema Médico CardioSys
 
-[![Vista previa del proyecto](assets/demo/demo-preview.png)]
+<img src="assets/demo/postspark-export.png" alt="Vista previa" width="385" height="217">
 
 ## Descripción
 
-Sistema Médico es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica. 
+CardioSys es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica. 
 Proporciona un panel de control que muestra estadísticas clave, como el número total de pacientes, pacientes nuevos en el mes, 
 y el total recaudado. Además, permite visualizar las visitas recientes y la imagen de la clínica del día.
 
