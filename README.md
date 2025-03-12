@@ -1,31 +1,36 @@
 # CardioSys Medical System
 
-<img src="app/assets/demo/demo-preview.png" alt="Preview" style="max-width: 100%;" />
+<img src="app/assets/demo/demo-preview.png" alt="Preview of the home page" style="max-width: 100%;" />
+<img src="app/assets/demo/demo-preview-2.png" alt="Preview of the patients section" style="max-width: 100%;" />
+<img src="app/assets/demo/demo-preview-3.png" alt="Preview of a patient information" style="max-width: 100%;" />
 
-<<<<<<< HEAD
-Sistema Médico es una aplicación web diseñada para gestionar la información de pacientes y actividades en una clínica.
-Proporciona un panel de control que muestra estadísticas clave, como el número total de pacientes, pacientes nuevos en el mes,
-y el total recaudado. Además, permite visualizar las visitas recientes y la imagen de la clínica del día.
-=======
 ## Description
->>>>>>> 2697bab2b13eb8cc03e741da58c7861c02e0ee32
 
-CardioSys is a web application designed to manage patient information and activities within a clinic. It provides a dashboard that displays key statistics, such as the total number of patients, new patients in the current month, and total revenue. Additionally, it allows users to view recent visits and the clinic's daily image.
+CardioSys is a web application designed to manage patient information and activities within a medical clinic. It offers a user-friendly interface for clinicians and medical staff to handle patients clinical data securely, track appointments, and monitor key statistics, all while improving the efficiency of medical office operations. The system is equipped with advanced features, making it an essential tool for better organization and patient care.
 
 ## Features
 
-- **Dashboard**: Visualize important clinic statistics.
-- **Monthly Summary**: Display the number of new patients, total revenue, and total patients.
-- **Recent Visits**: List recent activities at the clinic.
-- **Today's Clinic**: Show the current image of the clinic.
+- **Dashboard**:  
+  Visualize key clinic statistics, including the total number of patients, new patients for the current month, and total revenue. This central hub provides a quick overview of your clinic's operations.
+
+- **Monthly Summary**:  
+  Displays essential monthly metrics, such as the number of new patients, total revenue, and overall patient count, helping the clinic to track growth and performance.
+
+- **Recent Visits**:  
+  Provides a list of recent patient visits, enabling medical staff to quickly access information about past appointments, improving decision-making and workflow.
+
+- **Today's Clinic**:  
+  Showcases the current image of the clinic, adding a dynamic visual element to the system that updates throughout the day.
+
+- **File Management**:  
+  Securely upload and manage medical files and documents, giving users easy access to critical patient information.
+
+- **Report Generation**:  
+  Generate reports in PDF format for patient visits, revenue summaries, or any custom report needed, aiding in compliance and easy data sharing.
 
 ## Technologies Used
 
-- **React**: JavaScript library for building user interfaces.
-- **Next.js**: React framework for web applications.
-- **Material-UI**: UI component library.
-- **Axios**: HTTP client for making API requests.
-- **Context API**: For managing the global state of the application.
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black) ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) ![Shadcn-UI](https://img.shields.io/badge/Shadcn_UI-000000?style=for-the-badge&logo=shadcn&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) ![SQL](https://img.shields.io/badge/SQL-003B57?style=for-the-badge&logo=postgresql&logoColor=white) ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white) ![Railway](https://img.shields.io/badge/Railway-000000?style=for-the-badge&logo=railway&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
 ## Installation
 
@@ -54,12 +59,7 @@ CardioSys is a web application designed to manage patient information and activi
 Once the application is running, you can login using your .env credentials and then you can access the dashboard where the clinic statistics are displayed. 
 You can interact with the buttons to toggle the visibility of total revenue and navigate to the patients section.
 
-<<<<<<< HEAD
-Una vez que la aplicación esté en funcionamiento, podes acceder al panel de control donde se muestran las estadísticas de la clínica.
-Podes interactuar con los botones para alternar la visibilidad de los totales recaudados y navegar a la sección de pacientes.
-=======
 ## Contributions
->>>>>>> 2697bab2b13eb8cc03e741da58c7861c02e0ee32
 
 Contributions are welcome. If you wish to contribute, please follow these steps:
 
