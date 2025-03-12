@@ -1,6 +1,6 @@
 # Sistema Médico CardioSys
 
-<img src="assets/demo/postspark-export.png" alt="Vista previa" width="385" height="217">
+<img src="https://raw.githubusercontent.com/agusalta/sistema-medico/master/app/assets/demo/demo-preview.png" alt="Vista previa" width="385" height="217">
 
 ## Descripción
 
