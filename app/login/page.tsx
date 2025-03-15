@@ -247,8 +247,8 @@ export default function LoginPage() {
 
           <div className="p-4 bg-background/40 backdrop-blur-sm rounded-lg">
             <blockquote className="italic text-sm">
-              "Todo sistema eficaz es, en el fondo, una forma de inteligencia
-              organizada."
+              &quot;Todo sistema eficaz es, en el fondo, una forma de
+              inteligencia organizada.&quot;
             </blockquote>
             <p className="text-sm font-medium mt-2">Norbert Wiener</p>
           </div>
