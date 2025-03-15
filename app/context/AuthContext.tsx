@@ -70,14 +70,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await fetch(`${backendUrl}/auth/checkAuth`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("auth="));
+        if (token) {
+          const response = await fetch(`${backendUrl}/auth/checkAuth`, {
+            method: "GET",
+            credentials: "include",
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-          setIsLoggedIn(data.isLoggedIn);
+          if (response.ok) {
+            const data = await response.json();
+            setIsLoggedIn(data.isLoggedIn);
+          } else {
+            setIsLoggedIn(false);
+          }
         } else {
           setIsLoggedIn(false);
         }
