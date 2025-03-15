@@ -152,12 +152,6 @@ export default function LoginPage() {
                         Modo Demo
                       </Label>
                     </div>
-                    <a
-                      href="#"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      ¿Olvidaste tu contraseña?
-                    </a>
                   </div>
                 </div>
 
