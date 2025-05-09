@@ -18,9 +18,9 @@ export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isOpen, setIsOpen] = useState(false);
   const { logout, isLoggedIn } = useAuth();
 
-  if (!isLoggedIn) {
-    return null;
-  }
+  // if (!isLoggedIn) {
+  //   return null;
+  // }
 
   return (
     <div className={cn("fixed top-0 left-0 w-full z-50", className)}>

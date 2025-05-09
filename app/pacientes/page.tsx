@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { PatientSearch } from "../components/PatientSearch";
 import PatientList from "../components/PatientList";
 import { Button } from "@/components/ui/button";
@@ -65,14 +66,24 @@ export default function PatientsPage() {
             onFilteredPatientsChange={handleFilteredPatientsChange}
           />
         </div>
-        <Button asChild className="button-text bg-button font-semibold">
-          <Link href="/pacientes/nuevo" className="flex items-center gap-2">
-            <AddIcon className="text-xl md:text-2xl" />
-            <span className="hidden md:inline text-xs sm:text-sm">
-              Agregar Nuevo Paciente
-            </span>
-          </Link>
-        </Button>
+        <div className="flex items-center space-x-4 w-full sm:w-auto">
+          <Button asChild className="button-text bg-button font-semibold">
+            <Link href="/pacientes/csv" className="flex items-center gap-2">
+              <UploadFileIcon className="text-xl md:text-2xl" />
+              <span className="hidden md:inline text-xs sm:text-sm">
+                Subir archivo CSV
+              </span>
+            </Link>
+          </Button>
+          <Button asChild className="button-text bg-button font-semibold">
+            <Link href="/pacientes/nuevo" className="flex items-center gap-2">
+              <AddIcon className="text-xl md:text-2xl" />
+              <span className="hidden md:inline text-xs sm:text-sm">
+                Nuevo Paciente
+              </span>
+            </Link>
+          </Button>
+        </div>
       </div>
       <PatientList patients={filteredPatients} />
     </div>

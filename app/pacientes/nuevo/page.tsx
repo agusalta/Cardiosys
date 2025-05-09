@@ -43,7 +43,7 @@ export default function CreatePatientForm() {
     sexo: "",
     obraSocial: "",
     prepaidType: "",
-    empresaId: "", // Added empresaId to the state
+    empresaId: "", 
   });
 
   const [showEmpresaSelect, setShowEmpresaSelect] = useState(false);

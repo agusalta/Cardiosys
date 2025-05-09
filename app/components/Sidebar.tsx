@@ -35,9 +35,9 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const { clinicToday } = useStore();
   const { logout, isLoggedIn } = useAuth();
 
-  if (!isLoggedIn) {
-    return null;
-  }
+  // if (!isLoggedIn) {
+  //   return null;
+  // }
 
   const clinicEmoji =
     clinicToday === "Pinamed"
