@@ -60,8 +60,10 @@ import Loader from "@/app/components/Loader";
 
 const calcularIMC = (peso: number, altura: number) => {
   if (!peso || !altura) return "N/A";
+  if (altura > 3) altura = altura / 100;
   return (peso / Math.pow(altura, 2)).toFixed(2);
 };
+
 
 function calcularSC(peso: number, altura: number): number | string {
   if (!peso || !altura) return "N/A";
@@ -71,6 +73,11 @@ function calcularSC(peso: number, altura: number): number | string {
   if (peso <= 0 || altura <= 0) {
     return "Error: El peso y la altura deben ser valores positivos.";
   }
+
+  if (altura > 3) {
+    altura = altura / 100;
+  }
+
   if (peso > 500 || altura > 3) {
     return "Error: El peso y la altura parecen estar fuera de un rango razonable.";
   }
@@ -82,6 +89,7 @@ function calcularSC(peso: number, altura: number): number | string {
 
   return Number.parseFloat(superficieCorporal.toFixed(2));
 }
+
 
 interface Os {
   ID_Seguro: number;
