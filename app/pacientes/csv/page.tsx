@@ -174,7 +174,7 @@ export default function UploadCSVs() {
         description: "El archivo ha sido procesado. Revisa los resultados a continuación.",
         variant: "default",
       })
-    } catch (error) {
+    } catch (error: any) {
       clearInterval(progressInterval)
       setUploadStatus("error")
 
@@ -183,6 +183,7 @@ export default function UploadCSVs() {
         description: "Ocurrió un error al procesar el archivo. Intente nuevamente.",
         variant: "destructive",
       })
+     
     } finally {
       setIsUploading(false)
     }
@@ -776,8 +777,7 @@ export default function UploadCSVs() {
                   <div>
                     <p className="text-gray-700 font-medium">Usando Excel</p>
                     <p className="text-sm text-gray-600 mt-1">
-                      Abrí Microsoft Excel y creá una tabla con los datos de tus pacientes. Luego guardá el archivo como
-                      "CSV UTF-8 (delimitado por comas)" desde el menú Archivo &gt; Guardar como.
+                    Abrí Microsoft Excel y creá una tabla con los datos de tus pacientes. Luego guardá el archivo como &quot;CSV UTF-8 (delimitado por comas)&quot; desde el menú Archivo &gt; Guardar como.
                     </p>
                   </div>
                 </div>
