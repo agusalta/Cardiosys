@@ -16,11 +16,15 @@ const menuItems = [
 
 export function MobileNav({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isOpen, setIsOpen] = useState(false);
-  const { logout, isLoggedIn } = useAuth();
+  const { logout, isLoggedIn, checkAuthToken } = useAuth();
 
-  // if (!isLoggedIn) {
-  //   return null;
-  // }
+  useEffect(() => {
+    checkAuthToken(); 
+  }, [checkAuthToken]);
+
+  if (!isLoggedIn) {
+    return null;
+  }
 
   return (
     <div className={cn("fixed top-0 left-0 w-full z-50", className)}>

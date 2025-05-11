@@ -9,6 +9,7 @@ interface AuthContextType {
   setIsLoggedIn: (value: boolean) => void;
   login: (username: string, password: string) => void;
   logout: () => void;
+  checkAuthToken: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,6 +48,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const checkAuthToken = () => {
+    const authToken = document.cookie.includes("auth=");
+    setIsLoggedIn(authToken); 
+  };
+
   const logout = async () => {
     try {
       const res = await fetch(`${backendUrl}/auth/logout`, {
@@ -67,38 +73,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("auth="));
-        if (token) {
-          const response = await fetch(`${backendUrl}/auth/checkAuth`, {
-            method: "GET",
-            credentials: "include",
-          });
+  const checkLoginStatus = async () => {
+    try {
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("auth="));
+      if (token) {
+        const response = await fetch(`${backendUrl}/auth/checkAuth`, {
+          method: "GET",
+          credentials: "include",
+        });
 
-          if (response.ok) {
-            const data = await response.json();
-            setIsLoggedIn(data.isLoggedIn);
-          } else {
-            setIsLoggedIn(false);
-          }
+        if (response.ok) {
+          const data = await response.json();
+          setIsLoggedIn(data.isLoggedIn);
         } else {
           setIsLoggedIn(false);
         }
-      } catch (error) {
-        console.error("Error checking auth status:", error);
+      } else {
         setIsLoggedIn(false);
       }
-    };
+    } catch (error) {
+      console.error("Error checking auth status:", error);
+      setIsLoggedIn(false);
+    }
+  };
 
+  useEffect(() => {
     checkLoginStatus();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, login, logout, checkAuthToken }}>
       {children}
     </AuthContext.Provider>
   );

@@ -35,14 +35,14 @@ export default function LoginPage() {
     try {
       if (isDemoMode) {
         // Use demo credentials
-        await login("demo_user", "demo_password");
+        login("demo_user", "demo_password");
         toast({
           title: "Modo Demo Activado",
           description: "Has ingresado en modo demostración.",
         });
       } else {
         // Use provided credentials
-        await login(username, password);
+        login(username, password);
         toast({
           title: "Sesión iniciada",
           description: "Ahora puedes acceder a tus datos.",
