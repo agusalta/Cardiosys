@@ -22,7 +22,7 @@ export async function getTipoEstudio(id: number): Promise<string> {
 
     return data.NombreEstudio;
   } catch (error) {
-    console.error("Error fetching tipo estudio:", error);
+    ("Error fetching tipo estudio:", error);
     return "Error al cargar";
   }
 }

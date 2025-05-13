@@ -25,7 +25,7 @@ export async function uploadFiles(files: File[], ID_Estudio: number) {
 
     return { message: "All files uploaded successfully" };
   } catch (error) {
-    console.error("Error uploading files:", error);
+    ("Error uploading files:", error);
     throw error;
   }
 }
@@ -45,7 +45,7 @@ export async function fetchArchivosByEstudioId(idEstudio: number) {
 
     return archivos;
   } catch (error) {
-    console.error("Error fetching archivos:", error);
+    ("Error fetching archivos:", error);
     throw error;
   }
 }
@@ -65,7 +65,7 @@ export async function fetchArchivoContentById(idArchivo: number) {
 
     return archivo;
   } catch (error) {
-    console.error("Error fetching archivos:", error);
+    ("Error fetching archivos:", error);
     throw error;
   }
 }
@@ -84,7 +84,7 @@ export async function deleteArchivo(idArchivo: number) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Error al eliminar el archivo:", errorData);
+      ("Error al eliminar el archivo:", errorData);
       throw new Error(
         errorData.error || "Error desconocido al eliminar el archivo"
       );
@@ -92,6 +92,6 @@ export async function deleteArchivo(idArchivo: number) {
 
     return await response.json();
   } catch (error: any) {
-    console.error("Error:", error.message);
+    ("Error:", error.message);
   }
 }

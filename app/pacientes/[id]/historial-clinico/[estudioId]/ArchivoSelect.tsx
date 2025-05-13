@@ -38,7 +38,7 @@ export default function ArchivoViewer({ archivos }: { archivos: Archivo[] }) {
       );
       setSelectedArchivo(fileUrl);
     } catch (error) {
-      console.error("Error al cargar el archivo:", error);
+      ("Error al cargar el archivo:", error);
       setSelectedArchivo(null);
     } finally {
       setLoading(false);

@@ -84,7 +84,7 @@ export default function InsurancePieChart() {
           }
         }
       } catch (error) {
-        console.error("Error fetching insurance data:", error);
+        ("Error fetching insurance data:", error);
       }
     };
 

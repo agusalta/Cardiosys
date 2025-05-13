@@ -103,7 +103,7 @@ export default function ClinicalHistoryPage() {
       const costo = await getCostoEstudio(paciente?.ID_Seguro, ID_TipoEstudio);
       setCostoEstudio(costo);
     } catch (error) {
-      console.error("Error al obtener el costo del estudio:", error);
+      ("Error al obtener el costo del estudio:", error);
     }
   };
 
@@ -141,7 +141,7 @@ export default function ClinicalHistoryPage() {
         );
         setHistorial(updatedHistorial);
       } catch (err: any) {
-        console.error("Error fetching historial clínico:", err);
+        ("Error fetching historial clínico:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -161,7 +161,7 @@ export default function ClinicalHistoryPage() {
         const data = await response.json();
         setStudyTypes(data);
       } catch (error) {
-        console.error("Error fetching study types:", error);
+        ("Error fetching study types:", error);
       }
     };
     fetchStudyTypes();
@@ -177,7 +177,7 @@ export default function ClinicalHistoryPage() {
         }
         setStudyFiles(filesByStudy);
       } catch (error) {
-        console.error("Error fetching study files:", error);
+        ("Error fetching study files:", error);
       }
     };
     if (historial.length > 0) {
@@ -198,7 +198,7 @@ export default function ClinicalHistoryPage() {
         setPaciente(data);
         setNombreCompleto(nombreCompleto);
       } catch (error) {
-        console.error("Error:", error);
+        ("Error:", error);
       } finally {
         setLoading(false);
       }
@@ -255,7 +255,7 @@ export default function ClinicalHistoryPage() {
         )
       );
     } catch (error) {
-      console.error("Error al intentar eliminar el estudio:", error);
+      ("Error al intentar eliminar el estudio:", error);
       toast({
         title: "Error",
         description: "No se pudo eliminar el estudio.",
@@ -367,7 +367,7 @@ export default function ClinicalHistoryPage() {
         });
       }
     } catch (error) {
-      console.error("Error:", error);
+      ("Error:", error);
       toast({
         title: "Error",
         description: `No se pudo ${

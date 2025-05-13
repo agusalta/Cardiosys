@@ -16,7 +16,7 @@ export function useTipoEstudio(id?: number) {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Error al cargar los pacientes:", error);
+      ("Error al cargar los pacientes:", error);
     } finally {
       setLoading(false);
     }

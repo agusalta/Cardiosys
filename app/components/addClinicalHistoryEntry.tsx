@@ -62,7 +62,7 @@ export function AddClinicalHistoryEntry({
           "La nueva entrada del historial clínico ha sido creada con éxito.",
       });
     } catch (error) {
-      console.error("Error creating entry:", error);
+      ("Error creating entry:", error);
       toast({
         title: "Error",
         description:

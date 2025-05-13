@@ -82,10 +82,10 @@ export default function EstudiosPage() {
   const fetchEstudiosMasRealizados = async () => {
     try {
       const data = await getEstudiosMasRealizados();
-      console.log("Estudios más realizados:", data);
+
       setEstudiosMasRealizados(data);
     } catch (error) {
-      console.error("Error fetching studies:", error);
+      ("Error fetching studies:", error);
       setEstudiosMasRealizados([]);
     }
   };
@@ -155,7 +155,7 @@ export default function EstudiosPage() {
 
       await fetchUpdatedCosts();
     } catch (error) {
-      console.error("Error al actualizar el costo:", error);
+      ("Error al actualizar el costo:", error);
 
       toast({
         title: "Error",

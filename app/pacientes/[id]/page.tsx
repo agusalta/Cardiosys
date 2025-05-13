@@ -175,7 +175,7 @@ export default function PatientDetailsPage() {
       }
       reset(patientData);
     } catch (error) {
-      console.error("Error al cargar el paciente:", error);
+      ("Error al cargar el paciente:", error);
       toast({
         title: "Error",
         description: "No se pudo cargar la información del paciente.",
@@ -191,7 +191,7 @@ export default function PatientDetailsPage() {
       const seguro = await getSeguroById(patient.ID_Seguro);
       setOs(seguro);
     } catch (error) {
-      console.error("Error al cargar el seguro:", error);
+      ("Error al cargar el seguro:", error);
     }
   };
 
@@ -200,7 +200,7 @@ export default function PatientDetailsPage() {
       const seguros = await getAllSeguros();
       setSeguros(seguros);
     } catch (error) {
-      console.error("Error al cargar los seguros:", error);
+      ("Error al cargar los seguros:", error);
     }
   };
 
@@ -209,7 +209,7 @@ export default function PatientDetailsPage() {
       const empresas = await getEmpresaPrepagas();
       setEmpresaPrepagas(empresas);
     } catch (error) {
-      console.error("Error al cargar las empresas:", error);
+      ("Error al cargar las empresas:", error);
     }
   };
 
@@ -273,7 +273,7 @@ export default function PatientDetailsPage() {
         router.push("/");
       }, 3000);
     } catch (error) {
-      console.error("Error inesperado:", error);
+      ("Error inesperado:", error);
       toast({
         title: "Error",
         description:
@@ -326,7 +326,7 @@ export default function PatientDetailsPage() {
         description: `La información del paciente ${data.Apellido} se ha actualizado correctamente.`,
       });
     } catch (error) {
-      console.error("Error al guardar los cambios:", error);
+      ("Error al guardar los cambios:", error);
       toast({
         title: "Error",
         description: "No se pudo actualizar la información de este paciente.",

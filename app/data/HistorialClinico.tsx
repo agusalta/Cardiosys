@@ -16,7 +16,7 @@ export function useHistorialClinico(patientId: number | undefined) {
       const data = await response.json();
       return data[0]?.NombreEstudio ?? "Cargando...";
     } catch (err: any) {
-      console.error("Error fetching tipo de estudio:", err);
+      ("Error fetching tipo de estudio:", err);
       setError(err.message);
       return "Error al cargar tipo de estudio";
     }
@@ -50,7 +50,7 @@ export function useHistorialClinico(patientId: number | undefined) {
         );
         setHistorial(updatedHistorial);
       } catch (err: any) {
-        console.error("Error fetching historial clínico:", err);
+        ("Error fetching historial clínico:", err);
         setError(err.message);
       } finally {
         setLoading(false);

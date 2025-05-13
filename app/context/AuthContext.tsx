@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error(data.message || "Error desconocido");
       }
     } catch (error: any) {
-      console.error(error.message);
+      (error.message);
       throw new Error(error.message || "Ocurrió un error al iniciar sesión.");
     }
   };
@@ -66,10 +66,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsLoggedIn(false);
         router.push("/login");
       } else {
-        console.error("Error al cerrar sesión");
+        ("Error al cerrar sesión");
       }
     } catch (error) {
-      console.error("Error en el logout:", error);
+      ("Error en el logout:", error);
     }
   };
 
@@ -94,7 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsLoggedIn(false);
       }
     } catch (error) {
-      console.error("Error checking auth status:", error);
+      ("Error checking auth status:", error);
       setIsLoggedIn(false);
     }
   };

@@ -18,7 +18,7 @@ export default function useCostoEstudio() {
       const data = await response.json();
       return data.costo;
     } catch (error: any) {
-      console.error(error.message);
+      (error.message);
       return null;
     }
   }
@@ -56,7 +56,7 @@ export default function useCostoEstudio() {
 
       return data;
     } catch (error: any) {
-      console.error(error.message);
+      (error.message);
       return null;
     }
   }
@@ -72,7 +72,7 @@ export default function useCostoEstudio() {
       const data = await response.json();
       return data;
     } catch (error: any) {
-      console.error(error.message);
+      (error.message);
       return null;
     }
   }

@@ -34,7 +34,6 @@ export default function Home() {
       const data = await response.json();
       setTotalPacientes(data);
     } catch (error) {
-      console.error(error);
       setTotalPacientes(0);
     }
   }, [backendUrl]);
@@ -50,7 +49,7 @@ export default function Home() {
       const data = await response.json();
       setMonthTotal(data.total || 0);
     } catch (error) {
-      console.error(error);
+      (error);
       setMonthTotal(0);
     }
   }, [backendUrl]);
@@ -64,7 +63,7 @@ export default function Home() {
       const data = await response.json();
       setMonthTotalCollected(data.totalRecaudado || 0);
     } catch (error) {
-      console.error(error);
+      (error);
       setMonthTotalCollected(0);
     }
   }, [backendUrl]);

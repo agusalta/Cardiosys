@@ -50,10 +50,10 @@ export default function ConfiguracionPage() {
         });
       } else {
         const errorData = await response.json();
-        console.error("Error al actualizar la configuración:", errorData);
+        ("Error al actualizar la configuración:", errorData);
       }
     } catch (error) {
-      console.error("Error en la solicitud:", error);
+      ("Error en la solicitud:", error);
     }
   };
 

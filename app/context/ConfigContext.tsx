@@ -22,7 +22,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchConfig = async () => {
       if (!backendUrl) {
-        console.error(
+        (
           "La variable de entorno NEXT_PUBLIC_BACKEND_URL no está definida."
         );
         return;
@@ -43,7 +43,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
         setFontSize(Number(fontSize));
       } catch (error) {
-        console.error("Error al cargar la configuración:", error);
+        ("Error al cargar la configuración:", error);
       }
     };
 

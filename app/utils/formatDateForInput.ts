@@ -1,7 +1,7 @@
 const formatDateForInput = (date: string): string => {
   const parsedDate = new Date(date);
   if (isNaN(parsedDate.getTime())) {
-    console.error("Fecha inválida:", date);
+    ("Fecha inválida:", date);
     return "";
   }
   const formattedDate = parsedDate.toISOString().split("T")[0];

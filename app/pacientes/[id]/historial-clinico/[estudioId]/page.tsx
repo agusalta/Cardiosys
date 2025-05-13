@@ -45,7 +45,7 @@ async function getArchivosEstudio(estudioId: string) {
 
     return data;
   } catch (error) {
-    console.error("Error al obtener los archivos:", error);
+    ("Error al obtener los archivos:", error);
     return [];
   }
 }

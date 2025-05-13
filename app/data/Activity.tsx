@@ -9,7 +9,7 @@ export function useActivity() {
   useEffect(() => {
     async function fetchActivities() {
       if (!backendUrl) {
-        console.error("NEXT_PUBLIC_BACKEND_URL no está definido");
+        ("NEXT_PUBLIC_BACKEND_URL no está definido");
         setLoading(false);
         return;
       }
@@ -27,7 +27,7 @@ export function useActivity() {
 
         setActivities(data);
       } catch (error) {
-        console.error("Error al cargar las actividades:", error);
+        ("Error al cargar las actividades:", error);
       } finally {
         setLoading(false);
       }

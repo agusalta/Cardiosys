@@ -15,7 +15,7 @@ export function usePatients() {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Error al obtener el paciente:", error);
+      ("Error al obtener el paciente:", error);
     }
   }
 
@@ -29,7 +29,7 @@ export function usePatients() {
         const data = await response.json();
         setPatients(data);
       } catch (error) {
-        console.error("Error al cargar los pacientes:", error);
+        ("Error al cargar los pacientes:", error);
       } finally {
         setLoading(false);
       }

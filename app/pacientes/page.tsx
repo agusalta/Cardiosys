@@ -19,7 +19,7 @@ export default function PatientsPage() {
   useEffect(() => {
     const fetchPatients = async () => {
       if (!backendUrl) {
-        console.error("Error: NEXT_PUBLIC_BACKEND_URL no está definido.");
+        ("Error: NEXT_PUBLIC_BACKEND_URL no está definido.");
         setLoading(false);
         return;
       }
@@ -39,7 +39,7 @@ export default function PatientsPage() {
         setPatients(data);
         setFilteredPatients(data);
       } catch (error) {
-        console.error("Error al cargar los pacientes:", error);
+        ("Error al cargar los pacientes:", error);
       } finally {
         setLoading(false);
       }

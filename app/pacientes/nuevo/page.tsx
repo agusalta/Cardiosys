@@ -60,7 +60,7 @@ export default function CreatePatientForm() {
       const empresas = await getEmpresaPrepagas();
       setEmpresaPrepagas(empresas);
     } catch (error) {
-      console.error("Error al cargar las empresas:", error);
+      ("Error al cargar las empresas:", error);
     }
   };
 
@@ -76,7 +76,7 @@ export default function CreatePatientForm() {
         setSeguros(seguros);
       }
     } catch (error) {
-      console.error("Error al cargar los seguros:", error);
+      ("Error al cargar los seguros:", error);
     }
   };
 
@@ -212,7 +212,7 @@ export default function CreatePatientForm() {
         router.push(url);
       }, 3000);
     } catch (error: any) {
-      console.error("Error:", error?.message);
+      ("Error:", error?.message);
 
       toast({
         title: "Error",
