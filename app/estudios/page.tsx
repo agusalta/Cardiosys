@@ -85,7 +85,6 @@ export default function EstudiosPage() {
 
       setEstudiosMasRealizados(data);
     } catch (error) {
-      ("Error fetching studies:", error);
       setEstudiosMasRealizados([]);
     }
   };
@@ -155,7 +154,6 @@ export default function EstudiosPage() {
 
       await fetchUpdatedCosts();
     } catch (error) {
-      ("Error al actualizar el costo:", error);
 
       toast({
         title: "Error",
