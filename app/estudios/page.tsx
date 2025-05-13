@@ -284,9 +284,9 @@ export default function EstudiosPage() {
                         variant="outline"
                         className="w-full sm:w-auto button-text bg-button font-bold"
                         disabled={!selectedInsurance}
+                        title="Actualizar"
                       >
-                        <SaveIcon className="w-4 h-4 sm:mr-2" />
-                        <span className="hidden sm:inline">Actualizar</span>
+                        <SaveIcon className="w-4 h-4 text-white"/>
                       </Button>
                     </TableCell>
                   </TableRow>
