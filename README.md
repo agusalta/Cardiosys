@@ -1,8 +1,8 @@
 # CardioSys Medical System
 
-<img src="app/assets/demo/demo-preview.png" alt="Preview of the home page" style="max-width: 100%;" />
-<img src="app/assets/demo/demo-preview-2.png" alt="Preview of the patients section" style="max-width: 100%;" />
-<img src="app/assets/demo/demo-preview-3.png" alt="Preview of a patient information" style="max-width: 100%;" />
+<img src="app/assets/demo/dp-1.webp" alt="Preview of the home page" style="max-width: 100%;" />
+<img src="app/assets/demo/dp-2.webp" alt="Preview of the patients section" style="max-width: 100%;" />
+<img src="app/assets/demo/dp-3.webp" alt="Preview of a patient information" style="max-width: 100%;" />
 
 ## Description
 
